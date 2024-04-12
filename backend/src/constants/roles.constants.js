@@ -1,4 +1,5 @@
 /** Roles permitidos por la base de datos */
+
 const ROLES = [
   "user",
   "admin",
@@ -6,6 +7,7 @@ const ROLES = [
   "Vicepresidente de CEE",
   "Secretario general de CEE",
   "Secretario de finanzas de CEE",
+  "Apoderado de CEE",
   "Miembro de vocalía de CEE",
 
   "Miembro de Tricel",
@@ -15,6 +17,8 @@ const ROLES = [
   "Postulante a CEE",
   "Postulante a Tricel",
   "Postulante a vocalía",
+
+  "Moderador",
 ];
 
 module.exports = ROLES;
