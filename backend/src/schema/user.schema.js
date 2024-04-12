@@ -8,10 +8,15 @@ const ROLES = require("../constants/roles.constants");
  * @constant {Object}
  */
 const userBodySchema = Joi.object({
-  username: Joi.string().required().messages({
+  nombre_completo: Joi.string().required().messages({
     "string.empty": "El nombre de usuario no puede estar vacío.",
     "any.required": "El nombre de usuario es obligatorio.",
     "string.base": "El nombre de usuario debe ser de tipo string.",
+  }),
+  rut: Joi.string().required().messages({
+    "string.empty": "El rut no puede estar vacío.",
+    "any.required": "El rut es obligatorio.",
+    "string.base": "El rut debe ser de tipo string.",
   }),
   password: Joi.string().required().min(5).messages({
     "string.empty": "La contraseña no puede estar vacía.",
