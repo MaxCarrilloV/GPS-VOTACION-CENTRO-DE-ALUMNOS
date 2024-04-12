@@ -11,6 +11,18 @@ const EstudianteSchema = new Schema({
     required: true,
     maxLength: 100,
   },
+  rut: {
+    type: String,
+    required: true,
+    maxLength: 12,
+    unique: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    maxLength: 100,
+    unique: true,
+  },
   cargo: {
     type: String,
     required: true,
