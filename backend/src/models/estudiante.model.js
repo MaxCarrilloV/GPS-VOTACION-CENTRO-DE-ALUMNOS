@@ -5,8 +5,9 @@ const Schema = mongoose.Schema;
 const ROLES = require("../constants/roles.constants");
 
 //modelo tentativo de estudiante
-
 //si hay algo malo, por favor corregirlo
+// de userId se saca el correo
+
 const EstudianteSchema = new Schema({
   userId: {
     type: Schema.ObjectId,
@@ -17,6 +18,10 @@ const EstudianteSchema = new Schema({
     type: String,
     required: true,
     maxLength: 100,
+  },
+  rut: {
+    type: String,
+    required: true,
   },
   rol: {
     type: String,
