@@ -2,7 +2,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-//modelo tentativo de lista
+//modelo tentativo de lista de POSTULANTES a cee
 const ListaSchema = new Schema({
   nombre: {
     type: String,
