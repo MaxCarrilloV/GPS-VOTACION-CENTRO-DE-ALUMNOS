@@ -1,0 +1,43 @@
+{
+    "user": {
+        "_id": {
+            "type": "Schema.ObjectId",
+            "required": true
+        },
+        "username": {
+            "type": "String",
+            "required": true
+        },
+        "email": {
+            "type": "String",
+            "required": true
+        },
+        "roles": {
+            "type": [
+                "Schema.ObjectId"
+            ],
+            "ref": "role"
+        }
+    },
+    "role": {
+        "_id": {
+            "type": "Schema.ObjectId",
+            "required": true
+        },
+        "name": {
+            "type": "String",
+            "required": true,
+            "enum": [
+                "user",
+                "admin"
+            ]
+        }
+    },
+    "Estudiante": {
+        "nombre_completo": {
+            "type": "String",
+            "required": true,
+            "maxLenght": 100
+        }
+    }
+}
