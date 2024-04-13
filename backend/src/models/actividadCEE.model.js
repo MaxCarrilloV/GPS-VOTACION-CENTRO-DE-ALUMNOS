@@ -20,14 +20,6 @@ const actividadCEESchema = new mongoose.Schema(
         type: Date,
         required: true,
         },
-        hora_inicio: {
-        type: String,
-        required: true,
-        },
-        hora_fin: {
-        type: String,
-        required: true,
-        },
         lugar: {
         type: String,
         required: true,
