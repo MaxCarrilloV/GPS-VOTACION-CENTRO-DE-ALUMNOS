@@ -9,7 +9,7 @@ const Schema = mongoose.Schema;
  *
  */
 
-const TricelSchema = new Schema({
+const tricelSchema = new Schema({
   //miembros del tricel
   miembros: [
     {
@@ -27,4 +27,4 @@ const TricelSchema = new Schema({
   },
 });
 
-module.exports = mongoose.model("Tricel", TricelSchema);
+module.exports = mongoose.model("Tricel", tricelSchema);

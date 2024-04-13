@@ -8,7 +8,7 @@ const Schema = mongoose.Schema;
   Art. 28 = Cada lista debe presentar un presidente, un vicepresidente, un secretario general, un secretario de finanzas, junto con un apoderado quien los representará ante Tricel durante el proceso de elección.
  */
 
-const PostulacionSchema = new Schema({
+const postulacionSchema = new Schema({
   //ej: Lista A, Lista B, Lista C, etc.
   // debe ser automático y único.
   nombre: {
@@ -76,4 +76,4 @@ const PostulacionSchema = new Schema({
 
 });
 
-module.exports = mongoose.model("Postulacion", PostulacionSchema);
+module.exports = mongoose.model("Postulacion", postulacionSchema);

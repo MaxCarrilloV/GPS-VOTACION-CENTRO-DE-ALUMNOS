@@ -4,10 +4,10 @@ const Schema = mongoose.Schema;
 
 //modelo EXTREMADAMENTE TENTATIVO de votacion
 
-const VotacionSchema = new Schema({
+const votacionSchema = new Schema({
     
     //lista votada
     
     });
 
-module.exports = mongoose.model("Votacion", VotacionSchema);
+module.exports = mongoose.model("Votacion", votacionSchema);

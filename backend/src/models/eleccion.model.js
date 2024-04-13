@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 //El tricel gestiona procesos electivos
 
-const EleccionSchema = new Schema({
+const eleccionSchema = new Schema({
     //nombre de la eleccion
     nombre: {
         type: String,
@@ -38,3 +38,7 @@ const EleccionSchema = new Schema({
         maxLenght: 100,
     },
     });
+
+const Eleccion = mongoose.model("Eleccion", eleccionSchema);
+
+module.exports = Eleccion;
