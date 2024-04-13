@@ -14,7 +14,7 @@ const TricelSchema = new Schema({
   miembros: [
     {
       type: Schema.Types.ObjectId,
-      ref: "Estudiante",
+      ref: "User",
       required: true,
     },
   ],
@@ -22,7 +22,7 @@ const TricelSchema = new Schema({
   //presidente del tricel
   presidente: {
     type: Schema.Types.ObjectId,
-    ref: "Estudiante",
+    ref: "User",
     required: false,
   },
 });
