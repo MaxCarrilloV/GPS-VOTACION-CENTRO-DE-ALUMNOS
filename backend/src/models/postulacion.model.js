@@ -5,8 +5,14 @@ const Schema = mongoose.Schema;
 //modelo tentativo de lista de POSTULANTES a cee
 
 /**
-  Art. 28 = Cada lista debe presentar un presidente, un vicepresidente, un secretario general, un secretario de finanzas, junto con un apoderado quien los representará ante Tricel durante el proceso de elección.
+  Art. 28 = Cada lista debe presentar un presidente, un vicepresidente, un secretario general, un secretario de finanzas, junto con un apoderado quien los representará ante Tricel durante el proceso de elección. EL apoderado de la lista es el encargado de rellenar el formulario de postulación y el único que puede retirar la postulación.
+
+  Cada candidatura deberá ir acompañada de su programa de trabajo.
+
+  Cada lista podrá tener hasta dos miembros de primer año, serán adjuntos a alguna(s) vocalía(s).
  */
+
+  //Falta el campo de vocalias
 
 const postulacionSchema = new Schema({
   //ej: Lista A, Lista B, Lista C, etc.
@@ -74,6 +80,10 @@ const postulacionSchema = new Schema({
     required: true,
   },
 
+  //se puede modificar la postulación dentro de los 5 días habiles
+  fechaModificacion: {
+    type: Date,
+  },
 });
 
 module.exports = mongoose.model("Postulacion", postulacionSchema);
