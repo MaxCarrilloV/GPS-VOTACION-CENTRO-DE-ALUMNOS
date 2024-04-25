@@ -15,6 +15,7 @@ async function getPeriodos() {
   }
 }
 
+
 async function createPeriodo(periodo) {
   try {
     const { nombre_etapa, fecha_inicio } = periodo;
@@ -22,6 +23,10 @@ async function createPeriodo(periodo) {
     //verificar si el periodo electivo ya existe
     const periodoFound = await Periodo.findOne({ nombre_etapa });
     if (periodoFound) return [null, "El periodo ya existe"];
+
+    //verificar secuencia de etapas
+    //
+
 
     const duracion = PERIODOS.find(
       (periodo) => periodo.nombre_etapa === nombre_etapa,
