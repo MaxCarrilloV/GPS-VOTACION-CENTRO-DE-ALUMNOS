@@ -10,3 +10,4 @@ Asignaciones:
 | Claudio       | **Foro**.                |
 | Maximiliano   | **Sistema de Votación**. |
 | Miguel        | **Perfil de usuario, tricel y alumnos**.        |
+| Rene          | **Gestión de Listas**.   |
