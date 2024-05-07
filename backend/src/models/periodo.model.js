@@ -1,14 +1,10 @@
 "use strict";
 const mongoose = require("mongoose");
-const PERIODOS = require("../utils/constants");
-// Periodo o etapa de elecciones
-/**
- * Art. 28: periodo de postulaciones, el cual durará 5 días hábiles. Las postulaciones sólo podrán retirarse dentro de esos 5 días.
- * Art. 29: Una vez terminado el periodo de postulaciones, se abrirá una etapa de revisión, cuya duración será determinada por TRICEL. Seguido por un periodo de información y propaganda, el cual durará 5 días hábiles y
- versará sobre la identidad y propósitos de cada lista. Esta etapa será dirigida por el TRICEL, quien organizará (y moderará) todos los eventos necesarios para una información adecuada y completa. Por ejemplo:
- propaganda digital, impresa, debates, etc.
- Art. 30 Terminada la etapa de información y propaganda, luego de a lo menos 2 días hábiles, se llevará a cabo el acto de votación, en los horarios propuestos por TRICEL y durante 2 días consecutivos
- */
+const PERIODOS = require("../constants/periodos.constants");
+
+// Etapas o periodos dentro de un proceso electivo.
+/* Periodo de postulaciones, de revisión, de votación, etc. 
+   (artículos 28-32)*/
 
 const periodoSchema = new mongoose.Schema({
   nombre_etapa: {
@@ -17,13 +13,20 @@ const periodoSchema = new mongoose.Schema({
     enum: PERIODOS.map((periodo) => periodo.nombre_etapa),
   },
 
-  fecha_inicio: {
+  fechaInicio: {
     type: Date,
     required: true,
   },
 
+  procesoId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Proceso",
+    required: true,
+    unique: true,
+  },
+
   // automáticamente calculada
-  fecha_fin: {
+  fechaFin: {
     type: Date,
     required: true,
   },

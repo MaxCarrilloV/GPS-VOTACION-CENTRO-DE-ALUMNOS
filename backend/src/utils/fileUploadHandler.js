@@ -1,5 +1,6 @@
 "use strict";
 const { respondError } = require("./resHandler.js");
+const { handleError } = require("./errorHandler.js");
 const multer = require("multer");
 const path = require("path");
 
@@ -25,21 +26,23 @@ const filter = (req, file, cb) => {
 };
 
 // middleware para manejar errores de multer
-async function handleMulterError(req, res, next) {
+async function handleMulterError(err, req, res, next) {
   try {
+    if (err) {
+      if (err instanceof multer.MulterError) {
+        console.log("Error de multer:", err.message);
+        return respondError(req, res, 400, "Error al subir el archivo", err.message);
+      } else {
+        console.log("Error inesperado:", err.message);
+        return respondError(req, res, 500, "Error inesperado",err.message);
+      }
+    }
+
     if (!req.file?.filename) {
       return respondError(req, res, 401, "No se ha subido ningún archivo");
     }
 
-    if (err instanceof multer.MulterError) {
-      return res
-        .status(400)
-        .json({ error: "Error al subir el archivo", message: err.message });
-    } else if (err) {
-      // Si hay otro tipo de error, pasar al siguiente middleware
-      return next(err);
-    }
-    // Si no hay errores, pasar al siguiente middleware
+    // Si no hay errores, pasar al siguiente middleware o controlador
     next();
   } catch (error) {
     handleError(error, "fileUploadHandler -> handleMulterError");

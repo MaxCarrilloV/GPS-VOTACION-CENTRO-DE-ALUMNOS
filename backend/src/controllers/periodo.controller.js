@@ -2,10 +2,7 @@
 
 const { respondSuccess, respondError } = require("../utils/resHandler");
 const PeriodoService = require("../services/periodo.service");
-const {
-  periodoBodySchema,
-  periodoIdSchema,
-} = require("../schema/periodo.schema");
+const PeriodoSchema = require("../schema/periodo.schema");
 const { handleError } = require("../utils/errorHandler");
 
 async function getPeriodos(req, res) {
@@ -25,7 +22,7 @@ async function getPeriodos(req, res) {
 async function createPeriodo(req, res) {
   try {
     const { body } = req;
-    const { error: bodyError } = periodoBodySchema.validate(body);
+    const { error: bodyError } = PeriodoSchema.periodoBodySchema.validate(body);
     if (bodyError) return respondError(req, res, 400, bodyError.message);
 
     const [newPeriodo, periodoError] = await PeriodoService.createPeriodo(body);
@@ -46,7 +43,8 @@ async function createPeriodo(req, res) {
 async function updatePeriodo(req, res) {
   try {
     const { params, body } = req;
-    const { error: paramsError } = periodoIdSchema.validate(params);
+    const { error: paramsError } =
+      PeriodoSchema.periodoIdSchema.validate(params);
     if (paramsError) return respondError(req, res, 400, paramsError.message);
 
     const [updatedPeriodo, periodoError] = await PeriodoService.updatePeriodo(
@@ -69,7 +67,8 @@ async function updatePeriodo(req, res) {
 async function deletePeriodo(req, res) {
   try {
     const { params } = req;
-    const { error: paramsError } = periodoIdSchema.validate(params);
+    const { error: paramsError } =
+      PeriodoSchema.periodoIdSchema.validate(params);
     if (paramsError) return respondError(req, res, 400, paramsError.message);
 
     const [deletedPeriodo, periodoError] = await PeriodoService.deletePeriodo(

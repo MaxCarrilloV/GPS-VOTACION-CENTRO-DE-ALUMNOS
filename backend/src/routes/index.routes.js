@@ -6,9 +6,12 @@ const express = require("express");
 const userRoutes = require("./user.routes.js");
 /** Enrutador de roles */
 const roleRoutes = require("./role.routes.js");
-
 /** Enrutador de autenticación */
 const authRoutes = require("./auth.routes.js");
+
+/**Enrutador de periodos */
+const periodoRoutes = require("./periodo.routes.js");
+const procesoRoutes = require("./proceso.routes.js");
 
 /** Middleware de autenticación */
 const authenticationMiddleware = require("../middlewares/authentication.middleware.js");
@@ -22,6 +25,11 @@ router.use("/users", authenticationMiddleware, userRoutes);
 router.use("/roles", authenticationMiddleware, roleRoutes);
 // Define las rutas para la autenticación /api/auth
 router.use("/auth", authRoutes);
+
+// Define las rutas para los periodos /api/periodos
+router.use("/periodo", authenticationMiddleware, periodoRoutes);
+// Define las rutas para los procesos /api/procesos
+router.use("/procesos", authenticationMiddleware,procesoRoutes);
 
 // Exporta el enrutador
 module.exports = router;
