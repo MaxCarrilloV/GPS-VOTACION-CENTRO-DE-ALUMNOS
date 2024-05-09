@@ -6,49 +6,52 @@ const PERIODOS = require("../constants/periodos.constants");
 /* Periodo de postulaciones, de revisión, de votación, etc. 
    (artículos 28-32)*/
 
-const periodoSchema = new mongoose.Schema({
-  nombre_etapa: {
-    type: String,
-    required: true,
-    enum: PERIODOS.map((periodo) => periodo.nombre_etapa),
-  },
+const periodoSchema = new mongoose.Schema(
+  {
+    nombre_etapa: {
+      type: String,
+      required: true,
+      enum: PERIODOS.map((periodo) => periodo.nombre_etapa),
+    },
 
-  fechaInicio: {
-    type: Date,
-    required: true,
-  },
+    fechaInicio: {
+      type: Date,
+      required: true,
+    },
 
-  procesoId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Proceso",
-    required: true,
-    unique: true,
-  },
+    procesoId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Proceso",
+      required: true,
+      unique: false,
+    },
 
-  // automáticamente calculada
-  fechaFin: {
-    type: Date,
-    required: true,
-  },
+    // automáticamente calculada
+    fechaFin: {
+      type: Date,
+      required: true,
+    },
 
-  duracion: {
-    type: Number,
-    required: true,
-    enum: PERIODOS.map((periodo) => periodo.duracion),
-  },
+    duracion: {
+      type: Number,
+      required: true,
+      enum: PERIODOS.map((periodo) => periodo.duracion),
+    },
 
-  //orden o secuencia de etapas
-  numero_etapa: {
-    type: Number,
-    required: true,
-    enum: PERIODOS.map((periodo) => periodo.numero_etapa),
-  },
+    //orden o secuencia de etapas
+    numero_etapa: {
+      type: Number,
+      required: true,
+      enum: PERIODOS.map((periodo) => periodo.numero_etapa),
+    },
 
-  fechaCreacion: {
-    type: Date,
-    default: Date.now,
+    fechaCreacion: {
+      type: Date,
+      default: Date.now,
+    },
   },
-});
+  { versionKey: false },
+);
 
 const Periodo = mongoose.model("Periodo", periodoSchema);
 module.exports = Periodo;

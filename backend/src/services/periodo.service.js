@@ -16,6 +16,57 @@ async function getPeriodos() {
   }
 }
 
+async function ValidarSecuencia(
+  fechaInicioDate,
+  numero_etapa,
+  procesoId,
+  proceso,
+) {
+  try {
+    if (numero_etapa !== 1) {
+      const periodoPrevio = await Periodo.findOne({
+        numero_etapa: numero_etapa - 1,
+        procesoId: procesoId,
+      });
+
+      if (!periodoPrevio) return [null, "La secuencia de etapas es incorrecta"];
+
+      if (fechaInicioDate < periodoPrevio.fechaFin)
+        return [
+          null,
+          `La fecha de inicio debe ser posterior o igual a la fecha de finalización de la etapa anterior: '${periodoPrevio.fechaFin.toLocaleDateString()}'`,
+        ];
+
+      if (
+        fechaInicioDate >
+        new Date(periodoPrevio.fechaFin.getTime() + 14 * 24 * 60 * 60 * 1000)
+      )
+        return [
+          null,
+          `La fecha de inicio no puede exceder los 14 días después de la fecha de finalización de la etapa anterior: '${periodoPrevio.fechaFin.toLocaleDateString()}'`,
+        ];
+    } else {
+      if (fechaInicioDate < proceso.fechaCreacion)
+        return [
+          null,
+          `La fecha de inicio debe ser posterior o igual a la fecha de creación del proceso: '${proceso.fechaCreacion.toLocaleDateString()}'`,
+        ];
+
+      if (
+        fechaInicioDate >
+        new Date(proceso.fechaCreacion.getTime() + 14 * 24 * 60 * 60 * 1000)
+      )
+        return [
+          null,
+          `La fecha de inicio no puede exceder los 14 días después de la fecha de creación del proceso: '${proceso.fechaCreacion.toLocaleDateString()}'`,
+        ];
+    }
+    return [null, null];
+  } catch (error) {
+    handleError(error, "periodo.service -> ValidarSecuencia");
+  }
+}
+
 async function createPeriodo(periodo) {
   try {
     const { nombre_etapa, fechaInicio, procesoId } = periodo;
@@ -30,10 +81,8 @@ async function createPeriodo(periodo) {
       (periodo) => periodo.nombre_etapa === nombre_etapa,
     ).numero_etapa;
 
-    const proceso = await Proceso.findById(procesoId);
+    const proceso = await Proceso.findById({ _id: procesoId });
     if (!proceso) return [null, "El proceso no existe"];
-
-    console.log("El periodo `${nombre_etapa}` ya existe dentro del proceso: '${proceso.nombre}'");
 
     // Verificar si el periodo electivo ya existe dentro del proceso
     const periodoFound = await Periodo.findOne({
@@ -43,22 +92,22 @@ async function createPeriodo(periodo) {
     if (periodoFound)
       return [
         null,
-        "El periodo `${nombre_etapa}` ya existe dentro del proceso: '${proceso.nombre}'",
+        `El periodo: '${nombre_etapa}' ya existe dentro del proceso: '${proceso.nombre}'`,
       ];
 
-
-    //verificar secuencia de etapas
-    if (numero_etapa !== 1) {
-      const periodoPrevio = await Periodo.findOne({
-        numero_etapa: numero_etapa - 1,
-      });
-
-      if (!periodoPrevio) return [null, "La secuencia de etapas es incorrecta"];
-    }
+    //Validar la secuencia  y fechas de las etapas.
+    const [error, mensajeError] = await ValidarSecuencia(
+      fechaInicioDate,
+      numero_etapa,
+      procesoId,
+      proceso,
+    );
+    if (mensajeError || error) return [null, mensajeError];
 
     const newPeriodo = new Periodo({
-      nombre_etapa,
+      nombre_etapa: nombre_etapa,
       fechaInicio: fechaInicioDate,
+      procesoId: procesoId,
       fechaFin: new Date(
         fechaInicioDate.getTime() + duracion * 24 * 60 * 60 * 1000,
       ),
@@ -67,37 +116,41 @@ async function createPeriodo(periodo) {
     });
     await newPeriodo.save();
 
+    // Añadir el id del periodo al proceso
+    const ProcesoUpdated = await Proceso.findByIdAndUpdate(
+      procesoId,
+      { $push: { periodos: newPeriodo._id } },
+      { new: true },
+    );
+    if (!ProcesoUpdated)
+      return [null, "No se pudo añadir el id del periodo al proceso"];
+
     return [newPeriodo, null];
   } catch (error) {
     handleError(error, "periodo.service -> createPeriodo");
   }
 }
 
-//---- update y delete necesarios?
-
 async function updatePeriodo(id, periodo) {
   try {
-    const { nombre_etapa, fechaInicio } = periodo;
-    let fechaInicioDate = new Date(fechaInicio);
+    const { fechaInicio } = periodo;
+
+    const periodoFound = await Periodo.findById(id);
+    if (!periodoFound) return [null, "El periodo no existe"];
 
     const duracion = Constants.find(
-      (periodo) => periodo.nombre_etapa === nombre_etapa,
+      (periodo) => periodo.nombre_etapa === periodoFound.nombre_etapa,
     ).duracion;
 
-    const numero_etapa = Constants.find(
-      (periodo) => periodo.nombre_etapa === nombre_etapa,
-    ).numero_etapa;
+    let fechaInicioDate = new Date(fechaInicio);
 
     const updatedPeriodo = await Periodo.findByIdAndUpdate(
       id,
       {
-        nombre_etapa,
         fechaInicioDate,
         fechaFin: new Date(
           fechaInicioDate.getTime() + duracion * 24 * 60 * 60 * 1000,
         ),
-        duracion,
-        numero_etapa,
       },
       { new: true },
     );
@@ -114,6 +167,14 @@ async function deletePeriodo(id) {
     if (!periodoFound) return [null, "El periodo no existe"];
 
     const deletedPeriodo = await Periodo.findByIdAndDelete(id);
+    if (!deletedPeriodo) return [null, "No se pudo eliminar el periodo"];
+
+    const proceso = await Proceso.findByIdAndUpdate(
+      { _id: deletedPeriodo.procesoId },
+      { $pull: { periodos: deletedPeriodo._id } },
+      { new: true },
+    );
+    if (!proceso) return [null, "No se pudo eliminar el periodo del proceso"];
 
     return [deletedPeriodo, null];
   } catch (error) {
