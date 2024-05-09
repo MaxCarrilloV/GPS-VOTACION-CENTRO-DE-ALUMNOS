@@ -29,7 +29,7 @@ router.use("/auth", authRoutes);
 // Define las rutas para los periodos /api/periodos
 router.use("/periodo", authenticationMiddleware, periodoRoutes);
 // Define las rutas para los procesos /api/procesos
-router.use("/procesos", authenticationMiddleware,procesoRoutes);
+router.use("/proceso", authenticationMiddleware,procesoRoutes);
 
 // Exporta el enrutador
 module.exports = router;

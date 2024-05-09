@@ -18,10 +18,28 @@ async function createProceso(proceso) {
   try {
     const { nombre } = proceso;
     const year = new Date().getFullYear();
+    const semester = new Date().getMonth() < 6 ? 1 : 2;
+
+    const month = new Date().getMonth();
+    if (month < 2) {
+      return [
+        null,
+        "No se puede crear un proceso en los meses de enero y febrero",
+      ];
+    }
+
+    const procesoFound = await Proceso.findOne({ finalizado: false });
+    if (procesoFound) {
+      return [
+        null,
+        "Ya existe un proceso en curso, finalícelo para poder crear uno nuevo",
+      ];
+    }
 
     const newProceso = new Proceso({
       nombre: nombre,
       year: year,
+      semester: semester,
     });
     await newProceso.save();
 
@@ -31,12 +49,22 @@ async function createProceso(proceso) {
   }
 }
 
-async function deteleProceso(id) {
+async function deleteProceso(id) {
   try {
-    const proceso = await Proceso.findByIdAndDelete(id);
-    if (!proceso) return [null, "El proceso no existe"];
+    const procesoFound = await Proceso.findById(id);
+    if (!procesoFound)
+      return [null, "El proceso no existe o no fue encontrado"];
 
-    return [proceso, null];
+    if (procesoFound.finalizado)
+      return [null, "No se puede eliminar un proceso que ya ha sido finalizado"];
+
+    if (procesoFound.periodos.length > 0)
+      return [null, "No se puede eliminar un proceso con periodos asociados"];
+
+    const deletedProceso = await Proceso.findByIdAndDelete(id);
+    if (!deletedProceso) return [null, "No se pudo eliminar el proceso"];
+
+    return [deletedProceso, null];
   } catch (error) {
     handleError(error, "proceso.service -> deleteProceso");
   }
@@ -45,5 +73,5 @@ async function deteleProceso(id) {
 module.exports = {
   getProcesos,
   createProceso,
-  deteleProceso,
+  deleteProceso,
 };

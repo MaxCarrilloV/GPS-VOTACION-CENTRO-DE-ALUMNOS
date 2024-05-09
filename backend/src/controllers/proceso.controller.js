@@ -38,8 +38,6 @@ async function createProceso(req, res) {
 async function deleteProceso(req, res) {
   try {
     const { params } = req;
-    const { error: paramsError } = userIdSchema.validate(params);
-    if (paramsError) return respondError(req, res, 400, paramsError.message);
 
     const [proceso, procesoError] = await ProcesoService.deleteProceso(
       params.id,
@@ -52,7 +50,7 @@ async function deleteProceso(req, res) {
     respondSuccess(req, res, 200, proceso);
   } catch (error) {
     handleError(error, "proceso.controller -> deleteProceso");
-    respondError(req, res, 500, "No se eliminó el proceso");
+    respondError(req, res, 500, "No se pudo eliminar el proceso");
   }
 }
 
