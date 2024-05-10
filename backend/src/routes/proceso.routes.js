@@ -11,7 +11,7 @@ router.use(authenticationMiddleware);
 
 router.get("/", procesoController.getProcesos);
 router.post("/", procesoController.createProceso);
+router.put("/finalizado/:id", procesoController.updateFinalizadoProceso);
 router.delete("/:id", procesoController.deleteProceso);
 
 module.exports = router;
-

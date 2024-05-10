@@ -34,7 +34,7 @@ async function ValidarSecuencia(
       if (fechaInicioDate < periodoPrevio.fechaFin)
         return [
           null,
-          `La fecha de inicio debe ser posterior o igual a la fecha de finalización de la etapa anterior: '${periodoPrevio.fechaFin.toLocaleDateString()}'`,
+          `La fecha de inicio debe ser posterior a la fecha de finalización de la etapa anterior: '${periodoPrevio.fechaFin.toLocaleDateString()}'`,
         ];
 
       if (
@@ -46,7 +46,7 @@ async function ValidarSecuencia(
           `La fecha de inicio no puede exceder los 14 días después de la fecha de finalización de la etapa anterior: '${periodoPrevio.fechaFin.toLocaleDateString()}'`,
         ];
     } else {
-      if (fechaInicioDate < proceso.fechaCreacion)
+      if (fechaInicioDate < proceso.fechaCreacion.toLocaleDateString())
         return [
           null,
           `La fecha de inicio debe ser posterior o igual a la fecha de creación del proceso: '${proceso.fechaCreacion.toLocaleDateString()}'`,
@@ -81,10 +81,13 @@ async function createPeriodo(periodo) {
       (periodo) => periodo.nombre_etapa === nombre_etapa,
     ).numero_etapa;
 
+    // validar proceso
     const proceso = await Proceso.findById({ _id: procesoId });
     if (!proceso) return [null, "El proceso no existe"];
+    if (proceso.finalizado === true)
+      return [null, "No se pueden añadir etapas a un proceso finalizado"];
 
-    // Verificar si el periodo electivo ya existe dentro del proceso
+    // Verificar si el periodo ya existe dentro del proceso
     const periodoFound = await Periodo.findOne({
       nombre_etapa: nombre_etapa,
       procesoId: procesoId,
@@ -95,7 +98,7 @@ async function createPeriodo(periodo) {
         `El periodo: '${nombre_etapa}' ya existe dentro del proceso: '${proceso.nombre}'`,
       ];
 
-    //Validar la secuencia  y fechas de las etapas.
+    //Validar secuencia y fechas de las etapas.
     const [error, mensajeError] = await ValidarSecuencia(
       fechaInicioDate,
       numero_etapa,
@@ -104,6 +107,7 @@ async function createPeriodo(periodo) {
     );
     if (mensajeError || error) return [null, mensajeError];
 
+    //crear el periodo
     const newPeriodo = new Periodo({
       nombre_etapa: nombre_etapa,
       fechaInicio: fechaInicioDate,
@@ -116,14 +120,23 @@ async function createPeriodo(periodo) {
     });
     await newPeriodo.save();
 
-    // Añadir el id del periodo al proceso
+    // Actualizar el proceso
+    let vueltas = 0;
+    if (numero_etapa === 5) vueltas = 1;
+    if (numero_etapa === 8) vueltas = 2;
+    let finalizado = false;
+    if (numero_etapa === 9) finalizado = true;
+
     const ProcesoUpdated = await Proceso.findByIdAndUpdate(
       procesoId,
-      { $push: { periodos: newPeriodo._id } },
+      {
+        $push: { periodos: newPeriodo._id },
+        $set: { "proceso.vueltas": vueltas, "proceso.finalizado": finalizado },
+      },
       { new: true },
     );
     if (!ProcesoUpdated)
-      return [null, "No se pudo añadir el id del periodo al proceso"];
+      return [null, "No se pudo actualizar el proceso proceso correspondiente"];
 
     return [newPeriodo, null];
   } catch (error) {
@@ -133,16 +146,27 @@ async function createPeriodo(periodo) {
 
 async function updatePeriodo(id, periodo) {
   try {
-    const { fechaInicio } = periodo;
+    const { fechaInicio, numero_etapa, procesoId } = periodo;
+    let fechaInicioDate = new Date(fechaInicio);
 
     const periodoFound = await Periodo.findById(id);
     if (!periodoFound) return [null, "El periodo no existe"];
+
+    const proceso = await Proceso.findById({ _id: procesoId });
+    if (!proceso) return [null, "El proceso no se pudo encontrar"];
 
     const duracion = Constants.find(
       (periodo) => periodo.nombre_etapa === periodoFound.nombre_etapa,
     ).duracion;
 
-    let fechaInicioDate = new Date(fechaInicio);
+    //Validar la secuencia  y fechas de las etapas.
+    const [error, mensajeError] = await ValidarSecuencia(
+      fechaInicioDate,
+      numero_etapa,
+      procesoId,
+      proceso,
+    );
+    if (mensajeError || error) return [null, mensajeError];
 
     const updatedPeriodo = await Periodo.findByIdAndUpdate(
       id,

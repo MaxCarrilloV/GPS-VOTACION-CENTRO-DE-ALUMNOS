@@ -49,6 +49,21 @@ async function createProceso(proceso) {
   }
 }
 
+async function updateFinalizadoProceso(id, finalizado) {
+  try {
+    const procesoFound = await Proceso.findById(id);
+    if (!procesoFound)
+      return [null, "El proceso no existe o no fue encontrado"];
+
+    procesoFound.finalizado = finalizado; // true or false
+    await procesoFound.save();
+
+    return [procesoFound, null];
+  } catch (error) {
+    handleError(error, "proceso.service -> updateFinalizadoProceso");
+  }
+}
+
 async function deleteProceso(id) {
   try {
     const procesoFound = await Proceso.findById(id);
@@ -56,7 +71,10 @@ async function deleteProceso(id) {
       return [null, "El proceso no existe o no fue encontrado"];
 
     if (procesoFound.finalizado)
-      return [null, "No se puede eliminar un proceso que ya ha sido finalizado"];
+      return [
+        null,
+        "No se puede eliminar un proceso que ya ha sido finalizado",
+      ];
 
     if (procesoFound.periodos.length > 0)
       return [null, "No se puede eliminar un proceso con periodos asociados"];
@@ -73,5 +91,6 @@ async function deleteProceso(id) {
 module.exports = {
   getProcesos,
   createProceso,
+  updateFinalizadoProceso,
   deleteProceso,
 };
