@@ -32,6 +32,32 @@ async function isAdmin(req, res, next) {
   }
 }
 
+async function isTricelorAdmin(req, res, next) {
+  try {
+    const user = await User.findOne({ email: req.email });
+    const roles = await Role.find({ _id: { $in: user.roles } });
+    for (const element of roles) {
+      if (
+        element.name === "Miembro de Tricel" ||
+        element.name === "Presidente de Tricel" ||
+        element.name === "admin"
+      ) {
+        next();
+        return;
+      }
+    }
+    return respondError(
+      req,
+      res,
+      401,
+      "Se requiere un rol de Miembro de Tricel para realizar esta acción",
+    );
+  } catch (error) {
+    handleError(error, "authorization.middleware -> isTricel");
+  }
+}
+
 module.exports = {
   isAdmin,
+  isTricelorAdmin,
 };

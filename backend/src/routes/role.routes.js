@@ -9,6 +9,7 @@ router.use(authenticationMiddleware);
 
 // Define las rutas para los roles
 router.get("/", authorizationMiddleware.isAdmin, rolesController.getRoles);
+router.post("/", authorizationMiddleware.isAdmin, rolesController.createRole);
 router.delete("/:id", authorizationMiddleware.isAdmin, rolesController.deleteRole);
 
 module.exports = router;
