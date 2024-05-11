@@ -6,16 +6,15 @@ const bcrypt = require("bcryptjs");
 // Crea el esquema de la coleccion 'usuarios'
 const userSchema = new mongoose.Schema(
   {
-    nombre_completo: {
+    username: {
       type: String,
       required: true,
       maxLength: 100,
     },
     rut: {
       type: String,
-      required: true,
+      required: false,
       maxLength: 12,
-      unique: true,
     },
     password: {
       type: String,
