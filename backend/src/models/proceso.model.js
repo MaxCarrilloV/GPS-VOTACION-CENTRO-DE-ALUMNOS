@@ -45,6 +45,16 @@ const procesoSchema = new mongoose.Schema(
       default: [],
       required: true,
     },
+    postulaciones: {
+      type: [
+        {
+          type: mongoose.Schema.ObjectId,
+          ref: "Postulacion",
+        },
+      ],
+      default: [],
+      required: true,
+    },
   },
   { versionKey: false },
 );
