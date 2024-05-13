@@ -14,6 +14,17 @@ async function getProcesos() {
   }
 }
 
+async function getProcesoById(id) {
+  try {
+    const proceso = await Proceso.findById(id);
+    if (!proceso) return [null, "El proceso no existe"];
+
+    return [proceso, null];
+  } catch (error) {
+    handleError(error, "proceso.service -> getProcesoById");
+  }
+}
+
 async function createProceso(proceso) {
   try {
     const { nombre } = proceso;
@@ -90,6 +101,7 @@ async function deleteProceso(id) {
 
 module.exports = {
   getProcesos,
+  getProcesoById,
   createProceso,
   updateFinalizadoProceso,
   deleteProceso,

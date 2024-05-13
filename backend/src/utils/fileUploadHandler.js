@@ -31,10 +31,16 @@ async function handleMulterError(err, req, res, next) {
     if (err) {
       if (err instanceof multer.MulterError) {
         console.log("Error de multer:", err.message);
-        return respondError(req, res, 400, "Error al subir el archivo", err.message);
+        return respondError(
+          req,
+          res,
+          400,
+          "Error al subir el archivo",
+          err.message,
+        );
       } else {
         console.log("Error inesperado:", err.message);
-        return respondError(req, res, 500, "Error inesperado",err.message);
+        return respondError(req, res, 500, "Error inesperado", err.message);
       }
     }
 
