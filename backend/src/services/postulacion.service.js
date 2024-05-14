@@ -1,6 +1,7 @@
 "use strict";
 
 const Postulacion = require("../models/postulacion.model.js");
+const Proceso = require("../models/proceso.model.js");
 const ProcesoService = require("./proceso.service");
 const { handleError } = require("../utils/errorHandler");
 const { PORT, HOST } = require("../config/configEnv.js");
@@ -31,28 +32,38 @@ async function createPostulacion(postulacion, programa_trabajo) {
       procesoId,
     } = postulacion;
 
-    // Validar que el proceso exista y no haya finalizado
+    const url = `http:/${HOST}:${PORT}/api/postulacion/uploads/${programa_trabajo}`;
+
+    // Validar que el proceso exista y esté en la etapa de postulaciones
     const [proceso, error] = await ProcesoService.getProcesoById(procesoId);
     if (error) return [proceso, error];
     if (proceso.finalizado) return [null, "El proceso ha finalizado"];
+    if (proceso.periodos.length > 1 || proceso.periodos.length == 0)
+      return [null, "El proceso no está en la etapa de postulaciones"];
 
-    // Validar que el proceso esté en la etapa de postulaciones
-
-    const url = `http:/${HOST}:${PORT}/api/postulacion/uploads/${programa_trabajo}`;
+    // Asignar nombre de lista y letra
+    const Letras = ["A", "B", "C", "D", "E", "F", "G", "H"];
+    const indice = proceso.postulaciones.length;
+    const letra = Letras[indice];
 
     const newPostulacion = new Postulacion({
-      nombre: nombre,
+      nombre: `Lista ${letra} - ${nombre}`,
+      letra: letra,
       /*  presidenteId: presidenteId,
       vicepresidenteId: vicepresidenteId,
       secretario_generalId: secretario_generalId,
       secretario_finanzasId: secretario_finanzasId,
       apoderadoId: apoderadoId, */
       programa_trabajo: url,
-      estado,
-      procesoId,
+      estado: estado,
+      procesoId: procesoId,
     });
     const postulacionCreated = await newPostulacion.save();
     if (!postulacionCreated) return [null, "Error al crear la postulacion"];
+
+    // Agregar la postulación al proceso
+    proceso.postulaciones.push(postulacionCreated._id);
+    await proceso.save();
 
     return [newPostulacion, null];
   } catch (error) {
@@ -62,20 +73,20 @@ async function createPostulacion(postulacion, programa_trabajo) {
 
 async function deletePostulacion(id) {
   try {
-    const postulacionDeleted = await Postulacion.findByIdAndDelete(id);
-    if (!postulacionDeleted)
-      return [null, "La postulacion no existe o no fue eliminada"];
+    const postulacionFound = await Postulacion.findById(id);
+    if (!postulacionFound) return [null, "La postulacion no existe"];
 
-    // eliminar la postulación en proceso
-    const proceso = await ProcesoService.getProcesoById(
-      postulacionDeleted.procesoId,
+    // Eliminar la postulación del proceso
+    const proceso = await Proceso.findByIdAndUpdate(
+      { _id: postulacionFound.procesoId },
+      { $pull: { postulaciones: id } },
+      { new: true },
     );
-    if (!proceso) return [null, "No se encontró el proceso de la postulación"];
-    proceso.postulaciones.pull(postulacionDeleted._id);
-    await proceso.save();
+    if (!proceso)
+      return [null, "No se pudo eliminar la postulación del proceso"];
 
     // eliminar el archivo de programa de trabajo
-    const filename = postulacionDeleted.programa_trabajo.split("/").pop();
+    const filename = postulacionFound.programa_trabajo.split("/").pop();
     const pathFile = path.join(__dirname, `../../public/uploads/${filename}`);
     fs.unlink(pathFile, (err) => {
       if (err) {
@@ -84,6 +95,9 @@ async function deletePostulacion(id) {
         console.log("Archivo eliminado exitosamente");
       }
     });
+
+    const postulacionDeleted = await Postulacion.findByIdAndDelete(id);
+    if (!postulacionDeleted) return [null, "La postulación no fue eliminada"];
 
     return [postulacionDeleted, filename, null];
   } catch (error) {

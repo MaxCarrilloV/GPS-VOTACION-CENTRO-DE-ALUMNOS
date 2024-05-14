@@ -12,17 +12,17 @@ router.use(authenticationMiddleware);
 router.get("/", authorizationMiddleware.isAdmin, periodoController.getPeriodos);
 router.post(
   "/",
-  authorizationMiddleware.isTricelorAdmin,
+  authorizationMiddleware.isTricel,
   periodoController.createPeriodo,
 );
 router.put(
   "/:id",
-  authorizationMiddleware.isTricelorAdmin,
+  authorizationMiddleware.isTricel,
   periodoController.updatePeriodo,
 );
 router.delete(
   "/:id",
-  authorizationMiddleware.isTricelorAdmin,
+  authorizationMiddleware.isTricel,
   periodoController.deletePeriodo,
 );
 

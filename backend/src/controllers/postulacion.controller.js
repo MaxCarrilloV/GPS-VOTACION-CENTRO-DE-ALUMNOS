@@ -25,16 +25,15 @@ async function createPostulacion(req, res) {
   try {
     const { body } = req;
     const file = req.file.filename;
-
+    
     const { error: bodyError } =
       PostulacionSchema.postulacionBodySchema.validate(body);
     if (bodyError) return respondError(req, res, 400, bodyError.message);
 
-    const { error: fileError } = PostulacionSchema.productosFileSchema.validate(
-      {
+    const { error: fileError } =
+      PostulacionSchema.postulacionFileSchema.validate({
         file,
-      },
-    );
+      });
     if (fileError) return respondError(req, res, 400, fileError.message);
 
     const [newPostulacion, postulacionError] =
@@ -47,6 +46,9 @@ async function createPostulacion(req, res) {
 
     respondSuccess(req, res, 201, newPostulacion);
   } catch (error) {
+    if (!req.file?.filename) {
+      return respondError(req, res, 401, "No se ha subido ningún archivo");
+    }
     handleError(error, "postulacion.controller -> createPostulacion");
     respondError(req, res, 500, "No se creo la postulacion");
   }
@@ -58,11 +60,17 @@ async function deletePostulacion(req, res) {
     const { error } = PostulacionSchema.postulacionIdSchema.validate(params);
     if (error) return respondError(req, res, 400, error.message);
 
-    const deletedPostulacion =
-      await PostulacionService.deletePostulacion(params);
+    const deletedPostulacion = await PostulacionService.deletePostulacion(
+      params.id,
+    );
 
     if (!deletedPostulacion) {
-      return respondError(req, res, 400, "No se elimino la postulacion");
+      return respondError(
+        req,
+        res,
+        400,
+        "La postulación no fue eliminada correctamente",
+      );
     }
     respondSuccess(req, res, 200, deletedPostulacion);
   } catch (error) {

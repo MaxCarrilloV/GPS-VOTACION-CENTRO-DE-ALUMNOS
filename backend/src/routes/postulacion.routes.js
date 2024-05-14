@@ -9,7 +9,7 @@ router.use(authenticationMiddleware);
 
 //multer para subir archivos
 const {
-  uploadFile,
+  uploadPdf,
   handleMulterError,
 } = require("../utils/fileUploadHandler.js");
 
@@ -17,10 +17,15 @@ const {
 router.get("/", postulacionController.getPostulaciones);
 router.post(
   "/",
-  uploadFile.single("programa_trabajo"),
+  uploadPdf.single("programa_trabajo"),
   handleMulterError,
+  authorizationMiddleware.isApoderadoCee,
   postulacionController.createPostulacion,
 );
-router.delete("/:id", postulacionController.deletePostulacion);
+router.delete(
+  "/:id",
+  authorizationMiddleware.isApoderadoCee,
+  postulacionController.deletePostulacion,
+);
 
 module.exports = router;

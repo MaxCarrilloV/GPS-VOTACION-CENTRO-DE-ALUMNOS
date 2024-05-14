@@ -27,7 +27,7 @@ router.use("/periodo", authenticationMiddleware, periodoRoutes);
 // Define las rutas para los procesos /api/procesos
 router.use("/proceso", authenticationMiddleware, procesoRoutes);
 // Define las rutas para las postulaciones /api/postulaciones
-router.use("/postulaciones", authenticationMiddleware, postulacionRoutes);
+router.use("/postulacion", authenticationMiddleware, postulacionRoutes);
 
 // Exporta el enrutador
 module.exports = router;
