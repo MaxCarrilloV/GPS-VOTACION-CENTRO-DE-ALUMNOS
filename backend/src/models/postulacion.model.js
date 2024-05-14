@@ -4,7 +4,6 @@ const Schema = mongoose.Schema;
 
 //Lista de POSTULANTES a cee.
 //ej: Lista A, Lista B, Lista C, etc.
-//Falta el campo de vocalias
 
 const postulacionSchema = new Schema({
   nombre: {
@@ -48,7 +47,7 @@ const postulacionSchema = new Schema({
   //pdf con el programa de trabajo
   programa_trabajo: {
     type: String,
-    //  required: true,
+    required: true,
     maxLenght: 500,
   },
 
@@ -60,7 +59,6 @@ const postulacionSchema = new Schema({
     default: "Sin enviar",
   },
 
-  //para mantener un historial de postulaciones
   procesoId: {
     type: Schema.ObjectId,
     ref: "Proceso",

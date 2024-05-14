@@ -32,17 +32,23 @@ async function createPostulacion(postulacion, programa_trabajo) {
       procesoId,
     } = postulacion;
 
-    // Validar que el proceso exista y no haya finalizado
+    const url = `http:/${HOST}:${PORT}/api/postulacion/uploads/${programa_trabajo}`;
+
+    // Validar que el proceso exista y esté en la etapa de postulaciones
     const [proceso, error] = await ProcesoService.getProcesoById(procesoId);
     if (error) return [proceso, error];
     if (proceso.finalizado) return [null, "El proceso ha finalizado"];
+    if (proceso.periodos.length > 1 || proceso.periodos.length == 0)
+      return [null, "El proceso no está en la etapa de postulaciones"];
 
-    // Validar que el proceso esté en la etapa de postulaciones
-
-    const url = `http:/${HOST}:${PORT}/api/postulacion/uploads/${programa_trabajo}`;
+    // Asignar nombre de lista y letra
+    const Letras = ["A", "B", "C", "D", "E", "F", "G", "H"];
+    const indice = proceso.postulaciones.length;
+    const letra = Letras[indice];
 
     const newPostulacion = new Postulacion({
-      nombre: nombre,
+      nombre: `Lista ${letra} - ${nombre}`,
+      letra: letra,
       /*  presidenteId: presidenteId,
       vicepresidenteId: vicepresidenteId,
       secretario_generalId: secretario_generalId,
