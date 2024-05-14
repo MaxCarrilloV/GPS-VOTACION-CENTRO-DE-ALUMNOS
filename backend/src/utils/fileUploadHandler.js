@@ -16,9 +16,18 @@ const storage = multer.diskStorage({
   },
 });
 
-const filter = (req, file, cb) => {
+const filterImage = (req, file, cb) => {
   const ext = file.originalname.split(".").pop();
-  if (ext === "png" || ext === "jpg" || ext === "jpeg" || ext === "pdf") {
+  if (ext === "png" || ext === "jpg" || ext === "jpeg") {
+    cb(null, true);
+  } else {
+    cb(new Error("Formato de imagen no permitido"), false);
+  }
+};
+
+const filterPdf = (req, file, cb) => {
+  const ext = file.originalname.split(".").pop();
+  if (ext === "pdf") {
     cb(null, true);
   } else {
     cb(new Error("Formato de archivo no permitido"), false);
@@ -55,5 +64,6 @@ async function handleMulterError(err, req, res, next) {
   }
 }
 
-const uploadFile = multer({ storage, fileFilter: filter });
-module.exports = { uploadFile, handleMulterError };
+const uploadImage = multer({ storage, fileFilter: filterImage });
+const uploadPdf = multer({ storage, fileFilter: filterPdf });
+module.exports = { uploadImage, uploadPdf, handleMulterError };

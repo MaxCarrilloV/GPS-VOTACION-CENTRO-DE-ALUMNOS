@@ -15,8 +15,8 @@ async function isAdmin(req, res, next) {
   try {
     const user = await User.findOne({ email: req.email });
     const roles = await Role.find({ _id: { $in: user.roles } });
-    for (let i = 0; i < roles.length; i++) {
-      if (roles[i].name === "admin") {
+    for (const element of roles) {
+      if (element.name === "admin") {
         next();
         return;
       }
@@ -32,7 +32,7 @@ async function isAdmin(req, res, next) {
   }
 }
 
-async function isTricelorAdmin(req, res, next) {
+async function isTricel(req, res, next) {
   try {
     const user = await User.findOne({ email: req.email });
     const roles = await Role.find({ _id: { $in: user.roles } });
@@ -57,7 +57,29 @@ async function isTricelorAdmin(req, res, next) {
   }
 }
 
+async function isApoderadoCee(req, res, next) {
+  try {
+    const user = await User.findOne({ email: req.email });
+    const roles = await Role.find({ _id: { $in: user.roles } });
+    for (const element of roles) {
+      if (element.name === "Apoderado de CEE" || element.name === "admin") {
+        next();
+        return;
+      }
+    }
+    return respondError(
+      req,
+      res,
+      401,
+      "Se requiere un rol de Apoderado de CEE para realizar esta acción",
+    );
+  } catch (error) {
+    handleError(error, "authorization.middleware -> isApoderadoCee");
+  }
+}
+
 module.exports = {
   isAdmin,
-  isTricelorAdmin,
+  isTricel,
+  isApoderadoCee,
 };

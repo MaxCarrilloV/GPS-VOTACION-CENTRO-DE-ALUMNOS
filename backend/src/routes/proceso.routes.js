@@ -12,17 +12,17 @@ router.use(authenticationMiddleware);
 router.get("/", procesoController.getProcesos);
 router.post(
   "/",
-  authorizationMiddleware.isTricelorAdmin,
+  authorizationMiddleware.isTricel,
   procesoController.createProceso,
 );
 router.put(
   "/finalizado/:id",
-  authorizationMiddleware.isTricelorAdmin,
+  authorizationMiddleware.isTricel,
   procesoController.updateFinalizadoProceso,
 );
 router.delete(
   "/:id",
-  authorizationMiddleware.isTricelorAdmin,
+  authorizationMiddleware.isTricel,
   procesoController.deleteProceso,
 );
 
