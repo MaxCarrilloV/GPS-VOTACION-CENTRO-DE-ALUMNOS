@@ -50,6 +50,31 @@ async function createUser(req, res) {
 }
 
 /**
+ * Confirma un código de usuario
+ * @param {Object} req - Objeto de petición
+ * @param {Object} res - Objeto de respuesta
+ */
+async function confirmUser(req, res) {
+  try {
+    const { params, body } = req;
+    const { error: paramsError } = userIdSchema.validate(params);
+    if (paramsError) return respondError(req, res, 400, paramsError.message);
+
+    const { error: bodyError } = userBodySchema.validate(body);
+    if (bodyError) return respondError(req, res, 400, bodyError.message);
+
+    const [user, errorUser] = await UserService.confirmUser(params.id, body.code);
+
+    if (errorUser) return respondError(req, res, 404, errorUser);
+
+    respondSuccess(req, res, 200, user);
+  } catch (error) {
+    handleError(error, "user.controller -> confirmUser");
+    respondError(req, res, 500, "No se pudo confirmar el usuario");
+  }
+}
+
+/**
  * Obtiene un usuario por su id
  * @param {Object} req - Objeto de petición
  * @param {Object} res - Objeto de respuesta
@@ -129,4 +154,5 @@ module.exports = {
   getUserById,
   updateUser,
   deleteUser,
+  confirmUser,
 };
