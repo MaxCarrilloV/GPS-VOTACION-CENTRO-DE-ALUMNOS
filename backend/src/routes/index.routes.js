@@ -6,10 +6,11 @@ const userRoutes = require("./user.routes.js");
 const roleRoutes = require("./role.routes.js");
 const authRoutes = require("./auth.routes.js");
 
-/**Enrutador de periodos, procesos y postulaciones */
+/**Enrutador de periodos, procesos y postulaciones y publicaciones */
 const periodoRoutes = require("./periodo.routes.js");
 const procesoRoutes = require("./proceso.routes.js");
 const postulacionRoutes = require("./postulacion.routes.js");
+const postRoutes = require("./post.routes.js");
 
 /** Middleware de autenticación */
 const authenticationMiddleware = require("../middlewares/authentication.middleware.js");
@@ -28,6 +29,8 @@ router.use("/periodo", authenticationMiddleware, periodoRoutes);
 router.use("/proceso", authenticationMiddleware, procesoRoutes);
 // Define las rutas para las postulaciones /api/postulaciones
 router.use("/postulacion", authenticationMiddleware, postulacionRoutes);
+//Define las rutas para publicaciones
+router.use("/posts", authenticationMiddleware, postRoutes); 
 
 // Exporta el enrutador
 module.exports = router;
