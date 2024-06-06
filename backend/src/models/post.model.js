@@ -5,7 +5,8 @@ const Schema = mongoose.Schema;
 
 const commentSchema = new Schema({
   text: { type: String, required: true },
-  createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  username:{type: String},
+  createdBy: { type: Schema.Types.ObjectId, ref: "User"},//, required: true },
   createdAt: { type: Date, default: Date.now },
 });
 
@@ -19,7 +20,8 @@ const postSchema = new Schema({
   type: { type: String, enum: ["List", "Normal"], default: "Normal" }, // Tipo de publicación
   listMembers: [{ type: String }], 
   comments: [commentSchema], 
-  createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  username:{type: String},
+  createdBy: { type: Schema.Types.ObjectId, ref: "User"},//, required: true },
   createdAt: { type: Date, default: Date.now }
 });
 

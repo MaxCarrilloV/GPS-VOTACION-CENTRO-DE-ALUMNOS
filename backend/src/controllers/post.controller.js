@@ -30,6 +30,7 @@ async function getPostById(req, res) {
 async function createPost(req, res) {
   try {
     const postData = req.body;
+    postData.username = req.username;
     const [newPost, error] = await postService.createPost(postData);
     if (error) return res.status(400).json({ message: error });
     return res.status(201).json({ message: "Publicación creada exitosamente", post: newPost });
@@ -68,6 +69,8 @@ async function createComment(req, res) {
   try {
     const postId = req.params.postId;
     const commentData = req.body;
+    commentData.username = req.username;
+    console.log(req.username);
     const [updatedPost, error] = await postService.createComment(postId, commentData);
     if (error) return res.status(404).json({ message: error });
     return res.status(201).json({ message: "Comentario creado exitosamente", post: updatedPost });
@@ -112,9 +115,12 @@ async function getCommentById(req, res) {
 
 async function addCommentToComment(req, res) {
   const { postId, commentId } = req.params;
-  const { text, createdBy } = req.body;
-
-  const [updatedPost, error] = await postService.addReplyToComment(postId, commentId, { text, createdBy });
+  const { text } = req.body;
+  
+  const createdBy = req.userId;  
+  const username = req.username; 
+  
+  const [updatedPost, error] = await postService.addReplyToComment(postId, commentId, { text, createdBy, username });
 
   if (error) {
     return res.status(400).json({ error });
@@ -122,6 +128,7 @@ async function addCommentToComment(req, res) {
 
   res.json(updatedPost);
 }
+
 
 
 

@@ -8,9 +8,13 @@ const commentSchema = Joi.object({
     "any.required": "El texto del comentario es obligatorio.",
   }),
   createdBy: Joi.string().hex().required().messages({
-    "string.empty": "El ID del creador del comentario no puede estar vacío.",
-    "any.required": "El ID del creador del comentario es obligatorio.",
-    "string.hex": "El ID del creador del comentario debe ser un identificador hexadecimal válido.",
+    //"string.empty": "El ID del creador del comentario no puede estar vacío.",
+    //"any.required": "El ID del creador del comentario es obligatorio.",
+    //"string.hex": "El ID del creador del comentario debe ser un identificador hexadecimal válido.",
+  }),
+  username: Joi.string().hex().required().messages({
+    "string.empty": "El nombre de usuario del creador del comentario no puede estar vacío.",
+    //"any.required": "El ID del creador del comentario es obligatorio.",
   }),
   createdAt: Joi.date().default(Date.now),
   replies: Joi.array().items(Joi.string().hex()).messages({
@@ -30,10 +34,14 @@ const postSchema = Joi.object({
   }),
   listMembers: Joi.array().items(Joi.string()),
   comments: Joi.array().items(commentSchema),
+  username: Joi.string().hex().required().messages({
+    "string.empty": "El nombre de usuario del creador del comentario no puede estar vacío.",
+    //"any.required": "El ID del creador del comentario es obligatorio.",
+  }),
   createdBy: Joi.string().hex().required().messages({
-    "string.empty": "El ID del creador de la publicación no puede estar vacío.",
-    "any.required": "El ID del creador de la publicación es obligatorio.",
-    "string.hex": "El ID del creador de la publicación debe ser un identificador hexadecimal válido.",
+    //"string.empty": "El ID del creador de la publicación no puede estar vacío.",
+    //"any.required": "El ID del creador de la publicación es obligatorio.",
+    //"string.hex": "El ID del creador de la publicación debe ser un identificador hexadecimal válido.",
   }),
   createdAt: Joi.date().default(Date.now),
 });

@@ -1,36 +1,53 @@
 .post-detail {
     color: black;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
   }
   
   .post-card {
-    border: 1px solid #ccc;
-    padding: 16px;
-    margin: 8px;
-    width: 100%;
-    max-width: 600px;
     background-color: #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
   
   .post-card h2 {
-    margin: 0 0 8px;
+    margin-top: 0;
   }
   
   .post-card p {
-    margin: 0;
+    margin: 10px 0;
   }
   
-  .comment {
-    border: 1px solid #ccc;
-    padding: 12px;
-    margin-top: 8px;
+  .comment-box {
     background-color: #f9f9f9;
+    border: 1px solid black;
+    border-radius: 4px;
+    padding: 10px;
+    margin: 10px 0;
   }
   
-  .reply {
-    margin-left: 20px; /* Indentación para respuestas anidadas */
+  .comment-box p {
+    margin: 5px 0;
+  }
+  
+  .comment-box strong {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .post-card ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .post-card ul li {
+    background-color: #f1f1f1;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px;
+    margin: 5px 0;
   }
   
