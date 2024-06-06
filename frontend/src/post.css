@@ -1,0 +1,36 @@
+.post-detail {
+    color: black;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .post-card {
+    border: 1px solid #ccc;
+    padding: 16px;
+    margin: 8px;
+    width: 100%;
+    max-width: 600px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .post-card h2 {
+    margin: 0 0 8px;
+  }
+  
+  .post-card p {
+    margin: 0;
+  }
+  
+  .comment {
+    border: 1px solid #ccc;
+    padding: 12px;
+    margin-top: 8px;
+    background-color: #f9f9f9;
+  }
+  
+  .reply {
+    margin-left: 20px; /* Indentación para respuestas anidadas */
+  }
+  
