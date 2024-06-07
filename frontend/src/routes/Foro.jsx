@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import postService from '../services/post.service';
 import '../foro.css';
 
@@ -23,7 +24,9 @@ const Foro = () => {
     <div className="foro">
       {posts.map(post => (
         <div key={post._id} className="post-card card-content">
-          <h2>{post.title}</h2>
+          <h2>
+            <Link to={`/post/${post._id}`}>{post.title}</Link>
+          </h2>
           <p>{post.text}</p>
           {post.type === 'List' && (
             <div>
