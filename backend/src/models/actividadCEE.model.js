@@ -27,7 +27,7 @@ const actividadCEESchema = new mongoose.Schema(
         },
         completado: {
         type: Boolean,
-        required: true,
+        required: false,
         default: false,
         },
         tipo: {
