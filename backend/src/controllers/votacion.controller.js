@@ -90,10 +90,21 @@ async function votar(req, res, next){
     }
 }
 
+async function resultadoVotacion(req, res){
+    try {
+        const { votacionId } = req.params;
+        const resultado = await votacionService.resultadoVotacion(votacionId);
+        res.status(200).json(resultado);
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = {
     getVotaciones,
     createVotacion,
     updateVotacion,
     deleteVotacion,
     votar,
+    resultadoVotacion,
 }

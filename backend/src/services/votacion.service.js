@@ -69,7 +69,7 @@ async function deleteVotacion(id) {
 }
 
 
-  async function votar(votacionId, opcionIndex, votanteId) {
+async function votar(votacionId, opcionIndex, votanteId) {
       try {
           const votacion = await Votacion.findById(votacionId);
 
@@ -92,10 +92,25 @@ async function deleteVotacion(id) {
       }
   }
 
+async function resultadoVotacion(votacionId) {
+      try {
+          const votacion = await Votacion.findById(votacionId);
+
+          if (!votacion) {
+              throw new Error('La votación no existe');
+          }
+
+          return votacion.opciones;
+      } catch (error) {
+          throw error;
+      }
+  }
+
 module.exports = {
     getVotaciones,
     createVotacion,
     updateVotacion,
     deleteVotacion,
     votar,
+    resultadoVotacion,
 };

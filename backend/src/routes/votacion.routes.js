@@ -31,3 +31,4 @@ router.delete(
   votacionController.deleteVotacion,
 );
 router.post("/:id/votar", votacionController.votar);
+router.get("/:id/resultados", votacionController.resultadoVotacion);
