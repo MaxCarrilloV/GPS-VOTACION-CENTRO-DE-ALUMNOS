@@ -8,13 +8,13 @@ const authenticationMiddleware = require("../middlewares/authentication.middlewa
 const router = express.Router();
 router.use(authenticationMiddleware);
 
-router.get("/", authorizationMiddleware.isTricel, actividadCEEController.getActividades);
-router.get("/:id", authorizationMiddleware.isTricel, actividadCEEController.getActividadById);
+router.get("/", authorizationMiddleware.isMiembroCee, actividadCEEController.getActividades);
+router.get("/:id", authorizationMiddleware.isMiembroCee, actividadCEEController.getActividadById);
 
-router.post("/", authorizationMiddleware.isTricel, actividadCEEController.createActividad);
+router.post("/", authorizationMiddleware.isMiembroCee, actividadCEEController.createActividad);
 
-router.put("/:id", authorizationMiddleware.isTricel, actividadCEEController.updateActividad);
+router.put("/:id", authorizationMiddleware.isMiembroCee, actividadCEEController.updateActividad);
 
-router.delete("/:id", authorizationMiddleware.isTricel, actividadCEEController.deleteActividad);
+router.delete("/:id", authorizationMiddleware.isMiembroCee, actividadCEEController.deleteActividad);
 
 module.exports = router;

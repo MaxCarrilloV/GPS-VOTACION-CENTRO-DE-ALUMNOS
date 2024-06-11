@@ -33,7 +33,7 @@ router.use("/postulacion", authenticationMiddleware, postulacionRoutes);
 // Define las rutas para los votos /api/avisos
 router.use("/avisos", authenticationMiddleware, avisosRoutes);
 // Define las rutas para los votos /api/actividades
-router.use("/actividades", authenticationMiddleware, require("./actividadCEE.routes.js"));
+router.use("/actividades", authenticationMiddleware,actividadRoutes);
 
 // Exporta el enrutador
 module.exports = router;
