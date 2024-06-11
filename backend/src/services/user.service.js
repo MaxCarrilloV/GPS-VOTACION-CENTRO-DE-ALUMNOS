@@ -61,6 +61,8 @@ async function createUser(user) {
  * Confirma un código de usuario en la base de datos
  * @param {Object} user Objeto de usuario
  * @returns {Promise} Promesa con el objeto de usuario creado
+ * id: usuario a confirmar
+ * code: código de confirmación	
  */
 async function confirmUser(id, code) {
   try {
