@@ -10,6 +10,8 @@ const authRoutes = require("./auth.routes.js");
 const periodoRoutes = require("./periodo.routes.js");
 const procesoRoutes = require("./proceso.routes.js");
 const postulacionRoutes = require("./postulacion.routes.js");
+const votacionRoutes = require("./votacion.routes.js");
+
 const avisosRoutes = require("./avisos.routes.js");
 const actividadRoutes = require("./actividadCEE.routes.js");
 
@@ -35,5 +37,7 @@ router.use("/avisos", authenticationMiddleware, avisosRoutes);
 // Define las rutas para los votos /api/actividades
 router.use("/actividades", authenticationMiddleware,actividadRoutes);
 
+// Define las rutas para las votaciones /api/votaciones
+router.use("/votacion", authenticationMiddleware, votacionRoutes);
 // Exporta el enrutador
 module.exports = router;
