@@ -14,19 +14,25 @@ const authenticationMiddleware = require("../middlewares/authentication.middlewa
 /** Instancia del enrutador */
 const router = express.Router();
 
-// Define el middleware de autenticación para todas las rutas
-router.use(authenticationMiddleware);
 // Define las rutas para los usuarios
-router.get("/", authorizationMiddleware.isAdmin, usuarioController.getUsers);
-router.post("/", authorizationMiddleware.isAdmin, usuarioController.createUser);
-router.get("/:id", usuarioController.getUserById);
+
+// Rutas que no requieren autenticación
+// Ruta para confirmar un código de usuario
+router.put("/confirm/:id", usuarioController.confirmUser);
+
+// Rutas que requieren autenticación
+router.get("/", authenticationMiddleware, authorizationMiddleware.isAdmin, usuarioController.getUsers);
+router.post("/", authenticationMiddleware, usuarioController.createUser);
+router.get("/:id", authenticationMiddleware, usuarioController.getUserById);
 router.put(
   "/:id",
+  authenticationMiddleware,
   authorizationMiddleware.isAdmin,
   usuarioController.updateUser,
 );
 router.delete(
   "/:id",
+  authenticationMiddleware,
   authorizationMiddleware.isAdmin,
   usuarioController.deleteUser,
 );

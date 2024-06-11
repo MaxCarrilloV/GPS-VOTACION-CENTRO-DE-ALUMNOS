@@ -3,6 +3,7 @@
 const User = require("../models/user.model.js");
 const Role = require("../models/role.model.js");
 const { handleError } = require("../utils/errorHandler");
+const { notificationVerifyToken } = require("./notificacion.service");
 
 /**
  * Obtiene todos los usuarios de la base de datos
@@ -38,17 +39,51 @@ async function createUser(user) {
     if (rolesFound.length === 0) return [null, "El rol no existe"];
     const myRole = rolesFound.map((role) => role._id);
 
+    const codigo = Math.floor(100000 + Math.random() * 900000);
+
     const newUser = new User({
       username,
       email,
       password: await User.encryptPassword(password),
       roles: myRole,
+      verifyToken: codigo,
     });
+    await notificationVerifyToken(newUser);
     await newUser.save();
 
     return [newUser, null];
   } catch (error) {
     handleError(error, "user.service -> createUser");
+  }
+}
+
+/**
+ * Confirma un código de usuario en la base de datos
+ * @param {Object} user Objeto de usuario
+ * @returns {Promise} Promesa con el objeto de usuario creado
+ * id: usuario a confirmar
+ * code: código de confirmación	
+ */
+async function confirmUser(id, code) {
+  try {
+    const userFound = await User.findById(id);
+    if (!userFound) return [null, "El usuario no existe"];
+   
+    if (userFound.verifyToken !== code) {
+      return [null, "El código no coincide"];
+    } else if (userFound.isActive) {
+      return [null, "El usuario ya esta activo"];
+    } else {
+      const userUpdated = await User.findByIdAndUpdate(
+        id,
+        { isActive: true },
+        { new: true },
+      );
+      return [userUpdated, null];
+    }
+
+  } catch (error) {
+    handleError(error, "user.service -> confirmUser");
   }
 }
 
@@ -135,4 +170,5 @@ module.exports = {
   getUserById,
   updateUser,
   deleteUser,
+  confirmUser,
 };
