@@ -1,5 +1,6 @@
 "use strict";
 const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
 const votacionSchema = new mongoose.Schema({
     titulo: {
@@ -22,7 +23,7 @@ const votacionSchema = new mongoose.Schema({
     }],
     votantes: [{
         type: Schema.Types.ObjectId,
-        ref: 'User'
+        ref: "User"
     }],
     fechaInicio: {
         type: Date,
