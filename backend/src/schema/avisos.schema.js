@@ -27,6 +27,15 @@ const avisosBodySchema = Joi.object({
     "object.unknown": "No se permiten propiedades adicionales.",
     });
 
+const avisosIdSchema = Joi.object({
+    id: Joi.string().required().messages({
+        "string.empty": "El id no puede estar vacío.",
+        "any.required": "El id es obligatorio.",
+        "string.base": "El id debe ser de tipo string.",
+    }),
+});
+
 module.exports = {
     avisosBodySchema,
+    avisosIdSchema,
 };
