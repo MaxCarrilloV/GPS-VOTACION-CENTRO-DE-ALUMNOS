@@ -10,7 +10,6 @@ const authorizationMiddleware = require("../middlewares/authorization.middleware
 
 /** Middleware de autenticación */
 const authenticationMiddleware = require("../middlewares/authentication.middleware.js");
-const { Modal } = require("@mui/material");
 
 /** Instancia del enrutador */
 const router = express.Router();
