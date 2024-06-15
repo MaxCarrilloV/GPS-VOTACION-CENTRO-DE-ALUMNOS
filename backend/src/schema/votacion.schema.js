@@ -13,14 +13,6 @@ const votacionBodySchema = Joi.object({
         "any.required": "La descripción de la votación es obligatoria.",
         "string.base": "La descripción de la votación debe ser de tipo string.",
     }),
-    fechaInicio: Joi.date().required().messages({
-        "date.base": "La fecha de inicio debe ser de tipo date.",
-        "any.required": "La fecha de inicio es obligatoria.",
-    }),
-    fechaFin: Joi.date().required().messages({
-        "date.base": "La fecha de fin debe ser de tipo date.",
-        "any.required": "La fecha de fin es obligatoria.",
-    }),
     opciones: Joi.array()
         .items(
             Joi.object({
@@ -40,6 +32,14 @@ const votacionBodySchema = Joi.object({
             "array.min": "Debe haber al menos dos opciones.",
             "array.base": "Las opciones deben ser de tipo array.",
             "any.required": "Las opciones son obligatorias.",
+        }),
+        fechaInicio: Joi.date().required().messages({
+            "date.base": "La fecha de inicio debe ser de tipo date.",
+            "any.required": "La fecha de inicio es obligatoria.",
+        }),
+        fechaFin: Joi.date().required().messages({
+            "date.base": "La fecha de fin debe ser de tipo date.",
+            "any.required": "La fecha de fin es obligatoria.",
         }),
 }).messages({ "object.unknown": "No se permiten propiedades adicionales." });
 
