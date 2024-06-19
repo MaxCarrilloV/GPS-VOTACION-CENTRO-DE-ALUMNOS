@@ -21,6 +21,30 @@ async function notificationVerifyToken(user) {
     }
 }
 
+async function notificationAviso(aviso) {
+    const users = await User.find()
+        .select("-password")
+        .populate("roles")
+        .exec();
+
+    users.forEach(user => {
+        if (user.roles[0].name === "user") {
+            const mailOptions = {
+                from: `TRICEL`,
+                to: user.email,
+                subject: "",
+                html:`<html>
+                    <body>
+                        <p>Hola ${user.firstName} ${user.lastName},<br> 
+                        desde hoy tienes disponible el nuevo beneficio ${benefit.name}</p>
+                    </body>
+                    </html>`
+            };
+            sendAutoMail(mailOptions);
+        }
+    });
+}
+
 module.exports = {
     notificationVerifyToken
     };
