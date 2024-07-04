@@ -19,7 +19,7 @@ router.use(authenticationMiddleware);
 // Define las rutas para las votaciones
 router.get("/", authorizationMiddleware.isAdmin, votacionController.getVotaciones);
 router.post("/", authorizationMiddleware.isAdmin, votacionController.createVotacion);
-router.get("/:id", votacionController.getVotacionById);
+/* router.get("/:id", votacionController.getVotacionById); */
 router.put(
   "/:id",
   authorizationMiddleware.isAdmin,
@@ -32,3 +32,5 @@ router.delete(
 );
 router.post("/:id/votar", votacionController.votar);
 router.get("/:id/resultados", votacionController.resultadoVotacion);
+
+module.exports = router;

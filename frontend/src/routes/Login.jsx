@@ -1,3 +1,4 @@
+import { Box, Link, Typography } from '@mui/material';
 import LoginForm from '../components/LoginForm';
 import { useNavigate } from 'react-router-dom';
 
@@ -14,10 +15,22 @@ function Login() {
   }
 
   return (
-    <div>
-      <h2>Inicia sesion!</h2>
-      <LoginForm />
-    </div>
+    <>
+    <Box
+      sx={{
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#2C6AA0',
+        padding: '20px',
+        position: 'relative',
+        flexDirection: 'column',
+      }}
+      >
+        <LoginForm />
+      </Box>
+    </>
   );
 }
 

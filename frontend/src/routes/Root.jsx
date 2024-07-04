@@ -2,6 +2,8 @@ import { Outlet } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../services/auth.service';
 import { AuthProvider, useAuth } from '../context/AuthContext';
+import MainLayout from '../components/LandingPage';
+import LayoutAdmin from '../layouts/admin.jsx';
 
 function Root() {
   return (
@@ -22,6 +24,20 @@ function PageRoot() {
   const { user } = useAuth();
 
   return (
+    <>
+        {user ? (
+            <>
+              <LayoutAdmin>
+                <Outlet />
+              </LayoutAdmin>
+            </>
+        ) : (
+            <MainLayout/>
+        )}
+    </>
+  );
+
+ /*  return (
     <div>
       <div>
         <h1>Aqui deberia ir un header</h1>
@@ -30,7 +46,7 @@ function PageRoot() {
       </div>
       <Outlet />
     </div>
-  );
+  ); */
 }
 
 export default Root;
