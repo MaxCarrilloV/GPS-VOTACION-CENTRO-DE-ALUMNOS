@@ -12,6 +12,7 @@ const {
   uploadPdf,
   handleMulterError,
 } = require("../utils/fileUploadHandler.js");
+const Role = require("../models/role.model.js");
 
 // Define las rutas para las postulaciones
 router.get("/", postulacionController.getPostulaciones);
@@ -19,12 +20,12 @@ router.post(
   "/",
   uploadPdf.single("programa_trabajo"),
   handleMulterError,
-  authorizationMiddleware.isApoderadoCee,
+  authorizationMiddleware.hasRole("Apoderado de CEE"),
   postulacionController.createPostulacion,
 );
 router.delete(
   "/:id",
-  authorizationMiddleware.isApoderadoCee,
+  authorizationMiddleware.hasRole("Apoderado de CEE"),
   postulacionController.deletePostulacion,
 );
 

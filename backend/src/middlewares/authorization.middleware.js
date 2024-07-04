@@ -32,6 +32,29 @@ async function isAdmin(req, res, next) {
   }
 }
 
+const hasRole = (roleName) => {
+  return async (req, res, next) => {
+    try {
+      const user = await User.findOne({ email: req.email });
+      const roles = await Role.find({ _id: { $in: user.roles } });
+      for (const element of roles) {
+        if (element.name === roleName || element.name === "admin") {
+          return next();
+        }
+      }
+      // Si no se encuentra el rol, envía un mensaje de error
+      return respondError(
+        req,
+        res,
+        401,
+        `Se requiere un rol de ${roleName} para realizar esta acción`,
+      );
+    } catch (error) {
+      handleError(error, "authorization.middleware -> hasRole");
+    }
+  };
+};
+
 async function isTricel(req, res, next) {
   try {
     const user = await User.findOne({ email: req.email });
@@ -57,29 +80,8 @@ async function isTricel(req, res, next) {
   }
 }
 
-async function isApoderadoCee(req, res, next) {
-  try {
-    const user = await User.findOne({ email: req.email });
-    const roles = await Role.find({ _id: { $in: user.roles } });
-    for (const element of roles) {
-      if (element.name === "Apoderado de CEE" || element.name === "admin") {
-        next();
-        return;
-      }
-    }
-    return respondError(
-      req,
-      res,
-      401,
-      "Se requiere un rol de Apoderado de CEE para realizar esta acción",
-    );
-  } catch (error) {
-    handleError(error, "authorization.middleware -> isApoderadoCee");
-  }
-}
-
 module.exports = {
   isAdmin,
+  hasRole,
   isTricel,
-  isApoderadoCee,
 };
