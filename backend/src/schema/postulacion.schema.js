@@ -9,11 +9,18 @@ const EstadoConstants = [
 ];
 
 const postulacionBodySchema = Joi.object({
-  nombre: Joi.string().required().messages({
-    "string.empty": "El nombre no puede estar vacío.",
-    "any.required": "El nombre es obligatorio.",
-    "string.base": "El nombre debe ser de tipo string.",
-  }),
+  nombre: Joi.string()
+    .required()
+    .max(100)
+    .pattern(/^[A-ZÁÉÍÓÚÜÑ][a-záéíóúüñ]+(\s[A-ZÁÉÍÓÚÜÑ][a-záéíóúüñ]+)*$/)
+    .messages({
+      "string.empty": "El nombre no puede estar vacío.",
+      "any.required": "El nombre es obligatorio.",
+      "string.base": "El nombre debe ser de tipo string.",
+      "string.max": "El nombre no puede tener más de 100 caracteres.",
+      "string.pattern.base":
+        "El nombre debe tener debe tener las primeras letras en mayúscula y las palabras separadas por un espacio.",
+    }),
   procesoId: Joi.string()
     .required()
     .pattern(/^(?:[0-9a-fA-F]{24}|[0-9a-fA-F]{12})$/)

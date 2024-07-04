@@ -9,7 +9,7 @@ const router = express.Router();
 router.use(authenticationMiddleware);
 
 // Define las rutas para los periodos api/periodo
-router.get("/", authorizationMiddleware.isAdmin, periodoController.getPeriodos);
+router.get("/", periodoController.getPeriodos);
 router.post(
   "/",
   authorizationMiddleware.isTricel,

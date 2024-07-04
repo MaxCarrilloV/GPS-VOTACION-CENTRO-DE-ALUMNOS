@@ -19,6 +19,20 @@ async function getPostulaciones() {
   }
 }
 
+// validar que nombre no se repita en el proceso
+async function validateName(nombre, procesoId) {
+  try {
+    const postulaciones = await Postulacion.find({ procesoId: procesoId });
+    for (let postulacion of postulaciones) {
+      const nombreSinPrefijo = postulacion.nombre.split(" - ")[1]; 
+      if (nombreSinPrefijo === nombre) return false;
+    }
+    return true;
+  } catch (error) {
+    handleError(error, "postulacion.service -> validateName");
+  }
+}
+
 async function createPostulacion(postulacion, programa_trabajo) {
   try {
     const {
@@ -40,6 +54,10 @@ async function createPostulacion(postulacion, programa_trabajo) {
     if (proceso.finalizado) return [null, "El proceso ha finalizado"];
     if (proceso.periodos.length > 1 || proceso.periodos.length == 0)
       return [null, "El proceso no está en la etapa de postulaciones"];
+
+    // Validar que el nombre no se repita en el proceso
+    const uniqueName = await validateName(nombre, procesoId);
+    if (!uniqueName) return [null, "El nombre ya está en uso"];
 
     // Asignar nombre de lista y letra
     const Letras = ["A", "B", "C", "D", "E", "F", "G", "H"];

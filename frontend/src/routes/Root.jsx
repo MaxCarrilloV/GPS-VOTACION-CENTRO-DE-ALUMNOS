@@ -1,7 +1,9 @@
-import { Outlet } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
+import { Outlet, useNavigate } from 'react-router-dom';
+import { Box, Button, Typography } from '@mui/material';
 import { logout } from '../services/auth.service';
 import { AuthProvider, useAuth } from '../context/AuthContext';
+import Header from '../components/Header';
 
 function Root() {
   return (
@@ -22,14 +24,12 @@ function PageRoot() {
   const { user } = useAuth();
 
   return (
-    <div>
-      <div>
-        <h1>Aqui deberia ir un header</h1>
-        <p>Estas logeado como: {user.email}</p>
-        <button onClick={handleLogout}>Cerrar sesion</button>
-      </div>
-      <Outlet />
-    </div>
+    <Box sx={{ minHeight: '100vh', backgroundColor: 'white' }}>
+      <Header />
+      <Box sx={{ padding: 2 }}>
+        <Outlet />
+      </Box>
+    </Box>
   );
 }
 
