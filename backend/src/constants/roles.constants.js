@@ -3,6 +3,7 @@
 const ROLES = [
   "user",
   "admin",
+
   "Presidente de CEE",
   "Vicepresidente de CEE",
   "Secretario general de CEE",

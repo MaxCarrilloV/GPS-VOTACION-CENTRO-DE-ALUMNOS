@@ -2,6 +2,7 @@
 // Importa el modulo 'mongoose' para crear la conexion a la base de datos
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+const { verify } = require("jsonwebtoken");
 
 // Crea el esquema de la coleccion 'usuarios'
 const userSchema = new mongoose.Schema(
@@ -31,6 +32,22 @@ const userSchema = new mongoose.Schema(
         ref: "Role",
       },
     ],
+    profileImage: {
+      type: String,
+      required: false,
+    },
+    contact: {
+      type: String,
+      required: false,
+    },
+    isActive: {
+      type: Boolean,
+      default: false,
+    },
+    verifyToken: {
+      type: String,
+      required: false,
+    },
   },
   {
     versionKey: false,
