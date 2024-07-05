@@ -3,7 +3,8 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { Box, Button, Typography } from '@mui/material';
 import { logout } from '../services/auth.service';
 import { AuthProvider, useAuth } from '../context/AuthContext';
-import Header from '../components/Header';
+import MainLayout from '../components/LandingPage';
+import LayoutAdmin from '../layouts/admin.jsx';
 
 function Root() {
   return (
@@ -24,13 +25,29 @@ function PageRoot() {
   const { user } = useAuth();
 
   return (
-    <Box sx={{ minHeight: '100vh', backgroundColor: 'white' }}>
-      <Header />
-      <Box sx={{ padding: 2 }}>
-        <Outlet />
-      </Box>
-    </Box>
+    <>
+        {user ? (
+            <>
+              <LayoutAdmin>
+                <Outlet />
+              </LayoutAdmin>
+            </>
+        ) : (
+            <MainLayout/>
+        )}
+    </>
   );
+
+ /*  return (
+    <div>
+      <div>
+        <h1>Aqui deberia ir un header</h1>
+        <p>Estas logeado como: {user.email}</p>
+        <button onClick={handleLogout}>Cerrar sesion</button>
+      </div>
+      <Outlet />
+    </div>
+  ); */
 }
 
 export default Root;

@@ -21,7 +21,7 @@ const authenticationMiddleware = require("../middlewares/authentication.middlewa
 const router = express.Router();
 
 // Define las rutas para los usuarios /api/usuarios
-router.use("/users", authenticationMiddleware, userRoutes);
+router.use("/users", userRoutes);
 // Define las rutas para los roles /api/roles
 router.use("/roles", authenticationMiddleware, roleRoutes);
 // Define las rutas para la autenticación /api/auth

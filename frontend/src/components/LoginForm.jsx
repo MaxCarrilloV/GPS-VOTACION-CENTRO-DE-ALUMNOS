@@ -1,20 +1,11 @@
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
 import { useForm } from 'react-hook-form';
+import { useNavigate, Link } from 'react-router-dom';
+import { Button, TextField, Typography, Box, Paper } from '@mui/material';
 import { login } from '../services/auth.service';
-import {
-  Container,
-  TextField,
-  Button,
-  Box,
-  Typography,
-  Paper,
-  CssBaseline,
-  Avatar,
-} from '@mui/material';
 
 function LoginForm() {
   const navigate = useNavigate();
-
   const {
     register,
     handleSubmit,
@@ -22,64 +13,77 @@ function LoginForm() {
   } = useForm();
 
   const onSubmit = (data) => {
+    console.log(data);
     login(data).then(() => {
       navigate('/');
     });
   };
 
   return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <Paper elevation={6} sx={{ p: 4, mt: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            height="24"
-            viewBox="0 96 960 960"
-            width="24"
-            fill="white"
-          >
-            <path d="M480 606q-58 0-99-41t-41-99q0-58 41-99t99-41q58 0 99 41t41 99q0 58-41 99t-99 41zm-165 270q-24 0-45-9.5T244 838q-18-18-27.5-39.5T207 753q0-58 36-103t93-59q28-9 55-13.5t54-4.5q28 0 55 4.5t54 13.5q57 16 93 59t36 103q0 24-9.5 45.5T716 838q-18 18-39.5 27.5T631 875H315z" />
-          </svg>
-        </Avatar>
-        <Typography component="h1" variant="h5">
+    <Box
+      sx={{
+        position: 'absolute',
+        top: '40%',
+        transform: 'translateY(-50%)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'column',
+      }}
+    >
+      <img
+        src="https://intranet.ubiobio.cl/cb3542a830ef94d6f425b4c36b99c1f9/img/ubb_logo_new.png"
+        alt="Logo"
+        style={{ width: '400px', height: 'auto', margin: '0 auto 20px' }}
+      />
+      <Typography variant="h6" sx={{ marginBottom: '20px' }}>
+        Bienvenido al Portal de Votaciones
+      </Typography>
+      <Paper
+        component="form"
+        onSubmit={handleSubmit(onSubmit)}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          maxWidth: '400px',
+          width: '100%',
+          padding: '20px',
+          backgroundColor: '#fff',
+          borderRadius: '8px',
+          boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+        }}
+      >
+        <Typography variant="h5" sx={{ marginBottom: '20px', textAlign: 'center' }}>
           Iniciar sesión
         </Typography>
-        <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }}>
-          <TextField
-            fullWidth
-            id="email"
-            label="Email"
-            type="email"
-            margin="normal"
-            error={!!errors.email}
-            helperText={errors.email ? errors.email.message : ''}
-            {...register('email', { required: 'Este campo es requerido' })}
-          />
-          <TextField
-            fullWidth
-            id="password"
-            label="Contraseña"
-            type="password"
-            margin="normal"
-            error={!!errors.password}
-            helperText={errors.password ? errors.password.message : ''}
-            {...register('password', { required: 'Este campo es requerido' })}
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            sx={{ mt: 3, mb: 2 }}
-          >
-            Iniciar sesión
-          </Button>
-        </Box>
+        <TextField
+          label="Correo"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          {...register('email', { required: true })}
+          error={!!errors.email}
+          helperText={errors.email ? 'Correo es requerido' : ''}
+        />
+        <TextField
+          label="Contraseña"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          type="password"
+          {...register('password', { required: true })}
+          error={!!errors.password}
+          helperText={errors.password ? 'Contraseña is required' : ''}
+        />
+        <Button type="submit" variant="contained" color="primary" sx={{ marginTop: '20px' }}>
+          Acceder
+        </Button>
+        <Link to="/registro" style={{ marginTop: '20px', textAlign: 'center', textDecoration: 'none' }}>
+          Ir a Registro
+        </Link>
       </Paper>
-    </Container>
+    </Box>
   );
 }
 
 export default LoginForm;
-

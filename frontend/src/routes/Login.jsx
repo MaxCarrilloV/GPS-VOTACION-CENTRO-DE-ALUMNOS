@@ -1,6 +1,5 @@
-import React from 'react';
+import { Box, Button, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { Button, Container, Typography, Box } from '@mui/material';
 import LoginForm from '../components/LoginForm';
 
 function Login() {
@@ -25,9 +24,22 @@ function Login() {
   }
 
   return (
-    <div style={{ backgroundColor: 'white', minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-      <LoginForm />
-    </div>
+    <>
+    <Box
+      sx={{
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#2C6AA0',
+        padding: '20px',
+        position: 'relative',
+        flexDirection: 'column',
+      }}
+      >
+        <LoginForm />
+      </Box>
+    </>
   );
 }
 
