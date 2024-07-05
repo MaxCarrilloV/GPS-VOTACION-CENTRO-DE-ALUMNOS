@@ -46,7 +46,7 @@ async function createPostulacion(postulacion, programa_trabajo) {
       procesoId,
     } = postulacion;
 
-    const url = `http:/${HOST}:${PORT}/api/public/${programa_trabajo}`;
+    const url = `/public/${programa_trabajo}`;
 
     // Validar que el proceso exista y esté en la etapa de postulaciones
     const [proceso, error] = await ProcesoService.getProcesoById(procesoId);

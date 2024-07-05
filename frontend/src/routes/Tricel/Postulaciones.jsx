@@ -1,19 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import { 
   Table, TableBody, TableCell, TableContainer, 
-  TableHead, TableRow, Paper, Button, Modal, Box, Typography 
+  TableHead, TableRow, Paper, Button, Modal, Box, Typography, Alert 
 } from '@mui/material';
 import { getPostulaciones } from '../../services/tricel/postulaciones.service';
+import axios from 'axios';
 
 const Postulaciones = () => {
   const [postulaciones, setPostulaciones] = useState([]);
   const [selectedPostulacion, setSelectedPostulacion] = useState(null);
   const [open, setOpen] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchPostulaciones = async () => {
-      const data = await getPostulaciones();
-      setPostulaciones(data);
+      try {
+        const data = await getPostulaciones();
+        setPostulaciones(data);
+        if (data.length === 0) {
+          setError('No se encontraron postulaciones.');
+        }
+      } catch (err) {
+        setError('Ocurrió un error al cargar las postulaciones.');
+      }
     };
     fetchPostulaciones();
   }, []);
@@ -28,63 +38,86 @@ const Postulaciones = () => {
     // Implementar lógica para rechazar la postulación
   };
 
-  const handleDetail = (postulacion) => {
+  const handleDetail = async (postulacion) => {
     setSelectedPostulacion(postulacion);
     setOpen(true);
+
+    try {
+      // Asumiendo que el campo 'programa_trabajo' contiene la ruta relativa del archivo
+      const res = await axios.get(`http://localhost:5000${postulacion.programa_trabajo}`, { responseType: 'blob' });
+      const pdfBlob = new Blob([res.data], { type: 'application/pdf' });
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      setPdfUrl(pdfUrl);
+    } catch (err) {
+      setError('Ocurrió un error al cargar el programa de trabajo.');
+    }
   };
 
   const handleClose = () => {
     setOpen(false);
     setSelectedPostulacion(null);
+    setPdfUrl('');
+    setError('');
   };
 
   return (
     <>
+      {error && (
+        <Alert severity="error" onClose={() => setError('')}>{error}</Alert>
+      )}
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
             <TableRow>
               <TableCell>Nombre de la Lista</TableCell>
-              <TableCell>Letra</TableCell>
+              <TableCell >Letra</TableCell>
               <TableCell>Estado</TableCell>
-              <TableCell>Fecha de Postulación</TableCell>
-              <TableCell>Acciones</TableCell>
+              <TableCell align="center">Fecha de Postulación</TableCell>
+              <TableCell align="center" style={{ borderLeft: '2px solid #ddd' }}>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {postulaciones.map((postulacion) => (
-              <TableRow key={postulacion._id}>
-                <TableCell>{postulacion.nombre}</TableCell>
-                <TableCell>{postulacion.letra}</TableCell>
-                <TableCell>{postulacion.estado}</TableCell>
-                <TableCell>{new Date(postulacion.fechaPostulacion).toLocaleDateString()}</TableCell>
-                <TableCell>
-                  <Button 
-                    variant="contained" 
-                    color="primary" 
-                    onClick={() => handleDetail(postulacion)}
-                  >
-                    Detalles
-                  </Button>
-                  <Button 
-                    variant="contained" 
-                    color="success" 
-                    onClick={() => handleAccept(postulacion._id)}
-                    style={{ marginLeft: '10px' }}
-                  >
-                    Aceptar
-                  </Button>
-                  <Button 
-                    variant="contained" 
-                    color="error" 
-                    onClick={() => handleReject(postulacion._id)}
-                    style={{ marginLeft: '10px' }}
-                  >
-                    Rechazar
-                  </Button>
+            {postulaciones.length > 0 ? (
+              postulaciones.map((postulacion) => (
+                <TableRow key={postulacion._id}>
+                  <TableCell>{postulacion.nombre}</TableCell>
+                  <TableCell align="center">{postulacion.letra}</TableCell>
+                  <TableCell>{postulacion.estado}</TableCell>
+                  <TableCell align="center">{new Date(postulacion.fechaPostulacion).toLocaleDateString()}</TableCell>
+                  <TableCell align="center" style={{ borderLeft: '2px solid #ddd' }}>
+                    <Button 
+                      variant="contained" 
+                      color="primary" 
+                      onClick={() => handleDetail(postulacion)}
+                    >
+                      Detalles
+                    </Button>
+                    <Button 
+                      variant="contained" 
+                      color="success" 
+                      onClick={() => handleAccept(postulacion._id)}
+                      style={{ marginLeft: '10px' }}
+                    >
+                      Aceptar
+                    </Button>
+                    <Button 
+                      variant="contained" 
+                      color="error" 
+                      onClick={() => handleReject(postulacion._id)}
+                      style={{ marginLeft: '10px' }}
+                    >
+                      Rechazar
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={5} align="center">
+                  No se encontraron postulaciones.
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </TableContainer>
@@ -106,7 +139,7 @@ const Postulaciones = () => {
                 Fecha de Postulación: {new Date(selectedPostulacion.fechaPostulacion).toLocaleDateString()}
               </Typography>
               <Typography sx={{ mt: 2 }}>
-                Programa de Trabajo: <a href={selectedPostulacion.programa_trabajo} target="_blank" rel="noopener noreferrer">Ver PDF</a>
+                Programa de Trabajo: <a href={pdfUrl} target="_blank" rel="noopener noreferrer">Ver PDF</a>
               </Typography>
             </>
           )}
