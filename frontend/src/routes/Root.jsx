@@ -1,5 +1,6 @@
-import { Outlet } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
+import { Outlet, useNavigate } from 'react-router-dom';
+import { Box, Button, Typography } from '@mui/material';
 import { logout } from '../services/auth.service';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 import MainLayout from '../components/LandingPage';

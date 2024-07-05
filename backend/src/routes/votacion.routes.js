@@ -30,7 +30,7 @@ router.delete(
   authorizationMiddleware.isAdmin,
   votacionController.deleteVotacion,
 );
-router.post("/:id/votar", votacionController.votar);
+router.put("/:id/votar", votacionController.votar);
 router.get("/:id/resultados", votacionController.resultadoVotacion);
 
 module.exports = router;

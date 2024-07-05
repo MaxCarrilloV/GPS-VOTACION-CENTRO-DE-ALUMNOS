@@ -39,6 +39,46 @@ async function createVotacion(req, res) {
     }
 }
 
+
+
+async function deleteVotacion(req, res) {
+    try {
+        const { params } = req;
+        const { error: paramsError } = votacionIdSchema.validate(params);
+        if (paramsError) return respondError(req, res, 400, paramsError.message);
+    
+        const [deletedVotacion, votacionError] = await VotacionService.deleteVotacion(params.id);
+    
+        if (votacionError) return respondError(req, res, 400, votacionError);
+        if (!deletedVotacion) {
+        return respondError(req, res, 400, "No se elimino la votacion");
+        }
+    
+        respondSuccess(req, res, 200, deletedVotacion);
+    } catch (error) {
+        respondError(req, res, 500, "No se elimino la votacion");
+    }
+}
+
+async function getVotacionById(req, res) {
+    try {
+        const { params } = req;
+        const { error: paramsError } = votacionIdSchema.validate(params);
+        if (paramsError) return respondError(req, res, 400, paramsError.message);
+    
+        const [votacion, votacionError] = await VotacionService.getVotacionById(params.id);
+    
+        if (votacionError) return respondError(req, res, 404, votacionError);
+        if (!votacion) {
+        return respondError(req, res, 404, "No se encontro la votacion");
+        }
+    
+        respondSuccess(req, res, 200, votacion);
+    } catch (error) {
+        respondError(req, res, 500, "No se encontro la votacion");
+    }
+}
+
 async function updateVotacion(req, res) {
     try {
         const { params, body } = req;
@@ -61,42 +101,40 @@ async function updateVotacion(req, res) {
     }
 }
 
-async function deleteVotacion(req, res) {
+async function votar(req, res){
     try {
-        const { params } = req;
+        const { params, body } = req;
         const { error: paramsError } = votacionIdSchema.validate(params);
         if (paramsError) return respondError(req, res, 400, paramsError.message);
-    
-        const [deletedVotacion, votacionError] = await VotacionService.deleteVotacion(params.id);
-    
-        if (votacionError) return respondError(req, res, 400, votacionError);
-        if (!deletedVotacion) {
-        return respondError(req, res, 400, "No se elimino la votacion");
-        }
-    
-        respondSuccess(req, res, 200, deletedVotacion);
-    } catch (error) {
-        respondError(req, res, 500, "No se elimino la votacion");
-    }
-}
+       
+        const [ votarVotacion, votarError] = await VotacionService.votar(params.id, body);
 
-async function votar(req, res, next){
-    try {
-        const { votacionId, opcionIndex, votanteId } = req.body;
-        const resultado = await votacionService.votar(votacionId, opcionIndex, votanteId);
-        res.status(200).json(resultado);
+        if(votarError) return respondError(req, res, 400, votarError);
+
+        if(!votarVotacion){ 
+            return respondError(req, res, 404, "no se pudo Votar")
+        };
+
+        respondSuccess(req, res, 200, votarVotacion);
+
     } catch (error) {
-        next(error);
+        
+        respondError(req, res, 500, "No se pudo votar");
     }
 }
 
 async function resultadoVotacion(req, res){
     try {
-        const { votacionId } = req.params;
-        const resultado = await votacionService.resultadoVotacion(votacionId);
-        res.status(200).json(resultado);
+        const {params} = req;
+        const {error: paramsError} = votacionIdSchema.validate(params);
+        if(paramsError) return respondError(req, res, 400, paramsError.message);
+        const resultado = await VotacionService.resultadoVotacion(params.id);
+
+        if(!resultado) return respondError(req, res, 404, "No se encontro la votacion");
+        
+        respondSuccess(req, res, 200, resultado);
     } catch (error) {
-        next(error);
+        respondError(req, res, 500, "No se encontro la votacion");
     }
 }
 
@@ -105,6 +143,7 @@ module.exports = {
     createVotacion,
     updateVotacion,
     deleteVotacion,
+    getVotacionById,
     votar,
     resultadoVotacion,
 }

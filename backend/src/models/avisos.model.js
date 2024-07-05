@@ -19,7 +19,7 @@ const avisosSchema = new mongoose.Schema({
     fechaPublicacion: {
         type: Date,
         default: Date.now
-    }
+    },
 });
 
 const Avisos = mongoose.model('Aviso', avisosSchema);

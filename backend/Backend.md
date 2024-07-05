@@ -87,11 +87,6 @@
   - El token tiene una duracion de 24 horas, despues de ese tiempo, se puede refrescar el token con el endpoint `/api/auth/refresh`
   - El token de refresco, tiene una duracion de 7 dias, despues de ese tiempo, se debe volver a autenticar
 
-## Consideraciones
-
-- El manejo de tokens, esta simplificado para hacerlo mas facil de entender
-- La abstracion de la autenticacion, se completará con el frontend
-
 ## Librerias utilizadas
 
 - [Node](https://nodejs.org/es/): Entorno de ejecucion de JS
@@ -108,7 +103,5 @@
 ## Extra:
 
 - Para que funcione con el frontend:
-
-  - en server.js debes editar el cors y poner esta linea: `server.use(cors({ credentials: true, origin: true }));`
 
 - Solucion de error en authentication.middleware.js, agregar `const { handleError } = require("../utils/errorHandler.js");`

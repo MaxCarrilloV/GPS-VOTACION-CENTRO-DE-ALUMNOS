@@ -1,3 +1,5 @@
+// src/main.jsx
+
 import ReactDOM from 'react-dom/client';
 import App from './routes/App.jsx';
 import './index.css';
@@ -5,6 +7,8 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Root from './routes/Root.jsx';
 import ErrorPage from './routes/ErrorPage.jsx';
 import Login from './routes/Login.jsx';
+import Foro from './routes/Foro.jsx';
+import Post from './routes/Post.jsx';
 import Register from './routes/Register.jsx';
 
 const router = createBrowserRouter([
@@ -26,6 +30,14 @@ const router = createBrowserRouter([
   {
     path: '/registro',
     element: <Register />,
+  },
+  {
+    path: '/foro',
+    element: <Foro />,
+  },
+  {
+    path: '/post/:postId',
+    element: <Post />,
   },
 ]);
 

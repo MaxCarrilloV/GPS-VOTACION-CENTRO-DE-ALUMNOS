@@ -23,7 +23,7 @@ const votacionSchema = new mongoose.Schema({
     }],
     votantes: [{
         type: Schema.Types.ObjectId,
-        ref: 'User'
+        ref: "User"
     }],
     fechaInicio: {
         type: Date,

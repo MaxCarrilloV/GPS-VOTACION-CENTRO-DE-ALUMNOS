@@ -13,12 +13,11 @@ function LoginForm() {
   } = useForm();
 
   const onSubmit = (data) => {
+    console.log(data);
     login(data).then(() => {
       navigate('/');
     });
   };
-
-  const preventDefault = (event) => event.preventDefault();
 
   return (
     <Box
@@ -53,7 +52,6 @@ function LoginForm() {
           borderRadius: '8px',
           boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
         }}
-        onClick={preventDefault}
       >
         <Typography variant="h5" sx={{ marginBottom: '20px', textAlign: 'center' }}>
           Iniciar sesión

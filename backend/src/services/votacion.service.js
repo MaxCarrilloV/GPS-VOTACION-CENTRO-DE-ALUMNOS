@@ -17,10 +17,12 @@ async function getVotaciones() {
 async function createVotacion(votacion) {
   try {
     const { titulo, descripcion, opciones, fechaInicio, fechaFin } = votacion;
-
-    //verificar si la votacion ya existe
     const votacionFound = await Votacion.findOne({ titulo });
     if (votacionFound) return [null, "La votacion ya existe"];
+
+    if (opciones.length < 2) return [null, "Debe haber al menos dos opciones"];
+
+    if (fechaInicio >= fechaFin) return [null, "La fecha de inicio debe ser menor a la fecha de fin"];
 
     const newVotacion = new Votacion({
         titulo,
@@ -39,7 +41,7 @@ async function createVotacion(votacion) {
 
 async function updateVotacion(id, votacion) {
   try {
-    const { titulo, descripcion, opciones, fechaInicio, fechaFin } = votacion;
+    const { titulo, descripcion, opciones, fechaInicio, fechaFin, estado } = votacion;
 
     const updatedVotacion = await Votacion.findByIdAndUpdate(  
         id,
@@ -49,6 +51,7 @@ async function updateVotacion(id, votacion) {
             opciones,
             fechaInicio,
             fechaFin,
+            estado
         },
         { new: true }
         );
@@ -68,32 +71,51 @@ async function deleteVotacion(id) {
     }
 }
 
+async function getVotacionById(id) {
+    try {
+        const votacion = await Votacion.findById(id);
+        if (!votacion) return [null, "La votacion no existe"];
+        return [votacion, null];
+    } catch (error) {
+        handleError(error, "votacion.service -> getVotacionById");
+    }
+}
 
-async function votar(votacionId, opcionIndex, votanteId) {
+
+async function votar(votacionId, voto) {
       try {
+          const { votanteId, opcionIndex } = voto;
           const votacion = await Votacion.findById(votacionId);
 
           if (!votacion) {
-              throw new Error('La votación no existe');
+             return { message: 'La votación no existe' };  
+          }
+          if (votacion.estado === 'cerrada') {
+              return [null, "La votación ya termino"];
           }
 
           if (votacion.votantes.includes(votanteId)) {
-              throw new Error('El votante ya ha votado en esta votación');
+              return [null, "Ya votaste en esta votación"]
           }
-          votacion.opciones[opcionIndex].cantidadVotos++;
+          const opciones = votacion.opciones;
+          for (let i = 0; i < opciones.length; i++) {
+              if (opciones[i]._id.toString() === opcionIndex){  
+                  opciones[i].cantidadVotos++;
+              }
+          }
+        votacion.opciones = opciones;
+        votacion.votantes.push(votanteId);
 
-          votacion.votantes.push(votanteId);
-
-          await votacion.save();
-
-          return { message: 'Voto registrado exitosamente' };
+        await votacion.updateOne(votacion);
+        return [votacion, null];
       } catch (error) {
-          throw error;
+          handleError(error, "votacion.service -> votar");
       }
   }
 
 async function resultadoVotacion(votacionId) {
       try {
+         console.log(votacionId);
           const votacion = await Votacion.findById(votacionId);
 
           if (!votacion) {
@@ -111,6 +133,7 @@ module.exports = {
     createVotacion,
     updateVotacion,
     deleteVotacion,
+    getVotacionById,
     votar,
     resultadoVotacion,
 };
