@@ -1,5 +1,4 @@
 const { handleError } = require("../utils/errorHandler.js");
-const User = require("../models/user.model.js");
 const { sendAutoMail } = require("../controllers/notificacion.controller.js");
 
 async function notificationVerifyToken(user) {
