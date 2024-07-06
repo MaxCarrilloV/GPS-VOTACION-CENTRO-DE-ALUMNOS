@@ -9,9 +9,10 @@ import Foro from "./routes/Foro.jsx";
 import Post from "./routes/Post.jsx";
 import Register from "./routes/Register.jsx";
 import Postulaciones from "./routes/Tricel/Postulaciones.jsx";
-import PeriodosElectivos from "./routes/Tricel/PeriodosElectivos.jsx";
 import ListaGanadora from "./routes/Tricel/ListaGanadora.jsx";
 import HistorialRevisiones from "./routes/Tricel/HistorialRevisiones.jsx";
+import ProcesosElectivos from "./routes/Tricel/ProcesosElectivos.jsx";
+import PeriodosElectivos from "./routes/Tricel/PeriodoElectivo.jsx";
 
 const router = createBrowserRouter([
   {
@@ -28,8 +29,12 @@ const router = createBrowserRouter([
         element: <Postulaciones />,
       },
       {
+        path: "/tricel/procesos-electivos",
+        element: <ProcesosElectivos />,
+      },
+      {
         path: "/tricel/periodos-electivos",
-        element: <PeriodosElectivos />,
+        element: <PeriodosElectivos/>
       },
       {
         path: "/tricel/lista-ganadora",

@@ -35,7 +35,7 @@ const Postulaciones = () => {
 
   const handleReject = (id) => {
     console.log(`Rejecting postulation with id ${id}`);
-    // Implementar lógica para rechazar la postulación
+    // Implementar lógica para rechazar la postulación (pendienteeee)
   };
 
   const handleDetail = async (postulacion) => {
@@ -43,7 +43,7 @@ const Postulaciones = () => {
     setOpen(true);
 
     try {
-      // Asumiendo que el campo 'programa_trabajo' contiene la ruta relativa del archivo
+      // el campo 'programa_trabajo' contiene la ruta relativa del archivo
       const res = await axios.get(`http://localhost:5000${postulacion.programa_trabajo}`, { responseType: 'blob' });
       const pdfBlob = new Blob([res.data], { type: 'application/pdf' });
       const pdfUrl = URL.createObjectURL(pdfBlob);
