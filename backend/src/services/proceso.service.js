@@ -51,6 +51,7 @@ async function createProceso(proceso) {
       nombre: nombre,
       year: year,
       semester: semester,
+      fechaCreacion: new Date(), // fecha actual
     });
     await newProceso.save();
 
@@ -59,6 +60,7 @@ async function createProceso(proceso) {
     handleError(error, "proceso.service -> createProceso");
   }
 }
+
 
 async function updateFinalizadoProceso(id, finalizado) {
   try {
