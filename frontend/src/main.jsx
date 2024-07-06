@@ -12,7 +12,8 @@ import Postulaciones from "./routes/Tricel/Postulaciones.jsx";
 import ListaGanadora from "./routes/Tricel/ListaGanadora.jsx";
 import HistorialRevisiones from "./routes/Tricel/HistorialRevisiones.jsx";
 import ProcesosElectivos from "./routes/Tricel/ProcesosElectivos.jsx";
-import PeriodosElectivos from "./routes/Tricel/PeriodoElectivo.jsx";
+import PeriodosElectivos from "./routes/Tricel/PeriodosElectivos.jsx";
+
 
 const router = createBrowserRouter([
   {

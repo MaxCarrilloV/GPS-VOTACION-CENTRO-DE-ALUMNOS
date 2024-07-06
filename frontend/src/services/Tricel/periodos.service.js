@@ -7,9 +7,13 @@ export const getPeriodos = async () => {
     const { status, data } = response;
     if (status === 200) {
       return data.data;
+    } else {
+      console.error("Error fetching periodos:", response);
+      return [];
     }
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching periodos:", error);
+    return [];
   }
 };
 

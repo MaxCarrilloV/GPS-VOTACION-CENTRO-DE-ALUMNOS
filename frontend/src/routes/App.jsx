@@ -1,5 +1,7 @@
-import React from 'react';
-import { Box, Typography } from '@mui/material';
+// src/routes/App.jsx
+
+import React from "react";
+import { Box, Typography } from "@mui/material";
 
 function App() {
   return (
