@@ -9,6 +9,7 @@ import ErrorPage from './routes/ErrorPage.jsx';
 import Login from './routes/Login.jsx';
 import Foro from './routes/Foro.jsx';
 import Post from './routes/Post.jsx';
+import Votacion from './routes/Votacion.jsx';
 
 const router = createBrowserRouter([
   {
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
     path: '/post/:postId',
     element: <Post />,
   },
+  {
+    path:'votacion',
+    element: <Votacion />,
+  }
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
