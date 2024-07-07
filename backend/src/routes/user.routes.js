@@ -19,10 +19,11 @@ const router = express.Router();
 // Rutas que no requieren autenticación
 // Ruta para confirmar un código de usuario
 router.put("/confirm/:id", usuarioController.confirmUser);
+// Ruta para crear un usuario
+router.post("/", usuarioController.createUser);
 
 // Rutas que requieren autenticación
 router.get("/", authenticationMiddleware, authorizationMiddleware.isAdmin, usuarioController.getUsers);
-router.post("/", authenticationMiddleware, usuarioController.createUser);
 router.get("/:id", authenticationMiddleware, usuarioController.getUserById);
 router.put(
   "/:id",

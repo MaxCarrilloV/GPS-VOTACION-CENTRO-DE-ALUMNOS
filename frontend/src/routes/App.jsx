@@ -1,8 +1,15 @@
+// src/routes/App.jsx
+
+import React from "react";
+import { Box, Typography } from "@mui/material";
+
 function App() {
   return (
-    <>
-      <h1>Pagina principal</h1>
-    </>
+    <Box p={4}>
+      <Typography variant="h4" gutterBottom>
+        Inicio
+      </Typography>
+    </Box>
   );
 }
 

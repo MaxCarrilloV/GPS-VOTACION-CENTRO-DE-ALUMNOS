@@ -16,14 +16,14 @@ const periodoBodySchema = Joi.object({
       "any.only": "El nombre del periodo no es válido.",
     }),
   fechaInicio: Joi.string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .regex(/^\d{2}-\d{2}-\d{4}$/)
     .required()
     .messages({
       "date.base": "La fecha de inicio debe ser de tipo string.",
       "any.required": "La fecha de inicio es obligatoria.",
       "string.empty": "La fecha de inicio no puede estar vacía.",
       "string.pattern.base":
-        "La fecha de inicio debe tener el formato yyyy-mm-dd.",
+        "La fecha de inicio debe tener el formato: día-mes-año.",
     }),
   procesoId: Joi.string()
     .required()
