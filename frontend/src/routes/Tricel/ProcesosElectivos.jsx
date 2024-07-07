@@ -78,9 +78,9 @@ const ProcesosElectivos = () => {
                 <TableRow key={proceso._id}>
                   <TableCell>{proceso.nombre}</TableCell>
                   <TableCell>{proceso.year}</TableCell>
-                  <TableCell>{proceso.semester}</TableCell>
-                  <TableCell>{proceso.vueltas}</TableCell>
-                  <TableCell>{proceso.finalizado ? 'Sí' : 'No'}</TableCell>
+                  <TableCell align="center">{proceso.semester}</TableCell>
+                  <TableCell align="center">{proceso.vueltas}</TableCell>
+                  <TableCell align="center">{proceso.finalizado ? 'Sí' : 'No'}</TableCell>
                   <TableCell>{proceso.periodos.join(', ')}</TableCell>
                   <TableCell>{proceso.postulaciones.join(', ')}</TableCell>
                   <TableCell>{new Date(proceso.fechaCreacion).toLocaleDateString()}</TableCell>
