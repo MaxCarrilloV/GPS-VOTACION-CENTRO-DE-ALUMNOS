@@ -1,3 +1,5 @@
+//src/services/Tricel/postulaciones.service.js
+
 import instance from '../root.service';
 
 export const getPostulaciones = async () => {

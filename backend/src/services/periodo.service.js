@@ -16,56 +16,72 @@ async function getPeriodos() {
   }
 }
 
-async function ValidarSecuencia(
-  fechaInicioDate,
-  numero_etapa,
-  procesoId,
-  proceso,
-) {
+function truncateTime(date) {
+  return new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+}
+
+
+async function ValidarSecuencia(fechaInicioDate, numero_etapa, procesoId, proceso) {
   try {
+    console.log("Iniciando ValidarSecuencia");
+    console.log("Fecha de inicio (con hora):", fechaInicioDate);
+    fechaInicioDate = truncateTime(fechaInicioDate);
+    console.log("Fecha de inicio (sin hora):", fechaInicioDate);
+    console.log("Número de etapa:", numero_etapa);
+
     if (numero_etapa !== 1) {
       const periodoPrevio = await Periodo.findOne({
         numero_etapa: numero_etapa - 1,
         procesoId: procesoId,
       });
 
-      if (!periodoPrevio) return [null, "La secuencia de etapas es incorrecta"];
+      if (!periodoPrevio) {
+        console.error("La secuencia de etapas es incorrecta");
+        return [new Error("La secuencia de etapas es incorrecta"), null];
+      }
 
-      if (fechaInicioDate < periodoPrevio.fechaFin)
-        return [
-          null,
-          `La fecha de inicio debe ser posterior a la fecha de finalización de la etapa anterior: '${periodoPrevio.fechaFin.toLocaleDateString()}'`,
-        ];
+      const fechaFinPrevio = truncateTime(new Date(periodoPrevio.fechaFin));
+      console.log("Fecha de finalización del periodo previo (sin hora):", fechaFinPrevio);
 
-      if (
-        fechaInicioDate >
-        new Date(periodoPrevio.fechaFin.getTime() + 14 * 24 * 60 * 60 * 1000)
-      )
+      if (fechaInicioDate <= fechaFinPrevio) {
         return [
-          null,
-          `La fecha de inicio no puede exceder los 14 días después de la fecha de finalización de la etapa anterior: '${periodoPrevio.fechaFin.toLocaleDateString()}'`,
+          new Error("Fecha de inicio inválida"),
+          `La fecha de inicio debe ser posterior a la fecha de finalización de la etapa anterior: '${fechaFinPrevio.toLocaleDateString('es-ES')}'`,
         ];
+      }
+
+      if (fechaInicioDate > new Date(fechaFinPrevio.getTime() + 14 * 24 * 60 * 60 * 1000)) {
+        return [
+          new Error("Fecha de inicio inválida"),
+          `La fecha de inicio no puede exceder los 14 días después de la fecha de finalización de la etapa anterior: '${fechaFinPrevio.toLocaleDateString('es-ES')}'`,
+        ];
+      }
     } else {
-      if (fechaInicioDate < proceso.fechaCreacion.toLocaleDateString())
-        return [
-          null,
-          `La fecha de inicio debe ser posterior o igual a la fecha de creación del proceso: '${proceso.fechaCreacion.toLocaleDateString()}'`,
-        ];
+      const fechaCreacionProceso = truncateTime(new Date(proceso.fechaCreacion));
+      console.log("Fecha de creación del proceso (sin hora):", fechaCreacionProceso);
 
-      if (
-        fechaInicioDate >
-        new Date(proceso.fechaCreacion.getTime() + 14 * 24 * 60 * 60 * 1000)
-      )
+      if (fechaInicioDate < fechaCreacionProceso) {
         return [
-          null,
-          `La fecha de inicio no puede exceder los 14 días después de la fecha de creación del proceso: '${proceso.fechaCreacion.toLocaleDateString()}'`,
+          new Error("Fecha de inicio inválida"),
+          `La fecha de inicio debe ser posterior o igual a la fecha de creación del proceso: '${fechaCreacionProceso.toLocaleDateString('es-ES')}'`,
         ];
+      }
+
+      if (fechaInicioDate > new Date(fechaCreacionProceso.getTime() + 14 * 24 * 60 * 60 * 1000)) {
+        return [
+          new Error("Fecha de inicio inválida"),
+          `La fecha de inicio no puede exceder los 14 días después de la fecha de creación del proceso: '${fechaCreacionProceso.toLocaleDateString('es-ES')}'`,
+        ];
+      }
     }
     return [null, null];
   } catch (error) {
+    console.error("Error en ValidarSecuencia:", error);
     handleError(error, "periodo.service -> ValidarSecuencia");
+    return [error, null];
   }
 }
+
 
 async function createPeriodo(periodo) {
   try {
@@ -146,44 +162,60 @@ async function createPeriodo(periodo) {
 
 async function updatePeriodo(id, periodo) {
   try {
-    const { fechaInicio, numero_etapa, procesoId } = periodo;
+    console.log("Iniciando updatePeriodo");
+
+    const { fechaInicio } = periodo;
     let fechaInicioDate = new Date(fechaInicio);
+    console.log("Fecha de inicio:", fechaInicioDate);
 
     const periodoFound = await Periodo.findById(id);
-    if (!periodoFound) return [null, "El periodo no existe"];
+    if (!periodoFound) {
+      console.error("El periodo no existe");
+      return [null, "El periodo no existe"];
+    }
 
-    const proceso = await Proceso.findById({ _id: procesoId });
-    if (!proceso) return [null, "El proceso no se pudo encontrar"];
+    const proceso = await Proceso.findById({ _id: periodoFound.procesoId });
+    if (!proceso) {
+      console.error("El proceso no se pudo encontrar");
+      return [null, "El proceso no se pudo encontrar"];
+    }
 
     const duracion = Constants.find(
       (periodo) => periodo.nombre_etapa === periodoFound.nombre_etapa,
     ).duracion;
 
-    //Validar la secuencia  y fechas de las etapas.
+    console.log("Duración:", duracion);
+
+    // Validar la secuencia y fechas de las etapas.
     const [error, mensajeError] = await ValidarSecuencia(
       fechaInicioDate,
-      numero_etapa,
-      procesoId,
+      periodoFound.numero_etapa,
+      periodoFound.procesoId,
       proceso,
     );
-    if (mensajeError || error) return [null, mensajeError];
+    if (error || mensajeError) {
+      console.error("Validación fallida:", mensajeError);
+      return [null, mensajeError];
+    }
 
     const updatedPeriodo = await Periodo.findByIdAndUpdate(
       id,
       {
-        fechaInicioDate,
-        fechaFin: new Date(
-          fechaInicioDate.getTime() + duracion * 24 * 60 * 60 * 1000,
-        ),
+        fechaInicio: fechaInicioDate,
+        fechaFin: new Date(fechaInicioDate.getTime() + duracion * 24 * 60 * 60 * 1000),
       },
       { new: true },
     );
 
+    console.log("Periodo actualizado:", updatedPeriodo);
     return [updatedPeriodo, null];
   } catch (error) {
+    console.error("Error en updatePeriodo:", error);
     handleError(error, "periodo.service -> updatePeriodo");
+    return [null, error.message];
   }
 }
+
 
 async function deletePeriodo(id) {
   try {
