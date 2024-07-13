@@ -24,12 +24,20 @@ router.post("/", usuarioController.createUser);
 
 // Rutas que requieren autenticación
 router.get("/", authenticationMiddleware, authorizationMiddleware.isAdmin, usuarioController.getUsers);
+router.get("/tricel/", authenticationMiddleware, usuarioController.getUsersTricel);
 router.get("/:id", authenticationMiddleware, usuarioController.getUserById);
+router.get("/email/:email", authenticationMiddleware, usuarioController.getUserByEmail);
 router.put(
   "/:id",
   authenticationMiddleware,
   authorizationMiddleware.isAdmin,
   usuarioController.updateUser,
+);
+router.put(
+  "/update-role/:id",
+  authenticationMiddleware,
+  authorizationMiddleware.isAdmin,
+  usuarioController.updateRoleUser,
 );
 router.delete(
   "/:id",

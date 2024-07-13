@@ -33,7 +33,7 @@ async function createUser(user) {
     const { username, email, password, roles } = user;
 
     const userFound = await User.findOne({ email: user.email });
-    if (userFound) return [null, "El usuario ya existe"];
+    if (userFound) return [null, "Ya existe un usuario con ese correo"];
 
     const rolesFound = await Role.find({ name: { $in: roles } });
     if (rolesFound.length === 0) return [null, "El rol no existe"];
@@ -72,7 +72,7 @@ async function confirmUser(id, code) {
     if (userFound.verifyToken !== code) {
       return [null, "El código no coincide"];
     } else if (userFound.isActive) {
-      return [null, "El usuario ya esta activo"];
+      return [null, "El usuario ya está activo"];
     } else {
       const userUpdated = await User.findByIdAndUpdate(
         id,
@@ -104,6 +104,21 @@ async function getUserById(id) {
     return [user, null];
   } catch (error) {
     handleError(error, "user.service -> getUserById");
+  }
+}
+
+async function getUserByEmail(email) {
+  try {
+    const user = await User.findOne({ email: email })
+      .select("-password")
+      .populate("roles")
+      .exec();
+
+    if (!user) return [null, "El usuario no existe"];
+
+    return [user, null];
+  } catch (error) {
+    handleError(error, "user.service -> getUserByEmail");
   }
 }
 
@@ -151,6 +166,31 @@ async function updateUser(id, user) {
   }
 }
 
+async function updateRoleUser(id, role ) {
+  try {
+    const userFound = await User.findById(id);
+    if (!userFound) return [null, "El usuario no existe"];
+
+    const rolesFound = await Role.find({ name: { $in: role } });
+    if (rolesFound.length === 0) return [null, "El rol no existe"];
+
+    const myRole = rolesFound[0]._id;
+
+    const userUpdated = await User.findByIdAndUpdate(
+      id,
+      {
+        roles: [myRole],
+      },
+      { new: true }
+    );
+
+    return [userUpdated, null];
+  } catch (error) {
+    handleError(error, "user.service -> updateUser");
+    return [null, error.message];
+  }
+}
+
 /**
  * Elimina un usuario por su id de la base de datos
  * @param {string} Id del usuario
@@ -164,11 +204,28 @@ async function deleteUser(id) {
   }
 }
 
+async function getUsersTricel() {
+  try {
+    const users = await User.find({ roles: { $in: ["663fd0fd78dee408d2a3582c", "663fd1d61af43a2f88d89a71"] } })
+      .select("-password")
+      .populate("roles")
+      .exec();
+    if (!users) return [null, "No hay usuarios"];
+
+    return [users, null];
+  } catch (error) {
+    handleError(error, "user.service -> getUsersTricel");
+  }
+}
+
 module.exports = {
   getUsers,
   createUser,
   getUserById,
+  getUserByEmail,
   updateUser,
+  updateRoleUser,
   deleteUser,
   confirmUser,
+  getUsersTricel,
 };

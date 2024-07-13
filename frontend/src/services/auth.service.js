@@ -1,24 +1,25 @@
 import axios from './root.service';
 import cookies from 'js-cookie';
 import jwtDecode from 'jwt-decode';
+import { act } from 'react';
 
 export const login = async ({ email, password }) => {
   try {
     const response = await axios.post('auth/login', {
       email,
-      password,
+      password
     });
     const { status, data } = response;
     if (status === 200) {
-      const { email, roles } = await jwtDecode(data.data.accessToken);
-      localStorage.setItem('user', JSON.stringify({ email, roles }));
+      const { email, roles, active} = await jwtDecode(data.data.accessToken);
+      localStorage.setItem('user', JSON.stringify({ email, roles, active }));
       axios.defaults.headers.common[
         'Authorization'
       ] = `Bearer ${data.data.accessToken}`;
       cookies.set('jwt-auth', data.data.accessToken, { path: '/' });
     }
   } catch (error) {
-    console.log(error);
+    throw new Error(error.response.data.message);
   }
 };
 

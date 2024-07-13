@@ -20,14 +20,16 @@ import Avatar from '@mui/material/Avatar';
 import { Button, Menu, MenuItem, Tooltip } from '@mui/material';
 import { Link } from 'react-router-dom';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import PersonIcon from '@mui/icons-material/Person';
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import GroupIcon from '@mui/icons-material/Group';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import HowToVoteIcon from '@mui/icons-material/HowToVote';
 import StarsIcon from '@mui/icons-material/Stars';
 import CircleIcon from '@mui/icons-material/Circle';
 import { logout } from "../services/auth.service";
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { useEffect } from 'react';
+import { getUserByEmail } from '../services/user.service';
 
 const drawerWidth = 240;
 
@@ -103,7 +105,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   }),
 );
 
-export default function LayoutAdmin({ children }) {
+export default function LayoutUser({ children }) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -129,19 +131,44 @@ export default function LayoutAdmin({ children }) {
   const handleLogout = () => {
     logout();
     navigate('/');
-  };
+};
 
-const menuItems = [
-    { text: 'Usuarios', icon: <PersonIcon /> },
-    { text: 'Tricel', icon: <ManageAccountsIcon />, link: '/tricel/miembros'},
+  const menuItems = [
+    { text: 'Tricel', icon: <GroupIcon />, link: '/tricel/miembros'},
     {
       text: 'Listas',
       icon: <ListAltIcon />,
-      subitems: ['Postulaciones', 'Listas', 'Foros'],
+      subitems: ['Listas', 'Foros'],
     },
     { text: 'Votaciones', icon: <HowToVoteIcon /> },
     { text: 'Actividades', icon: <StarsIcon />}
   ];
+
+  const { user }  = useAuth();
+  const [usuario, setUsuario] = React.useState(null);
+  
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        if (user && user.email) {
+          const loadedUser = await getUserByEmail(user.email);
+          if (loadedUser && loadedUser.length > 0) {
+            setUsuario(loadedUser[0].user);
+          } else {
+            console.error('No se encontró ningún usuario.');
+          }
+        }
+      } catch (error) {
+        console.error('Error al obtener el usuario:', error.message);
+      }
+    };
+
+    fetchUser();
+  }, [user]);
+
+  if (!usuario) {
+    return <p>Cargando usuario...</p>; // Mensaje de carga mientras se carga el usuario
+  }
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -195,7 +222,7 @@ const menuItems = [
                     }}
                     >
                         <ArrowDropDownIcon sx={{ color: '#fff'}} />
-                        <Typography textAlign="center" sx={{ paddingRight: 1, color: '#fff'}}>Admin</Typography>
+                        <Typography textAlign="center" sx={{ paddingRight: 1, color: '#fff'}}>{usuario.username}</Typography>
                         <Avatar alt="Remy Sharp" />
                     </Button>
                 </Tooltip>
@@ -235,11 +262,33 @@ const menuItems = [
         </DrawerHeader>
         <Divider sx={{ color: '#fff'}}/>
         <List>
-      {menuItems.map((item) => (
-        <React.Fragment key={item.text}>
-          <ListItem disablePadding sx={{ display: 'block' }}>
-            {item.link ? (
-              <Link to={item.link} style={{ textDecoration: 'none', color: 'inherit' }}>
+            {menuItems.map((item) => (
+            <React.Fragment key={item.text}>
+            <ListItem disablePadding sx={{ display: 'block' }}>
+              {item.link ? (
+                <Link to={item.link} style={{ textDecoration: 'none', color: 'inherit' }}>
+                  <ListItemButton
+                    sx={{
+                      minHeight: 48,
+                      justifyContent: open ? 'initial' : 'center',
+                      px: 2.5,
+                      color: '#fff',
+                    }}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 0,
+                        mr: open ? 3 : 'auto',
+                        justifyContent: 'center',
+                        color: '#E1EAF1',
+                      }}
+                    >
+                      {item.icon}
+                    </ListItemIcon>
+                    <ListItemText primary={item.text} sx={{ opacity: open ? 1 : 0 }} />
+                  </ListItemButton>
+                </Link>
+              ) : (
                 <ListItemButton
                   sx={{
                     minHeight: 48,
@@ -247,6 +296,7 @@ const menuItems = [
                     px: 2.5,
                     color: '#fff',
                   }}
+                  onClick={() => setOpen(!open)}
                 >
                   <ListItemIcon
                     sx={{
@@ -260,64 +310,41 @@ const menuItems = [
                   </ListItemIcon>
                   <ListItemText primary={item.text} sx={{ opacity: open ? 1 : 0 }} />
                 </ListItemButton>
-              </Link>
-            ) : (
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
-                  px: 2.5,
-                  color: '#fff',
-                }}
-                onClick={() => setOpen(!open)}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
-                    color: '#E1EAF1',
-                  }}
-                >
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText primary={item.text} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            )}
-          </ListItem>
-          {item.subitems && open && (
-            <List>
-              {item.subitems.map((subitem, index) => (
-                <ListItem key={subitem} disablePadding sx={{ display: 'block' }}>
-                  <ListItemButton
-                    sx={{
-                      minHeight: 48,
-                      justifyContent: open ? 'initial' : 'center',
-                      px: 4, // Aumenta el padding horizontal para indentar los submenús
-                      color: '#fff',
-                    }}
-                  >
-                    <ListItemIcon
+              )}
+            </ListItem>
+            {item.subitems && open && (
+              <List>
+                {item.subitems.map((subitem, index) => (
+                  <ListItem key={subitem} disablePadding sx={{ display: 'block' }}>
+                    <ListItemButton
                       sx={{
-                        minWidth: 0,
-                        mr: open ? 3 : 'auto',
-                        justifyContent: 'center',
-                        color: '#E1EAF1',
+                        minHeight: 48,
+                        justifyContent: open ? 'initial' : 'center',
+                        px: 4, // Aumenta el padding horizontal para indentar los submenús
+                        color: '#fff',
                       }}
                     >
-                      <CircleIcon sx={{ fontSize: 'small' }} />
-                    </ListItemIcon>
-                    <ListItemText primary={subitem} sx={{ opacity: open ? 1 : 0 }} />
-                  </ListItemButton>
-                </ListItem>
-              ))}
-            </List>
-          )}
-        </React.Fragment>
-      ))}
-    </List>
+                      <ListItemIcon
+                        sx={{
+                          minWidth: 0,
+                          mr: open ? 3 : 'auto',
+                          justifyContent: 'center',
+                          color: '#E1EAF1',
+                        }}
+                      >
+                        <CircleIcon sx={{ fontSize: 'small' }} />
+                      </ListItemIcon>
+                      <ListItemText primary={subitem} sx={{ opacity: open ? 1 : 0 }} />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+              </List>
+            )}
+          </React.Fragment>
+            ))}
+        </List>
         </Drawer>
-      <Box component="main" sx={{ marginTop: '64px', p: 3 , width: '100%'}}>
+      <Box component="main" sx={{ marginTop: '64px', p: 3, width: '100%' }}>
         {children}
       </Box>
     </Box>

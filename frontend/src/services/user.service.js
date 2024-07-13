@@ -6,17 +6,29 @@ export const createUser = async (userData) => {
         return [data, null];
     } catch (error) {
         console.error("Error creating user:", error);
-        return [null, error.response ? error.response.data : error];
+        throw new Error(error.response.data.message);
     }
 };
 
-export const confirmUser = async (id, code) => {
+export const updateRoleUser = async (id, userData) => {
     try {
-        const { data } = await axios.put(`users/confirm/${id}`, { code });
+        const { data } = await axios.put(`users/update-role/${id}`, userData);
+        return [data, null];
+    } catch (error) {
+        console.error("Error updating user:", error);
+        return [null, error.response ? error.response.data : error];
+    }
+}
+
+export const confirmUser = async (mail, code) => {
+    try {
+        const promise = await getUserByEmail(mail);
+        const user = promise[0].user;
+        const { data } = await axios.put(`users/confirm/${user._id}`, { code });
         return [data, null];
     } catch (error) {
         console.error("Error confirming user:", error);
-        return [null, error.response ? error.response.data : error];
+        throw new Error(error.response.data.message);
     }
 };
 
@@ -29,3 +41,34 @@ export const getUserById = async (id) => {
         return [null, error.response ? error.response.data : error];
     }
 }
+
+export const getUserByEmail = async (email) => {
+    try {
+        const { data } = await axios.get(`users/email/${email}`);
+        return [data, null];
+    } catch (error) {
+        console.error("Error getting user by email:", error);
+        return [null, error.response ? error.response.data : error];
+    }
+}
+
+export const getUsers = async () => {
+    try {
+        const { data } = await axios.get('users/');
+        return data.data;
+    } catch (error) {
+        console.error("Error getting users:", error);
+        return [null, error.response ? error.response.data : error];
+    }
+}
+
+export const getUsersTricel = async () => {
+    try {
+        const { data } = await axios.get('users/tricel/');
+        return data.data;
+    } catch (error) {
+        console.error("Error getting users:", error);
+        return [null, error.response ? error.response.data : error];
+    }
+};
+

@@ -10,6 +10,9 @@ import Login from './routes/Login.jsx';
 import Foro from './routes/Foro.jsx';
 import Post from './routes/Post.jsx';
 import Register from './routes/Register.jsx';
+import MiembrosTricel from './routes/Tricel/MiembrosTricel.jsx';
+import AñadirTricel from './routes/Tricel/AñadirTricel.jsx';
+import Verificacion from './routes/Verificacion.jsx';
 
 const router = createBrowserRouter([
   {
@@ -21,6 +24,14 @@ const router = createBrowserRouter([
         path: '/',
         element: <App />,
       },
+      {
+        path: '/tricel/miembros',
+        element: <MiembrosTricel />,
+      },
+      {
+        path: '/tricel/miembros/añadir',
+        element: <AñadirTricel />,
+      }
     ],
   },
   {
@@ -38,6 +49,10 @@ const router = createBrowserRouter([
   {
     path: '/post/:postId',
     element: <Post />,
+  },
+  {
+    path: '/verificacion',
+    element: <Verificacion />,
   },
 ]);
 

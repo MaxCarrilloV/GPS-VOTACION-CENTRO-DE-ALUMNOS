@@ -5,6 +5,7 @@ import { logout } from '../services/auth.service';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 import MainLayout from '../components/LandingPage';
 import LayoutAdmin from '../layouts/admin.jsx';
+import LayoutUser from '../layouts/user.jsx'; // Asumiendo que tienes un layout para usuarios normales
 
 function Root() {
   return (
@@ -26,28 +27,23 @@ function PageRoot() {
 
   return (
     <>
-        {user ? (
-            <>
-              <LayoutAdmin>
-                <Outlet />
-              </LayoutAdmin>
-            </>
-        ) : (
-            <MainLayout/>
-        )}
+      {user ? (
+        <>
+          {user.roles[0].name === 'admin' ? (
+            <LayoutAdmin>
+              <Outlet />
+            </LayoutAdmin>
+          ) : (
+            <LayoutUser>
+              <Outlet />
+            </LayoutUser>
+          )}
+        </>
+      ) : (
+        <MainLayout />
+      )}
     </>
   );
-
- /*  return (
-    <div>
-      <div>
-        <h1>Aqui deberia ir un header</h1>
-        <p>Estas logeado como: {user.email}</p>
-        <button onClick={handleLogout}>Cerrar sesion</button>
-      </div>
-      <Outlet />
-    </div>
-  ); */
 }
 
 export default Root;
