@@ -15,39 +15,30 @@ export const getVotaciones = async () => {
 export const createVotacion = async (formdata) => {
     try {
         const response = await axios.post('/votacion', formdata);
-        const { status } = response;
-        if (status === 201) {
-            return true;
-        }
+        return [response,null];
     } catch (error) {
         console.log(error);
-        return false;
+        return [null, error.response ? error.response.data : error];
     }
 }
 
 export const updateVotacion = async (id, formdata) => {
     try {
         const response = await axios.put(`/votacion/${id}`, formdata);
-        const { status } = response;
-        if (status === 200) {
-            return true;
-        }
+        return [response,null];
     } catch (error) {
         console.log(error);
-        return false;
+        return [null, error.response ? error.response.data : error];
     }
 }
 
 export const votarVotacion = async (id, formdata) => {
     try {
         const response = await axios.put(`/votacion/${id}/votar`, formdata);
-        const { status } = response;
-        if (status === 200) {
-            return true;
-        }
+        return [response,null];
     } catch (error) {
         console.log(error);
-        return false;
+        return [null, error.response ? error.response.data : error];
     }
 }
 

@@ -13,17 +13,9 @@ import ListaGanadora from "./routes/Tricel/ListaGanadora.jsx";
 import HistorialRevisiones from "./routes/Tricel/HistorialRevisiones.jsx";
 import ProcesosElectivos from "./routes/Tricel/ProcesosElectivos.jsx";
 import PeriodosElectivos from "./routes/Tricel/PeriodosElectivos.jsx";
-
-import ReactDOM from 'react-dom/client';
-import App from './routes/App.jsx';
-import './index.css';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import Root from './routes/Root.jsx';
-import ErrorPage from './routes/ErrorPage.jsx';
-import Login from './routes/Login.jsx';
-import Foro from './routes/Foro.jsx';
-import Post from './routes/Post.jsx';
-import Votacion from './routes/Votacion.jsx';
+import VotacionAdmin from "./routes/Votacion/VotacionAdmin.jsx";
+import VotacionForm from "./components/VotacionForm.jsx";
+import VotacionUser from "./routes/Votacion/VotacionUser.jsx";
 
 const router = createBrowserRouter([
   {
@@ -55,6 +47,18 @@ const router = createBrowserRouter([
         path: "/tricel/historial-revisiones",
         element: <HistorialRevisiones />,
       },
+      {
+        path:'votaciones',
+        element: <VotacionAdmin />,
+      },
+      {
+        path: "/votaciones/crear",
+        element: <VotacionForm />,
+      },
+      {
+        path: "/votacionesUser",
+        element: <VotacionUser />,
+      }
     ],
   },
   {
@@ -73,10 +77,7 @@ const router = createBrowserRouter([
     path: "/post/:postId",
     element: <Post />,
   },
-  {
-    path:'votacion',
-    element: <Votacion />,
-  }
+  
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
