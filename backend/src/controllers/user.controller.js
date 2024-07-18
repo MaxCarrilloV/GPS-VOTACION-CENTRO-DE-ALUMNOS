@@ -2,7 +2,7 @@
 
 const { respondSuccess, respondError } = require("../utils/resHandler");
 const UserService = require("../services/user.service");
-const { userBodySchema, userIdSchema, roleUpdateSchema, codeSchema } = require("../schema/user.schema");
+const { userBodySchema, userIdSchema, userUpdateBodySchema, roleUpdateSchema, codeSchema } = require("../schema/user.schema");
 const { handleError } = require("../utils/errorHandler");
 
 /**
@@ -122,21 +122,27 @@ async function getUserByEmail(req, res) {
  */
 async function updateUser(req, res) {
   try {
-    const { params, body } = req;
-    const { error: paramsError } = userIdSchema.validate(params);
-    if (paramsError) return respondError(req, res, 400, paramsError.message);
+      const { params, body } = req;
+      const file = req.file ? req.file.filename : 'user.png';
 
-    const { error: bodyError } = userBodySchema.validate(body);
-    if (bodyError) return respondError(req, res, 400, bodyError.message);
+      console.log(file);
 
-    const [user, userError] = await UserService.updateUser(params.id, body);
+      const { error: paramsError } = userIdSchema.validate(params);
+      if (paramsError) return respondError(req, res, 400, paramsError.message);
 
-    if (userError) return respondError(req, res, 400, userError);
+      // Añadir el nombre del archivo de la imagen al cuerpo de la solicitud
+      body.profileImage = file;
 
-    respondSuccess(req, res, 200, user);
+      const { error: bodyError } = userUpdateBodySchema.validate(body);
+      if (bodyError) return respondError(req, res, 400, bodyError.message);
+      
+      const [user, userError] = await UserService.updateUser(params.id, body, file);
+      if (userError) return respondError(req, res, 400, userError);
+
+      respondSuccess(req, res, 200, user);
   } catch (error) {
-    handleError(error, "user.controller -> updateUser");
-    respondError(req, res, 500, "No se pudo actualizar el usuario");
+      handleError(error, "user.controller -> updateUser");
+      respondError(req, res, 500, "No se pudo actualizar el usuario");
   }
 }
 

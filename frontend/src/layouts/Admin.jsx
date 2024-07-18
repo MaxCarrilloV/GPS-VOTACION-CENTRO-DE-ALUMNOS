@@ -179,7 +179,7 @@ const menuItems = [
             </Typography>
             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, paddingLeft: '50px' }}></Box>
             <Box sx={{ flexGrow: 0 }}>
-                <Tooltip title="Open settings">
+                <Tooltip title="Abrir Menú">
                 <Button
                     onClick={handleOpenUserMenu}
                     sx={{
@@ -215,11 +215,6 @@ const menuItems = [
                     open={Boolean(anchorElUser)}
                     onClose={handleCloseUserMenu}
                 >
-                    <MenuItem onClick={handleCloseUserMenu}>
-                        <Link to="/profile" style={{ textDecoration: 'none', color: 'black' }}>
-                            <Typography textAlign="center">Mi perfil</Typography>
-                        </Link>
-                    </MenuItem>
                     <MenuItem key={"logout"} onClick={handleLogout}>
                         <Typography textAlign="center">Cerrar sesión</Typography>
                     </MenuItem>

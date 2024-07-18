@@ -10,6 +10,21 @@ export const createUser = async (userData) => {
     }
 };
 
+export const updateUser = async (id, formData) => {
+    console.log("formData", formData);
+    try {
+        const { data } = await axios.put(`/users/${id}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return [data, null];
+    } catch (error) {
+        console.error("Error updating user:", error);
+        return [null, error.response ? error.response.data : error];
+    }
+};
+
 export const updateRoleUser = async (id, userData) => {
     try {
         const { data } = await axios.put(`users/update-role/${id}`, userData);

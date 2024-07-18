@@ -1,16 +1,20 @@
-import React from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
-import { Box, Button, Typography } from '@mui/material';
-import { logout } from '../services/auth.service';
-import { AuthProvider, useAuth } from '../context/AuthContext';
-import MainLayout from '../components/LandingPage';
-import LayoutAdmin from '../layouts/admin.jsx';
-import LayoutUser from '../layouts/user.jsx'; // Asumiendo que tienes un layout para usuarios normales
+// src/routes/Root.jsx
+
+import React from "react";
+import { Outlet, useNavigate } from "react-router-dom";
+import { Box, Button, Typography } from "@mui/material";
+import { logout } from "../services/auth.service";
+import { AuthProvider, useAuth } from "../context/AuthContext";
+import MainLayout from "../components/LandingPage";
+import LayoutAdmin from "../layouts/Admin.jsx";
+import toast, { Toaster } from "react-hot-toast";
+import LayoutUser from '../layouts/User.jsx';
 
 function Root() {
   return (
     <AuthProvider>
       <PageRoot />
+      <Toaster position="top-right" reverseOrder={false} />
     </AuthProvider>
   );
 }
@@ -20,7 +24,7 @@ function PageRoot() {
 
   const handleLogout = () => {
     logout();
-    navigate('/auth');
+    navigate("/auth");
   };
 
   const { user } = useAuth();

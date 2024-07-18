@@ -59,6 +59,23 @@ const userBodySchema = Joi.object({
   "object.unknown": "No se permiten propiedades adicionales.",
 });
 
+const userUpdateBodySchema = Joi.object({
+  username: Joi.string().messages({
+    "string.base": "El nombre de usuario debe ser de tipo string.",
+  }),
+  rut: Joi.string().messages({
+    "string.base": "El rut debe ser de tipo string.",
+  }),
+  contact: Joi.string().messages({
+    "string.base": "El contacto debe ser de tipo string.",
+  }),
+  profileImage: Joi.any().optional(),
+  password: Joi.string().min(5).messages({
+    "string.base": "La contraseña debe ser de tipo string.",
+    "string.min": "La contraseña debe tener al menos 5 caracteres.",
+  }), 
+});
+
 /**
  * Esquema de validación para el id de usuario.
  * @constant {Object}
@@ -95,4 +112,4 @@ const codeSchema = Joi.object({
   }),
 });
 
-module.exports = { userBodySchema, userIdSchema, roleUpdateSchema, codeSchema};
+module.exports = { userBodySchema, userIdSchema, userUpdateBodySchema, roleUpdateSchema, codeSchema};

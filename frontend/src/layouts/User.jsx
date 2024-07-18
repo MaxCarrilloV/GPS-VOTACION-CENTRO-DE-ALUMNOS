@@ -187,7 +187,7 @@ export default function LayoutUser({ children }) {
             >
               <MenuIcon />
             </IconButton>
-            <Avatar variant="square" sx={{ width: '21px', height: '20px' }} src="https://intranet.ubiobio.cl/bootstrapsite/assets/images/escudo.png" />
+            <Avatar variant="square" sx={{ width: '21px', height: '20px'}} src="https://intranet.ubiobio.cl/bootstrapsite/assets/images/escudo.png" />
             <Typography
                 variant="h6"
                 noWrap
@@ -206,7 +206,7 @@ export default function LayoutUser({ children }) {
             </Typography>
             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, paddingLeft: '50px' }}></Box>
             <Box sx={{ flexGrow: 0 }}>
-                <Tooltip title="Open settings">
+                <Tooltip title="Abrir Menú">
                 <Button
                     onClick={handleOpenUserMenu}
                     sx={{
@@ -222,8 +222,12 @@ export default function LayoutUser({ children }) {
                     }}
                     >
                         <ArrowDropDownIcon sx={{ color: '#fff'}} />
-                        <Typography textAlign="center" sx={{ paddingRight: 1, color: '#fff'}}>{usuario.username}</Typography>
-                        <Avatar alt="Remy Sharp" />
+                        <Typography textAlign="center" sx={{ fontSize: '14px', paddingRight: 1, color: '#fff'}}>{usuario.username}</Typography>
+                        <Avatar
+                                alt="Imagen Perfil"
+                                src={`http://localhost:5000${usuario.profileImage}`} 
+                                sx={{ width: 40, height: 40, objectFit: 'cover', backgroundColor: '#e0e0e0'}}
+                            />
                     </Button>
                 </Tooltip>
                 <Menu
@@ -243,9 +247,9 @@ export default function LayoutUser({ children }) {
                     onClose={handleCloseUserMenu}
                 >
                     <MenuItem onClick={handleCloseUserMenu}>
-                        <Link to="/profile" style={{ textDecoration: 'none', color: 'black' }}>
-                            <Typography textAlign="center">Mi perfil</Typography>
-                        </Link>
+                    <Link to="/mi-perfil/" style={{ textDecoration: 'none', color: 'black' }}>
+                      <Typography textAlign="center">Mi perfil</Typography>
+                    </Link>
                     </MenuItem>
                     <MenuItem key={"logout"} onClick={handleLogout}>
                         <Typography textAlign="center">Cerrar sesión</Typography>

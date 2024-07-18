@@ -14,6 +14,11 @@ const authenticationMiddleware = require("../middlewares/authentication.middlewa
 /** Instancia del enrutador */
 const router = express.Router();
 
+const {
+  uploadImage,
+  handleMulterError,
+} = require("../utils/fileUploadHandler.js");
+
 // Define las rutas para los usuarios
 
 // Rutas que no requieren autenticación
@@ -29,8 +34,9 @@ router.get("/:id", authenticationMiddleware, usuarioController.getUserById);
 router.get("/email/:email", authenticationMiddleware, usuarioController.getUserByEmail);
 router.put(
   "/:id",
+  uploadImage.single("Imagen_Perfil"),
+  handleMulterError,
   authenticationMiddleware,
-  authorizationMiddleware.isAdmin,
   usuarioController.updateUser,
 );
 router.put(
