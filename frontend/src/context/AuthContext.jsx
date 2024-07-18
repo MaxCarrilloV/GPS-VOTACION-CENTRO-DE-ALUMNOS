@@ -16,6 +16,10 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     if (!isAuthenticated) {
       navigate('/auth');
+    } else {
+      if (user.active === false && user.roles[0].name != 'admin') {
+        navigate('/verificacion');
+      }
     }
   }, [isAuthenticated, navigate]);
 

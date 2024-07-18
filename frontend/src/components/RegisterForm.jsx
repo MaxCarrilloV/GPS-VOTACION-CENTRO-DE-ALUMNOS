@@ -2,6 +2,8 @@ import { useForm } from 'react-hook-form';
 import { createUser } from '../services/user.service';
 import { Link, useNavigate } from 'react-router-dom';
 import { Box, Button, Paper, TextField, Typography } from '@mui/material';
+import { login } from '../services/auth.service';
+import { useState } from 'react';
 
 function RegisterForm() {
     const navigate = useNavigate();
@@ -10,21 +12,21 @@ function RegisterForm() {
         handleSubmit,
         formState: { errors },
     } = useForm();
+    const [error, setError] = useState('');
 
     const onSubmit = (data) => {
         data.roles = ['user'];
 
-        console.log(data);
-
         createUser(data)
             .then((response) => {
-                console.log(response);
                 if (response[0].state === 'Success') {
-                    navigate('/profile');
+                    login(data).then(() => {
+                      navigate('/verificacion');
+                    });
                 }
             })
             .catch(error => {
-                console.error(error);
+                setError(error.message);
             });
     };
 
@@ -65,6 +67,11 @@ function RegisterForm() {
           <Typography variant="h5" sx={{ marginBottom: '20px', textAlign: 'center' }}>
             Registro
           </Typography>
+          {error && (
+            <Typography variant="body2" color="error" sx={{ textAlign: 'center', marginBottom: '10px' }}>
+              {error}
+            </Typography>
+          )}
           <TextField
             label="Nombre de Usuario"
             variant="outlined"
