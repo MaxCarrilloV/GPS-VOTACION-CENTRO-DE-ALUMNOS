@@ -31,7 +31,7 @@ const columns = [
   { field: "titulo", headerName: "Nombre", width: 150 },
   { field: "descripcion", headerName: "Descripción", width: 250 },
   { field: "fechaInicio", headerName: "Fecha inicio", width: 250 },
-  { field: "fechaFin", headerName: "Fecha fin", width: 250 },
+  { field: "fechaFin", headerName: "Fecha fin", width: 200 },
   {
     field: "resultados",
     headerName: "Resultados",
@@ -72,7 +72,6 @@ export default function VotacionUser() {
   const [loading, setLoading] = useState(true);
   const [filterText, setFilterText] = useState("");
   const [selectedVotacion, setSelectedVotacion] = useState(null);
-  const [open, setOpen] = useState(false);
   const [openVotar, setOpenVotar] = useState(false);
   const navigate = useNavigate();
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -104,6 +103,8 @@ export default function VotacionUser() {
           fechaInicio: new Date(votacion.fechaInicio).toLocaleString(),
           fechaFin: new Date(votacion.fechaFin).toLocaleString(),
           opciones: votacion.opciones,
+          estado: votacion.estado,
+          votantes: votacion.votantes,
         }));
         setRows(formattedData);
         setLoading(false);
@@ -147,18 +148,29 @@ export default function VotacionUser() {
     setSelectedOption(opcion);
   };
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-
   const closeResultados = () => {
     setOpenResultados(false);
   };
 
   const ModalVotar = (id) => {
     const votacion = rows.find((row) => row.id === id);
-    setSelectedVotacion(votacion);
-    setOpenVotar(true);
+    if (votacion.estado === "cerrada") {
+      setSnackbarMessage("La votación se encuentra cerrada");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      return;
+    } else {
+      const UserId = JSON.parse(localStorage.getItem("user")).Userid;
+      if (votacion.votantes.includes(UserId)) {
+        setSnackbarMessage(`Ya has votado en la votación ${votacion.titulo}`);
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
+        return;
+      } else {
+        setSelectedVotacion(votacion);
+        setOpenVotar(true);
+      }
+    }
   };
 
   const handleCloseVotar = () => {
@@ -186,7 +198,6 @@ export default function VotacionUser() {
       }
       setSnackbarOpen(true);
     });
-
   };
 
   const handleSnackbarClose = () => {
@@ -391,13 +402,12 @@ export default function VotacionUser() {
                     labelPlacement="top"
                     sx={{ marginX: 2 }}
                     {...register("opcion", { required: true })}
-
                   />
                 ))}
               </RadioGroup>
             </Box>
             {errors?.opcion && (
-              <FormHelperText  error sx={{ textAlign: "center" }}>
+              <FormHelperText error sx={{ textAlign: "center" }}>
                 Debe seleccionar una opción
               </FormHelperText>
             )}
