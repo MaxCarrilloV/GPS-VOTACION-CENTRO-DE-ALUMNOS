@@ -13,6 +13,9 @@ import ListaGanadora from "./routes/Tricel/ListaGanadora.jsx";
 import HistorialRevisiones from "./routes/Tricel/HistorialRevisiones.jsx";
 import ProcesosElectivos from "./routes/Tricel/ProcesosElectivos.jsx";
 import PeriodosElectivos from "./routes/Tricel/PeriodosElectivos.jsx";
+import VotacionAdmin from "./routes/Votacion/VotacionAdmin.jsx";
+import VotacionForm from "./components/VotacionForm.jsx";
+import VotacionUser from "./routes/Votacion/VotacionUser.jsx";
 import MiembrosTricel from './routes/Tricel/MiembrosTricel.jsx';
 import AñadirTricel from './routes/Tricel/AñadirTricel.jsx';
 import Verificacion from './routes/Verificacion.jsx';
@@ -49,6 +52,18 @@ const router = createBrowserRouter([
       {
         path: "/tricel/historial-revisiones",
         element: <HistorialRevisiones />,
+      },
+      {
+        path:'votaciones',
+        element: <VotacionAdmin />,
+      },
+      {
+        path: "/votaciones/crear",
+        element: <VotacionForm />,
+      },
+      {
+        path: "/votacionesUser",
+        element: <VotacionUser />,
       },
       {
         path: '/tricel/miembros',
