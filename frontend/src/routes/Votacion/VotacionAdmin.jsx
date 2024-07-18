@@ -89,6 +89,7 @@ export default function VotacionAdmin() {
   const [selectedVotacion, setSelectedVotacion] = useState();
   const [openResultados, setOpenResultados] = useState(false);
   const navigate = useNavigate();
+  const [totalVotos, setTotalVotos] = useState(0);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -133,6 +134,7 @@ export default function VotacionAdmin() {
       setSnackbarOpen(true);
       return;   
     }
+    setTotalVotos(total);
     votacion.opciones.map((opcion) => {
       opcion.porcentaje = `${((opcion.cantidadVotos / total) * 100).toFixed(
         2
@@ -343,6 +345,7 @@ export default function VotacionAdmin() {
             sx={{
               border: "1px solid #e0e0e0", 
               borderRadius: 3,
+              marginBottom: 5,
             }}
           >
             <Table
@@ -371,6 +374,10 @@ export default function VotacionAdmin() {
               </TableBody>
             </Table>
           </TableContainer>
+          <Typography variant="h6">
+            Total de votos: {totalVotos} <br />
+            Participacion Carrera: {(totalVotos/200)*100}% <br />
+          </Typography>
         </Box>
       </Modal>
     </Box>

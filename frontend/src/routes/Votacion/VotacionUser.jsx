@@ -79,7 +79,7 @@ export default function VotacionUser() {
   const [snackbarSeverity, setSnackbarSeverity] = useState("");
   const [selectedOption, setSelectedOption] = useState(null);
   const [openResultados, setOpenResultados] = useState(false);
-
+  const [totalVotos, setTotalVotos] = useState(0);
   const {
     register,
     handleSubmit,
@@ -128,13 +128,13 @@ export default function VotacionUser() {
       (acc, opcion) => acc + opcion.cantidadVotos,
       0
     );
-    console.log(total);
     if (total === 0) {
       setSnackbarMessage("No hay votos registrados para esta votación");
       setSnackbarSeverity("primary");
       setSnackbarOpen(true);
       return;
     }
+    setTotalVotos(total);
     votacion.opciones.map((opcion) => {
       opcion.porcentaje = `${((opcion.cantidadVotos / total) * 100).toFixed(
         2
@@ -317,7 +317,14 @@ export default function VotacionUser() {
               <CloseIcon />
             </IconButton>
           </Box>
-          <TableContainer component={Paper}>
+          <TableContainer
+            sx={{
+              border: "1px solid #e0e0e0",
+              borderRadius: 3,
+              marginBottom: 5,
+            }}
+            component={Paper}
+          >
             <Table
               sx={{
                 "& .MuiTableCell-root": {
@@ -344,6 +351,10 @@ export default function VotacionUser() {
               </TableBody>
             </Table>
           </TableContainer>
+          <Typography variant="h6">
+            Total de votos: {totalVotos} <br />
+            Participacion Carrera: {(totalVotos / 200) * 100}% <br />
+          </Typography>
         </Box>
       </Modal>
       <Modal open={openVotar} onClose={handleCloseVotar}>
