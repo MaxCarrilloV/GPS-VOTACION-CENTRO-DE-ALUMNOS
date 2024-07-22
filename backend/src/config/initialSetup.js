@@ -2,7 +2,8 @@
 // Importa el modelo de datos 'Role'
 const Role = require("../models/role.model.js");
 const User = require("../models/user.model.js");
-
+const Votacion = require('../models/votacion.model.js');
+const cron = require('node-cron');
 /**
  * Crea los roles por defecto en la base de datos.
  * @async
@@ -60,7 +61,31 @@ async function createUsers() {
   }
 }
 
+function cerrarVotacion() {
+  cron.schedule('* * * * *', async () => {
+    try {
+        const votaciones = await Votacion.find();
+        const now = new Date();
+        
+        votaciones.forEach(async (votacion) => {
+            if (votacion.fechaFin < now && votacion.estado === 'Abierta') {
+                votacion.estado = 'Cerrada';
+                await votacion.save();
+                console.log(`Votación "${votacion.titulo}" cerrada automáticamente`);
+            } else if (votacion.fechaFin >= now && votacion.estado === 'Cerrada') {
+                votacion.estado = 'Abierta';
+                await votacion.save();
+                console.log(`Votación "${votacion.titulo}" reabierta automáticamente`);
+            }
+        });
+    } catch (err) {
+        console.error('Error al actualizar el estado de las votaciones:', err);
+    }
+  });
+}
+
 module.exports = {
   createRoles,
   createUsers,
+  cerrarVotacion,
 };

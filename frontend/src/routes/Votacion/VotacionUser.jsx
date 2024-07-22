@@ -32,6 +32,7 @@ const columns = [
   { field: "descripcion", headerName: "Descripción", width: 250 },
   { field: "fechaInicio", headerName: "Fecha inicio", width: 250 },
   { field: "fechaFin", headerName: "Fecha fin", width: 200 },
+  { field: "estado", headerName: "Estado", width: 100 },
   {
     field: "resultados",
     headerName: "Resultados",
@@ -85,7 +86,6 @@ export default function VotacionUser() {
     handleSubmit,
     formState: { errors },
     reset,
-    setValue,
   } = useForm();
 
   useEffect(() => {
@@ -154,8 +154,8 @@ export default function VotacionUser() {
 
   const ModalVotar = (id) => {
     const votacion = rows.find((row) => row.id === id);
-    if (votacion.estado === "cerrada") {
-      setSnackbarMessage("La votación se encuentra cerrada");
+    if (votacion.estado === "Cerrada") {
+      setSnackbarMessage(`La votación ${votacion.titulo} se encuentra cerrada`);
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
       return;

@@ -35,13 +35,23 @@ const votacionSchema = new mongoose.Schema({
     },
     estado: {
         type: String,
-        enum: ['abierta', 'cerrada'],
-        default: 'abierta'
+        enum: ['Abierta', 'Cerrada'],
+        default: 'Abierta'
     },
     fechaCreacion: {
         type: Date,
         default: Date.now,
     },
+});
+
+votacionSchema.pre('updateOne', function(next) {
+    const now = new Date();
+    if (this.fechaFin < now) {
+        this.estado = 'Cerrada';
+    } else {
+        this.estado = 'Abierta';
+    }
+    next();
 });
 
 const Votacion = mongoose.model('Votacion', votacionSchema );
