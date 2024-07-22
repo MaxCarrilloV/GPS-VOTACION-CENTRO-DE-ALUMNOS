@@ -256,7 +256,7 @@ export default function VotacionAdmin() {
   });
 
   return (
-    <Box style={{ height: 400 }}>
+    <Box style={{ height: 400, width:1260 }}>
       <Snackbar
         className=""
         open={snackbarOpen}
