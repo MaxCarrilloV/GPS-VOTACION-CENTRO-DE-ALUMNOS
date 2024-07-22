@@ -19,6 +19,7 @@ import {
   Alert,
   Snackbar,
   Modal,
+  Backdrop,
 } from "@mui/material";
 import { updateVotacion } from "../services/votacion.service";
 
@@ -109,10 +110,10 @@ export default function VotacionEditForm({ votacion, open, onClose }) {
         setSnackbarMessage("Votación editada exitosamente");
         setSnackbarOpen(true);
         setTimeout(() => {
-            setSnackbarOpen(false);
-            onClose();
-            window.location.reload();
-          }, 2000);
+          setSnackbarOpen(false);
+          onClose();
+          window.location.reload();
+        }, 2000);
       }
     });
   };
@@ -139,8 +140,16 @@ export default function VotacionEditForm({ votacion, open, onClose }) {
   return (
     <Modal
       open={open}
-      onClose={handleClose}
+      onClose={(_, reason) => {
+        if (reason !== "backdropClick") {
+          handleClose();
+        }
+      }}
       sx={{ overflowY: "scroll", mb: 2 }}
+      slotsBackdropt={Backdrop}
+      slotPropsBackdropt={{
+        timeout: 500,
+      }}
     >
       <Box
         sx={{
@@ -154,7 +163,6 @@ export default function VotacionEditForm({ votacion, open, onClose }) {
           transform: "translate(-60%, -50%)",
           p: 4,
         }}
-
         component="form"
         onSubmit={handleSubmit(onSubmit)}
       >
