@@ -6,8 +6,9 @@ import { Box, Button, Typography } from "@mui/material";
 import { logout } from "../services/auth.service";
 import { AuthProvider, useAuth } from "../context/AuthContext";
 import MainLayout from "../components/LandingPage";
-import LayoutAdmin from "../layouts/admin.jsx";
+import LayoutAdmin from "../layouts/Admin.jsx";
 import toast, { Toaster } from "react-hot-toast";
+import LayoutUser from '../layouts/User.jsx';
 
 function Root() {
   return (
@@ -31,9 +32,17 @@ function PageRoot() {
   return (
     <>
       {user ? (
-        <LayoutAdmin>
-          <Outlet />
-        </LayoutAdmin>
+        <>
+          {user.roles[0].name === 'admin' ? (
+            <LayoutAdmin>
+              <Outlet />
+            </LayoutAdmin>
+          ) : (
+            <LayoutUser>
+              <Outlet />
+            </LayoutUser>
+          )}
+        </>
       ) : (
         <MainLayout />
       )}

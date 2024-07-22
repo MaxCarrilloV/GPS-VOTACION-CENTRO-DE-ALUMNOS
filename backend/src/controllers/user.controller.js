@@ -2,7 +2,7 @@
 
 const { respondSuccess, respondError } = require("../utils/resHandler");
 const UserService = require("../services/user.service");
-const { userBodySchema, userIdSchema } = require("../schema/user.schema");
+const { userBodySchema, userIdSchema, userUpdateBodySchema, roleUpdateSchema, codeSchema } = require("../schema/user.schema");
 const { handleError } = require("../utils/errorHandler");
 
 /**
@@ -60,10 +60,10 @@ async function confirmUser(req, res) {
     const { error: paramsError } = userIdSchema.validate(params);
     if (paramsError) return respondError(req, res, 400, paramsError.message);
 
-    const { error: bodyError } = userBodySchema.validate(body);
+    const { error: bodyError } = codeSchema.validate(body.code);
     if (bodyError) return respondError(req, res, 400, bodyError.message);
 
-    const [user, errorUser] = await UserService.confirmUser(params.id, body.code);
+    const [user, errorUser] = await UserService.confirmUser(params.id, body.code.codigo);
 
     if (errorUser) return respondError(req, res, 404, errorUser);
 
@@ -96,6 +96,25 @@ async function getUserById(req, res) {
   }
 }
 
+async function getUserByEmail(req, res) {
+  try {
+    const { email } = req.params; // Suponiendo que el correo está en los parámetros de la URL
+    const [user, error] = await UserService.getUserByEmail(email);
+
+    if (error) {
+      // Manejar el error (por ejemplo, enviar una respuesta de error)
+      return res.status(404).json({ error: error });
+    }
+
+    // Enviar el usuario como respuesta
+    return res.status(200).json({ user: user });
+  } catch (error) {
+    // Manejar otros errores inesperados
+    console.error(error);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
+}
+
 /**
  * Actualiza un usuario por su id
  * @param {Object} req - Objeto de petición
@@ -103,20 +122,46 @@ async function getUserById(req, res) {
  */
 async function updateUser(req, res) {
   try {
+      const { params, body } = req;
+      const file = req.file ? req.file.filename : 'user.png';
+
+      console.log(file);
+
+      const { error: paramsError } = userIdSchema.validate(params);
+      if (paramsError) return respondError(req, res, 400, paramsError.message);
+
+      // Añadir el nombre del archivo de la imagen al cuerpo de la solicitud
+      body.profileImage = file;
+
+      const { error: bodyError } = userUpdateBodySchema.validate(body);
+      if (bodyError) return respondError(req, res, 400, bodyError.message);
+      
+      const [user, userError] = await UserService.updateUser(params.id, body, file);
+      if (userError) return respondError(req, res, 400, userError);
+
+      respondSuccess(req, res, 200, user);
+  } catch (error) {
+      handleError(error, "user.controller -> updateUser");
+      respondError(req, res, 500, "No se pudo actualizar el usuario");
+  }
+}
+
+async function updateRoleUser(req, res) {
+  try {
     const { params, body } = req;
     const { error: paramsError } = userIdSchema.validate(params);
-    if (paramsError) return respondError(req, res, 400, paramsError.message);
+    if (paramsError) return respondError(req, res, 400, paramsError.message); 
 
-    const { error: bodyError } = userBodySchema.validate(body);
+    const { error: bodyError } = roleUpdateSchema.validate(body);
     if (bodyError) return respondError(req, res, 400, bodyError.message);
 
-    const [user, userError] = await UserService.updateUser(params.id, body);
+    const [user, userError] = await UserService.updateRoleUser(params.id, body.roles);
 
     if (userError) return respondError(req, res, 400, userError);
 
     respondSuccess(req, res, 200, user);
   } catch (error) {
-    handleError(error, "user.controller -> updateUser");
+    handleError(error, "user.controller -> updateRoleUser");
     respondError(req, res, 500, "No se pudo actualizar el usuario");
   }
 }
@@ -148,11 +193,28 @@ async function deleteUser(req, res) {
   }
 }
 
+async function getUsersTricel(req, res) {
+  try {
+    const [usuarios, errorUsuarios] = await UserService.getUsersTricel();
+    if (errorUsuarios) return respondError(req, res, 404, errorUsuarios);
+
+    usuarios.length === 0
+      ? respondSuccess(req, res, 204)
+      : respondSuccess(req, res, 200, usuarios);
+  } catch (error) {
+    handleError(error, "user.controller -> getUsersTricel");
+    respondError(req, res, 400, error.message);
+  }
+}
+
 module.exports = {
   getUsers,
   createUser,
   getUserById,
+  getUserByEmail,
   updateUser,
+  updateRoleUser,
   deleteUser,
   confirmUser,
+  getUsersTricel,
 };
