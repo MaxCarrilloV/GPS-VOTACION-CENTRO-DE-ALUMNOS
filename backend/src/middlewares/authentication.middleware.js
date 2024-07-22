@@ -26,12 +26,12 @@ const verifyJWT = (req, res, next) => {
     }
 
     const token = authHeader.split(" ")[1];
-
     jwt.verify(token, ACCESS_JWT_SECRET, (err, decoded) => {
       if (err) return respondError(req, res, 403, "No autorizado", err.message);
       req.email = decoded.email;
       req.roles = decoded.roles;
       req.username = decoded.username;
+      req.Userid = decoded.Userid;
       next();
     });
   } catch (error) {

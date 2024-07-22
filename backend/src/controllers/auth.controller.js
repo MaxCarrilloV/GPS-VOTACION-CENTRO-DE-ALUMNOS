@@ -22,7 +22,7 @@ async function login(req, res) {
 
     const [accessToken, refreshToken, errorToken] =
       await AuthServices.login(body);
-
+      
     if (errorToken) return respondError(req, res, 400, errorToken);
 
     // * Existen mas opciones de seguirdad para las cookies *//

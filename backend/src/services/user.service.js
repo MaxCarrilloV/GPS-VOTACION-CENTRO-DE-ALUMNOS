@@ -4,6 +4,8 @@ const User = require("../models/user.model.js");
 const Role = require("../models/role.model.js");
 const { handleError } = require("../utils/errorHandler");
 const { notificationVerifyToken } = require("./notificacion.service");
+const fs = require('fs');
+const path = require('path');
 
 /**
  * Obtiene todos los usuarios de la base de datos
@@ -32,8 +34,15 @@ async function createUser(user) {
   try {
     const { username, email, password, roles } = user;
 
+    // Verificar el dominio del correo
+    const dominiosAdmitidos = ['alumnos.ubiobio.cl', 'ubb.cl', 'email.com']; // Agrega los dominios permitidos aquí
+    const emailDominio = email.split('@')[1];
+    if (!dominiosAdmitidos.includes(emailDominio)) {
+      return [null, "Debes ingresar un correo institucional"];
+    }
+
     const userFound = await User.findOne({ email: user.email });
-    if (userFound) return [null, "El usuario ya existe"];
+    if (userFound) return [null, "Ya existe un usuario con ese correo"];
 
     const rolesFound = await Role.find({ name: { $in: roles } });
     if (rolesFound.length === 0) return [null, "El rol no existe"];
@@ -47,6 +56,7 @@ async function createUser(user) {
       password: await User.encryptPassword(password),
       roles: myRole,
       verifyToken: codigo,
+      profileImage: "/public/user.png",
     });
     await notificationVerifyToken(newUser);
     await newUser.save();
@@ -72,7 +82,7 @@ async function confirmUser(id, code) {
     if (userFound.verifyToken !== code) {
       return [null, "El código no coincide"];
     } else if (userFound.isActive) {
-      return [null, "El usuario ya esta activo"];
+      return [null, "El usuario ya está activo"];
     } else {
       const userUpdated = await User.findByIdAndUpdate(
         id,
@@ -107,40 +117,56 @@ async function getUserById(id) {
   }
 }
 
+async function getUserByEmail(email) {
+  try {
+    const user = await User.findOne({ email: email })
+      .select("-password")
+      .populate("roles")
+      .exec();
+
+    if (!user) return [null, "El usuario no existe"];
+
+    return [user, null];
+  } catch (error) {
+    handleError(error, "user.service -> getUserByEmail");
+  }
+}
+
 /**
  * Actualiza un usuario por su id en la base de datos
  * @param {string} id Id del usuario
  * @param {Object} user Objeto de usuario
  * @returns {Promise} Promesa con el objeto de usuario actualizado
  */
-async function updateUser(id, user) {
+async function updateUser(id, user, imagen_perfil) {
   try {
     const userFound = await User.findById(id);
     if (!userFound) return [null, "El usuario no existe"];
 
-    const { username, email, password, newPassword, roles } = user;
+    const { username, rut, contact } = user;
+    
+    let url;
 
-    const matchPassword = await User.comparePassword(
-      password,
-      userFound.password,
-    );
-
-    if (!matchPassword) {
-      return [null, "La contraseña no coincide"];
+    if (userFound.profileImage && userFound.profileImage !== "/public/user.png") {
+      const oldImagePath = path.join(__dirname, '../..', userFound.profileImage);
+      fs.unlink(oldImagePath, (err) => {
+          if (err) {
+              console.error('Error al eliminar la imagen antigua:', err);
+          }
+      });
     }
 
-    const rolesFound = await Role.find({ name: { $in: roles } });
-    if (rolesFound.length === 0) return [null, "El rol no existe"];
-
-    const myRole = rolesFound.map((role) => role._id);
+    if (userFound.profileImage && imagen_perfil !== "user.png") {
+      url = `/public/${imagen_perfil}`;
+    }
 
     const userUpdated = await User.findByIdAndUpdate(
       id,
       {
         username,
-        email,
-        password: await User.encryptPassword(newPassword || password),
-        roles: myRole,
+        rut,
+        profileImage: url,
+        contact,
       },
       { new: true },
     );
@@ -148,6 +174,32 @@ async function updateUser(id, user) {
     return [userUpdated, null];
   } catch (error) {
     handleError(error, "user.service -> updateUser");
+  }
+}
+
+
+async function updateRoleUser(id, role ) {
+  try {
+    const userFound = await User.findById(id);
+    if (!userFound) return [null, "El usuario no existe"];
+
+    const rolesFound = await Role.find({ name: { $in: role } });
+    if (rolesFound.length === 0) return [null, "El rol no existe"];
+
+    const myRole = rolesFound[0]._id;
+
+    const userUpdated = await User.findByIdAndUpdate(
+      id,
+      {
+        roles: [myRole],
+      },
+      { new: true }
+    );
+
+    return [userUpdated, null];
+  } catch (error) {
+    handleError(error, "user.service -> updateUser");
+    return [null, error.message];
   }
 }
 
@@ -164,11 +216,28 @@ async function deleteUser(id) {
   }
 }
 
+async function getUsersTricel() {
+  try {
+    const users = await User.find({ roles: { $in: ["663fd0fd78dee408d2a3582c", "663fd1d61af43a2f88d89a71"] } })
+      .select("-password")
+      .populate("roles")
+      .exec();
+    if (!users) return [null, "No hay usuarios"];
+
+    return [users, null];
+  } catch (error) {
+    handleError(error, "user.service -> getUsersTricel");
+  }
+}
+
 module.exports = {
   getUsers,
   createUser,
   getUserById,
+  getUserByEmail,
   updateUser,
+  updateRoleUser,
   deleteUser,
   confirmUser,
+  getUsersTricel,
 };

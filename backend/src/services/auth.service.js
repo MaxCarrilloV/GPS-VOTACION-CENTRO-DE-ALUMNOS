@@ -38,9 +38,8 @@ async function login(user) {
     if (!matchPassword) {
       return [null, null, "El usuario y/o contraseña son incorrectos"];
     }
-
     const accessToken = jwt.sign(
-      { email: userFound.email, roles: userFound.roles, username: userFound.username, },
+      { email: userFound.email, roles: userFound.roles, Userid: userFound._id, username: userFound.username, active: userFound.isActive},
       ACCESS_JWT_SECRET,
       {
         expiresIn: "1d",
@@ -87,7 +86,7 @@ async function refresh(cookies) {
         if (!userFound) return [null, "No usuario no autorizado"];
 
         const accessToken = jwt.sign(
-          { email: userFound.email, roles: userFound.roles, username: userFound.username, },
+          { email: userFound.email, roles: userFound.roles, username: userFound.username, active: userFound.isActive },
           ACCESS_JWT_SECRET,
           {
             expiresIn: "1d",

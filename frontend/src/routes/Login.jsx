@@ -32,7 +32,6 @@ function Login() {
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#2C6AA0',
-        padding: '20px',
         position: 'relative',
         flexDirection: 'column',
       }}

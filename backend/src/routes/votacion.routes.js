@@ -17,17 +17,17 @@ const router = express.Router();
 // Define el middleware de autenticación para todas las rutas
 router.use(authenticationMiddleware);
 // Define las rutas para las votaciones
-router.get("/", authorizationMiddleware.isAdmin, votacionController.getVotaciones);
-router.post("/", authorizationMiddleware.isAdmin, votacionController.createVotacion);
+router.get("/",  votacionController.getVotaciones);
+router.post("/", authorizationMiddleware.isAdmin || authorizationMiddleware.isTricel, votacionController.createVotacion);
 /* router.get("/:id", votacionController.getVotacionById); */
 router.put(
   "/:id",
-  authorizationMiddleware.isAdmin,
+  authorizationMiddleware.isAdmin || authorizationMiddleware.isTricel,
   votacionController.updateVotacion,
 );
 router.delete(
   "/:id",
-  authorizationMiddleware.isAdmin,
+  authorizationMiddleware.isAdmin || authorizationMiddleware.isTricel,
   votacionController.deleteVotacion,
 );
 router.put("/:id/votar", votacionController.votar);
