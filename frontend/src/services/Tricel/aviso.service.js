@@ -30,7 +30,17 @@ const getAllActivities = () => {
     return instance.get('/actividades');
 };
 
+const createAdvice = (adviceData) => {
+    return instance.post('/avisos', adviceData);
+};
+
+const createActivity = (activityData) => {
+    return instance.post('/actividades', activityData);
+};
+
 export default {
     getAllAdvices,
-    getAllActivities
+    getAllActivities,
+    createAdvice,
+    createActivity
 };
