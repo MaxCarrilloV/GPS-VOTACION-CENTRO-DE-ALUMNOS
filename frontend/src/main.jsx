@@ -13,7 +13,15 @@ import ListaGanadora from "./routes/Tricel/ListaGanadora.jsx";
 import HistorialRevisiones from "./routes/Tricel/HistorialRevisiones.jsx";
 import ProcesosElectivos from "./routes/Tricel/ProcesosElectivos.jsx";
 import PeriodosElectivos from "./routes/Tricel/PeriodosElectivos.jsx";
-
+import VotacionAdmin from "./routes/Votacion/VotacionAdmin.jsx";
+import VotacionForm from "./components/VotacionForm.jsx";
+import VotacionUser from "./routes/Votacion/VotacionUser.jsx";
+import MiembrosTricel from './routes/Tricel/MiembrosTricel.jsx';
+import AñadirTricel from './routes/Tricel/AñadirTricel.jsx';
+import Verificacion from './routes/Verificacion.jsx';
+import Perfil from './routes/Perfil.jsx';
+import MiPerfil from './routes/MiPerfil/MiPerfil.jsx';
+import EditarMiPerfil from './routes/MiPerfil/EditarMiPerfil.jsx';
 
 const router = createBrowserRouter([
   {
@@ -45,6 +53,38 @@ const router = createBrowserRouter([
         path: "/tricel/historial-revisiones",
         element: <HistorialRevisiones />,
       },
+      {
+        path:'votaciones',
+        element: <VotacionAdmin />,
+      },
+      {
+        path: "/votaciones/crear",
+        element: <VotacionForm />,
+      },
+      {
+        path: "/votacionesUser",
+        element: <VotacionUser />,
+      },
+      {
+        path: '/tricel/miembros',
+        element: <MiembrosTricel />,
+      },
+      {
+        path: '/tricel/miembros/añadir',
+        element: <AñadirTricel />,
+      },
+      {
+        path: '/perfil',
+        element: <Perfil />,
+      },
+      {
+        path: '/mi-perfil',
+        element: <MiPerfil />,
+      },
+      {
+        path: '/mi-perfil/editar',
+        element: <EditarMiPerfil />,
+      },
     ],
   },
   {
@@ -62,6 +102,10 @@ const router = createBrowserRouter([
   {
     path: "/post/:postId",
     element: <Post />,
+  },
+  {
+    path: '/verificacion',
+    element: <Verificacion />,
   },
 ]);
 

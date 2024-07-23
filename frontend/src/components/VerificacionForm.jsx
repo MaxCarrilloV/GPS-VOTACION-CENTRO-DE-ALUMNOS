@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, Link } from 'react-router-dom';
 import { Button, TextField, Typography, Box, Paper } from '@mui/material';
-import { login } from '../services/auth.service';
+import { confirmUser } from '../services/user.service';
+import { logout } from '../services/auth.service';
 import { useState } from 'react';
 
 function LoginForm() {
@@ -14,13 +15,38 @@ function LoginForm() {
   } = useForm();
   const [error, setError] = useState('');
 
-  const onSubmit = (data) => {
-    login(data).then(() => {
+  const user = JSON.parse(localStorage.getItem('user'));
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/auth');
+    } else if (user.active) {
       navigate('/');
-    })
-    .catch((error) => {
-      setError(error.message);
-    });
+    } 
+  }, [user, navigate]);
+
+  const onSubmit = (data) => {
+    if (!user) {
+        navigate('/auth');
+    } 
+    const mail = user.email;
+
+    confirmUser(mail, data)
+        .then((response) => {
+            if (response[0].state === 'Success') {
+                user.active = true;
+                localStorage.setItem('user', JSON.stringify(user));
+                navigate('/');
+            }
+        })
+        .catch(error => {
+          setError(error.message);
+        });
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
   };
 
   return (
@@ -58,37 +84,30 @@ function LoginForm() {
         }}
       >
         <Typography variant="h5" sx={{ marginBottom: '20px', textAlign: 'center' }}>
-          Iniciar sesión
+          Verificar Cuenta
+        </Typography>
+        <Typography variant="p" sx={{ marginBottom: '10px', textAlign: 'center' }}>
+          El Código de Verificación ha sido enviado a tu correo. Ingrésalo aquí:
         </Typography>
         {error && (
-          <Typography variant="body2" color="error" sx={{ textAlign: 'center', marginBottom: '10px' }}>
-            {error}
-          </Typography>
-        )}
+            <Typography variant="body2" color="error" sx={{ textAlign: 'center', marginBottom: '10px' }}>
+              {error}
+            </Typography>
+          )}
         <TextField
-          label="Correo"
+          label="Código"
           variant="outlined"
           fullWidth
           margin="normal"
-          {...register('email', { required: true })}
-          error={!!errors.email}
-          helperText={errors.email ? 'Correo es requerido' : ''}
-        />
-        <TextField
-          label="Contraseña"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          type="password"
-          {...register('password', { required: true })}
-          error={!!errors.password}
-          helperText={errors.password ? 'Contraseña is required' : ''}
+          {...register('codigo', { required: true })}
+          error={!!errors.codigo}
+          helperText={errors.codigo ? 'Código es requerido' : ''}
         />
         <Button type="submit" variant="contained" color="primary" sx={{ marginTop: '20px' }}>
           Acceder
         </Button>
-        <Link to="/registro" style={{ marginTop: '20px', textAlign: 'center', textDecoration: 'none' }}>
-          Ir a Registro
+        <Link to="#" onClick={handleLogout} style={{ marginTop: '20px', textAlign: 'center', textDecoration: 'none' }}>
+          Cerrar Sesión
         </Link>
       </Paper>
     </Box>

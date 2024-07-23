@@ -47,6 +47,9 @@ const userBodySchema = Joi.object({
   verifyToken: Joi.string().messages({
     "string.base": "El token de verificación debe ser de tipo string.",
   }),
+  isActive: Joi.boolean().messages({
+    "boolean.base": "El estado de activación debe ser de tipo boolean.",
+  }),
   newPassword: Joi.string().min(5).messages({
     "string.empty": "La contraseña no puede estar vacía.",
     "string.base": "La contraseña debe ser de tipo string.",
@@ -54,6 +57,23 @@ const userBodySchema = Joi.object({
   }),
 }).messages({
   "object.unknown": "No se permiten propiedades adicionales.",
+});
+
+const userUpdateBodySchema = Joi.object({
+  username: Joi.string().messages({
+    "string.base": "El nombre de usuario debe ser de tipo string.",
+  }),
+  rut: Joi.string().messages({
+    "string.base": "El rut debe ser de tipo string.",
+  }),
+  contact: Joi.string().messages({
+    "string.base": "El contacto debe ser de tipo string.",
+  }),
+  profileImage: Joi.any().optional(),
+  password: Joi.string().min(5).messages({
+    "string.base": "La contraseña debe ser de tipo string.",
+    "string.min": "La contraseña debe tener al menos 5 caracteres.",
+  }), 
 });
 
 /**
@@ -72,4 +92,24 @@ const userIdSchema = Joi.object({
     }),
 });
 
-module.exports = { userBodySchema, userIdSchema };
+const roleUpdateSchema = Joi.object({
+  roles: Joi.array()
+    .items(Joi.string().valid(...ROLES))
+    .required()
+    .messages({
+      "array.base": "El rol debe ser de tipo array.",
+      "any.required": "El rol es obligatorio.",
+      "string.base": "El rol debe ser de tipo string.",
+      "any.only": "El rol proporcionado no es válido.",
+    }),
+});
+
+const codeSchema = Joi.object({
+  codigo: Joi.string().required().messages({
+    "string.empty": "El código no puede estar vacío.",
+    "any.required": "El código es obligatorio.",
+    "string.base": "El código debe ser de tipo string.",
+  }),
+});
+
+module.exports = { userBodySchema, userIdSchema, userUpdateBodySchema, roleUpdateSchema, codeSchema};
