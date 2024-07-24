@@ -34,6 +34,10 @@ const getPostById = (postId) => {
   return instance.get(`/posts/${postId}`);
 };
 
+const deletePost = (postId) => {
+  return instance.delete(`/posts/${postId}`);
+};
+
 const getUserById = (id) => {
   return instance.get(`/users/${id}`);
 };
@@ -55,6 +59,7 @@ const deleteComment = (postId, commentId) => {
 
 export default {
   createPost,
+  deletePost,
   getAllPosts,
   getPostById,
   getUserById,

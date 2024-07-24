@@ -4,6 +4,7 @@ import postService from '../services/post.service';
 import '../foro.css';
 
 const Foro = () => {
+  const [message, setMessage] = useState('');
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
@@ -18,6 +19,16 @@ const Foro = () => {
       }
     };
     fetchPosts();
+  }, []);
+
+  useEffect(() => {
+    // Recupera el mensaje del almacenamiento local
+    const message = localStorage.getItem('postDeletedMessage');
+
+    if (message) {
+      window.confirm(message); // Muestra el mensaje como una ventana de confirmación
+      localStorage.removeItem('postDeletedMessage'); // Elimina el mensaje del almacenamiento local después de mostrarlo
+    }
   }, []);
 
   return (
