@@ -6,6 +6,7 @@ import Root from "./routes/Root.jsx";
 import ErrorPage from "./routes/ErrorPage.jsx";
 import Login from "./routes/Login.jsx";
 import Foro from "./routes/Foro.jsx";
+import Listas from "./routes/Listas.jsx";
 import Post from "./routes/Post.jsx";
 import Register from "./routes/Register.jsx";
 import Postulaciones from "./routes/Tricel/Postulaciones.jsx";
@@ -21,6 +22,7 @@ import Verificacion from './routes/Verificacion.jsx';
 import Perfil from './routes/Perfil.jsx';
 import MiPerfil from './routes/MiPerfil/MiPerfil.jsx';
 import EditarMiPerfil from './routes/MiPerfil/EditarMiPerfil.jsx';
+import CrearPost from './routes/CrearPost.jsx';
 
 const router = createBrowserRouter([
   {
@@ -80,6 +82,21 @@ const router = createBrowserRouter([
         path: '/mi-perfil/editar',
         element: <EditarMiPerfil />,
       },
+      {
+        path: "/foro",
+        element: <Foro />,
+      },
+      {path: "/crearpost",
+        element: <CrearPost />,
+      },
+      {
+        path: "/post/:postId",
+        element: <Post />,
+      },
+      {
+        path: "listas",
+        element: <Listas />,
+      }
     ],
   },
   {
@@ -89,14 +106,6 @@ const router = createBrowserRouter([
   {
     path: "/registro",
     element: <Register />,
-  },
-  {
-    path: "/foro",
-    element: <Foro />,
-  },
-  {
-    path: "/post/:postId",
-    element: <Post />,
   },
   {
     path: '/verificacion',

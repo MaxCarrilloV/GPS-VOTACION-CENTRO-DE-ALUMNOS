@@ -28,6 +28,8 @@ import StarsIcon from '@mui/icons-material/Stars';
 import CircleIcon from '@mui/icons-material/Circle';
 import { logout } from "../services/auth.service";
 import { useNavigate } from 'react-router-dom';
+import Home from '@mui/icons-material/Home';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 const drawerWidth = 240;
 
@@ -132,15 +134,14 @@ export default function LayoutAdmin({ children }) {
   };
 
 const menuItems = [
+  {text: 'Foro', icon: <Home />, link: '/foro'},
     { text: 'Usuarios', icon: <PersonIcon /> },
     { text: 'Tricel', icon: <ManageAccountsIcon />, link: '/tricel/miembros'},
-    {
-      text: 'Listas',
-      icon: <ListAltIcon />,
-      subitems: ['Postulaciones', 'Listas', 'Foros'],
-    },
+    {text: 'Postulaciones', icon: <ListAltIcon />},  
+    {text: 'Listas', icon: <ListAltIcon />, link: '/listas'},
     { text: 'Votaciones', icon: <HowToVoteIcon /> },
-    { text: 'Actividades', icon: <StarsIcon />}
+    { text: 'Actividades', icon: <StarsIcon />},
+    {text: 'Sube tu Publicación', icon: <AddCircleIcon />, link: '/crearpost'},
   ];
 
   return (
@@ -165,7 +166,7 @@ const menuItems = [
                 variant="h6"
                 noWrap
                 component="a"
-                href="/"
+                href="/foro"
                 sx={{
                     mr: 2,
                     display: { xs: 'none', md: 'flex' },

@@ -15,7 +15,7 @@ function Login() {
         <Button
           variant="contained"
           color="primary"
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/foro')}
         >
           Ir a home
         </Button>
