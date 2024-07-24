@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import postService from '../services/post.service';
 import { getUserByEmail } from '../services/user.service';
 import { useAuth } from '../context/AuthContext';
@@ -8,16 +8,17 @@ import '../post.css';
 const Post = () => {
   const { postId } = useParams();
   const [post, setPost] = useState(null);
+  const navigate = useNavigate();
   const [expandedComments, setExpandedComments] = useState({});
   const [newCommentText, setNewCommentText] = useState('');
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyText, setReplyText] = useState('');
   const [usuario, setUsuario] = useState(null);
 
-  const { user }  = useAuth();
+  const { user } = useAuth();
 
   useEffect(() => {
-    
+
     const fetchPost = async () => {
       try {
         const { data } = await postService.getPostById(postId);
@@ -49,14 +50,18 @@ const Post = () => {
     fetchUser();
   }, [user]);
 
-  
-
-  
-
-  
-
-  
-
+  const handleDeletePost = async () => {
+    const confirmDelete = window.confirm("¿Estás seguro de que quieres eliminar este post?");
+    if (confirmDelete) {
+      try {
+        await postService.deletePost(postId);
+        localStorage.setItem('postDeletedMessage', 'Publicación eliminada exitosamente');
+        navigate('/foro'); 
+      } catch (error) {
+        console.error("Error al eliminar el post:", error);
+      }
+    }
+  };
 
 
 
@@ -104,7 +109,7 @@ const Post = () => {
       }
     }
   };
-  
+
 
   const handleNewCommentSubmit = async (e) => {
     e.preventDefault();
@@ -171,33 +176,33 @@ const Post = () => {
             )}
             <button onClick={() => setReplyingTo(reply._id)} className="reply-button">Responder</button>
             {usuario && usuario.username === reply.username && (
-            <button onClick={() => handleDeleteComment(reply._id)} className="delete-button">Eliminar</button>
-          )}
+              <button onClick={() => handleDeleteComment(reply._id)} className="delete-button">Eliminar</button>
+            )}
 
           </div>
-        
-        {expandedComments[reply._id] && renderReplies(reply.replies, level + 1)}
-        {replyingTo === reply._id && (
-          <div className="reply-box" style={{ marginLeft: `${(level + 1) * 20}px` }}>
-            <form onSubmit={(e) => handleReplySubmit(e, reply._id)}>
-              <textarea
-                value={replyText}
-                onChange={handleReplyTextChange}
-                placeholder="Responder comentario..."
-                rows="3"
-              />
-              <button type="submit">Responder</button>
-            </form>
-          </div>
-          
-        )}
+
+          {expandedComments[reply._id] && renderReplies(reply.replies, level + 1)}
+          {replyingTo === reply._id && (
+            <div className="reply-box" style={{ marginLeft: `${(level + 1) * 20}px` }}>
+              <form onSubmit={(e) => handleReplySubmit(e, reply._id)}>
+                <textarea
+                  value={replyText}
+                  onChange={handleReplyTextChange}
+                  placeholder="Responder comentario..."
+                  rows="3"
+                />
+                <button type="submit">Responder</button>
+              </form>
+            </div>
+
+          )}
         </div>
       </React.Fragment>
     ));
   };
 
-  
-  
+
+
   const renderComments = (comments) => {
     return comments.map(comment => (
       <React.Fragment key={comment._id}>
@@ -212,25 +217,25 @@ const Post = () => {
             )}
             <button onClick={() => setReplyingTo(comment._id)} className="reply-button">Responder</button>
             {usuario && usuario.username === comment.username && (
-            <button onClick={() => handleDeleteComment(comment._id)} className="delete-button">Eliminar</button>
+              <button onClick={() => handleDeleteComment(comment._id)} className="delete-button">Eliminar</button>
+            )}
+          </div>
+          {/*Poner aqui un </div> si se quieren cajas independientes*/}
+          {expandedComments[comment._id] && renderReplies(comment.replies)}
+          {replyingTo === comment._id && (
+            <div className="reply-box" style={{ marginLeft: '20px' }}>
+              <form onSubmit={(e) => handleReplySubmit(e, comment._id)}>
+                <textarea
+                  value={replyText}
+                  onChange={handleReplyTextChange}
+                  placeholder="Responder comentario..."
+                  rows="3"
+                  ref={(input) => input && input.focus()}
+                />
+                <button type="submit">Responder</button>
+              </form>
+            </div>
           )}
-          </div>
-        {/*Poner aqui un </div> si se quieren cajas independientes*/}
-        {expandedComments[comment._id] && renderReplies(comment.replies)}
-        {replyingTo === comment._id && (
-          <div className="reply-box" style={{ marginLeft: '20px' }}>
-            <form onSubmit={(e) => handleReplySubmit(e, comment._id)}>
-              <textarea
-                value={replyText}
-                onChange={handleReplyTextChange}
-                placeholder="Responder comentario..."
-                rows="3"
-                ref={(input) => input && input.focus()}
-              />
-              <button type="submit">Responder</button>
-            </form>
-          </div>
-        )}
         </div> {/* y quitar este*/}
       </React.Fragment>
     ));
@@ -240,23 +245,34 @@ const Post = () => {
     return <div>Cargando...</div>;
   }
 
-  
+
 
   return (
     <div className="post-detail">
       <div className="post-card">
-        <p><span style={{ 
-      fontStyle: 'italic', 
-      fontWeight: 'bold', 
-      color: 'rgba(128, 200, 255, 0.5)',
-      textShadow: '0 0 1px black' 
-    }}>
+        <p><span style={{
+          fontStyle: 'italic',
+          fontWeight: 'bold',
+          color: 'rgba(128, 200, 255, 0.5)',
+          textShadow: '0 0 1px black'
+        }}>
           Publicada por: {post.username}
         </span></p>
         <h2>{post.title}</h2>
 
         <div className="post-text-box">
           <p>{post.text}</p>
+        </div>
+        <div>
+          {usuario && usuario.username === post.username && (
+            <button
+              type="submit"
+              onClick={handleDeletePost}
+              style={{ backgroundColor: 'red', color: 'white' }}
+            >
+              Eliminar post
+            </button>
+          )}
         </div>
         {post.type === 'List' && (
           <div>
