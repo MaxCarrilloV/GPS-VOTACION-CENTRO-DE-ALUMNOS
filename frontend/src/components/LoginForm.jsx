@@ -16,7 +16,7 @@ function LoginForm() {
 
   const onSubmit = (data) => {
     login(data).then(() => {
-      navigate('/');
+      navigate('/foro'); //foro es página principal
     })
     .catch((error) => {
       setError(error.message);

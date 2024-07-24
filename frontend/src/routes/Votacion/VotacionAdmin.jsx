@@ -32,6 +32,7 @@ const columns = [
   { field: "descripcion", headerName: "Descripción", width: 150 },
   { field: "fechaInicio", headerName: "Fecha inicio", width: 200 },
   { field: "fechaFin", headerName: "Fecha fin", width: 200 },
+  { field: "estado", headerName: "Estado", width: 100 },
   {
     field: "resultados",
     headerName: "Resultados",
@@ -53,7 +54,7 @@ const columns = [
     field: "acciones",
     headerName: "Acciones",
     sortable: false,
-    width: 330,
+    width: 230,
     renderCell: (params) => (
       <Box>
         <Button
@@ -110,6 +111,7 @@ export default function VotacionAdmin() {
           fechaInicio: new Date(votacion.fechaInicio).toLocaleString(),
           fechaFin: new Date(votacion.fechaFin).toLocaleString(),
           opciones: votacion.opciones,
+          estado: votacion.estado,
         }));
         setRows(formattedData);
         setLoading(false);
@@ -254,7 +256,7 @@ export default function VotacionAdmin() {
   });
 
   return (
-    <Box style={{ height: 400 }}>
+    <Box style={{ height: 400, width:1260 }}>
       <Snackbar
         className=""
         open={snackbarOpen}

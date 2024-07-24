@@ -41,7 +41,7 @@ async function createVotacion(votacion) {
 
 async function updateVotacion(id, votacion) {
   try {
-    const { titulo, descripcion, opciones, fechaInicio, fechaFin, estado } = votacion;
+    let { titulo, descripcion, opciones, fechaInicio, fechaFin, estado } = votacion;
 
     const updatedVotacion = await Votacion.findByIdAndUpdate(  
         id,
@@ -55,7 +55,7 @@ async function updateVotacion(id, votacion) {
         },
         { new: true }
         );
-        return [updatedVotacion, null];
+    return [updatedVotacion, null];
     } catch (error) {
         handleError(error, "votacion.service -> updateVotacion");
     }
