@@ -10,7 +10,6 @@ import Post from "./routes/Post.jsx";
 import Register from "./routes/Register.jsx";
 import Postulaciones from "./routes/Tricel/Postulaciones.jsx";
 import ListaGanadora from "./routes/Tricel/ListaGanadora.jsx";
-import HistorialRevisiones from "./routes/Tricel/HistorialRevisiones.jsx";
 import ProcesosElectivos from "./routes/Tricel/ProcesosElectivos.jsx";
 import PeriodosElectivos from "./routes/Tricel/PeriodosElectivos.jsx";
 import VotacionAdmin from "./routes/Votacion/VotacionAdmin.jsx";
@@ -48,10 +47,6 @@ const router = createBrowserRouter([
       {
         path: "/tricel/lista-ganadora",
         element: <ListaGanadora />,
-      },
-      {
-        path: "/tricel/historial-revisiones",
-        element: <HistorialRevisiones />,
       },
       {
         path:'votaciones',
