@@ -22,6 +22,7 @@ import { Link } from 'react-router-dom';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import GroupIcon from '@mui/icons-material/Group';
 import ListAltIcon from '@mui/icons-material/ListAlt';
+import HomeIcon from '@mui/icons-material/Home';
 import HowToVoteIcon from '@mui/icons-material/HowToVote';
 import StarsIcon from '@mui/icons-material/Stars';
 import CircleIcon from '@mui/icons-material/Circle';
@@ -30,6 +31,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useEffect } from 'react';
 import { getUserByEmail } from '../services/user.service';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 const drawerWidth = 240;
 
@@ -134,14 +136,13 @@ export default function LayoutUser({ children }) {
 };
 
   const menuItems = [
+    {text: 'Foro', icon: <HomeIcon />, link: '/foro'},
     { text: 'Tricel', icon: <GroupIcon />, link: '/tricel/miembros'},
-    {
-      text: 'Listas',
-      icon: <ListAltIcon />,
-      subitems: ['Listas', 'Foros'],
-    },
+    {text: 'Listas', icon: <ListAltIcon />, link: '/listas'},
     { text: 'Votaciones', icon: <HowToVoteIcon /> },
-    { text: 'Actividades', icon: <StarsIcon />}
+    { text: 'Actividades', icon: <StarsIcon />},
+    {text: 'Sube tu Publicación', icon: <AddCircleIcon />, link: '/crearpost'},
+    
   ];
 
   const { user }  = useAuth();
@@ -192,7 +193,7 @@ export default function LayoutUser({ children }) {
                 variant="h6"
                 noWrap
                 component="a"
-                href="/"
+                href="/foro"
                 sx={{
                     mr: 2,
                     display: { xs: 'none', md: 'flex' },

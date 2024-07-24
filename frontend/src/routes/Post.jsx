@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import postService from '../services/post.service';
+import { getUserByEmail } from '../services/user.service';
+import { useAuth } from '../context/AuthContext';
 import '../post.css';
 
 const Post = () => {
@@ -10,8 +12,12 @@ const Post = () => {
   const [newCommentText, setNewCommentText] = useState('');
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyText, setReplyText] = useState('');
+  const [usuario, setUsuario] = useState(null);
+
+  const { user }  = useAuth();
 
   useEffect(() => {
+    
     const fetchPost = async () => {
       try {
         const { data } = await postService.getPostById(postId);
@@ -22,6 +28,37 @@ const Post = () => {
     };
     fetchPost();
   }, [postId]);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        if (user && user.email) {
+          const loadedUser = await getUserByEmail(user.email);
+          if (loadedUser && loadedUser.length > 0) {
+            setUsuario(loadedUser[0].user);
+            console.log('Usuario cargado:', loadedUser[0].user.username);
+          } else {
+            console.error('No se encontró ningún usuario.');
+          }
+        }
+      } catch (error) {
+        console.error('Error al obtener el usuario:', error.message);
+      }
+    };
+
+    fetchUser();
+  }, [user]);
+
+  
+
+  
+
+  
+
+  
+
+
+
 
   const handleExpandClick = (commentId, replies) => {
     setExpandedComments((prev) => {
@@ -133,7 +170,9 @@ const Post = () => {
               </button>
             )}
             <button onClick={() => setReplyingTo(reply._id)} className="reply-button">Responder</button>
+            {usuario && usuario.username === reply.username && (
             <button onClick={() => handleDeleteComment(reply._id)} className="delete-button">Eliminar</button>
+          )}
 
           </div>
         
@@ -172,7 +211,9 @@ const Post = () => {
               </button>
             )}
             <button onClick={() => setReplyingTo(comment._id)} className="reply-button">Responder</button>
+            {usuario && usuario.username === comment.username && (
             <button onClick={() => handleDeleteComment(comment._id)} className="delete-button">Eliminar</button>
+          )}
           </div>
         {/*Poner aqui un </div> si se quieren cajas independientes*/}
         {expandedComments[comment._id] && renderReplies(comment.replies)}
@@ -198,6 +239,8 @@ const Post = () => {
   if (!post) {
     return <div>Cargando...</div>;
   }
+
+  
 
   return (
     <div className="post-detail">

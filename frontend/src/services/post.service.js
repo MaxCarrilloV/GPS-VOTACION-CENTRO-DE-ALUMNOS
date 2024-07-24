@@ -22,6 +22,10 @@ instance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+const createPost = (postData) => {
+  return instance.post('/posts', postData);
+};
+
 const getAllPosts = () => {
   return instance.get('/posts');
 };
@@ -50,6 +54,7 @@ const deleteComment = (postId, commentId) => {
 
 
 export default {
+  createPost,
   getAllPosts,
   getPostById,
   getUserById,

@@ -10,9 +10,9 @@ const Foro = () => {
     const fetchPosts = async () => {
       try {
         const { data } = await postService.getAllPosts();
-        const listPosts = data.filter(post => post.type === 'List');
+        // Filtrar las publicaciones de tipo 'Normal'
         const normalPosts = data.filter(post => post.type === 'Normal');
-        setPosts([...listPosts, ...normalPosts]);
+        setPosts(normalPosts);
       } catch (error) {
         console.error("Error al obtener las publicaciones:", error);
       }
@@ -28,16 +28,6 @@ const Foro = () => {
             <Link to={`/post/${post._id}`}>{post.title}</Link>
           </h2>
           <p>{post.text}</p>
-          {post.type === 'List' && (
-            <div>
-              <h3>Miembros:</h3>
-              <ul>
-                {post.listMembers.map(member => (
-                  <li key={member}>{member}</li>
-                ))}
-              </ul>
-            </div>
-          )}
         </div>
       ))}
     </div>
