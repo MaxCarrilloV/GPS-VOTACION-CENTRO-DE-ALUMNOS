@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, Grid, IconButton } from '@mui/material';
+import PlusIcon from '@mui/icons-material/Plus';
+
 
 import avisoService from "../services/Tricel/aviso.service";
-import { Grid, Stack } from "@mui/material";
 
 const Avisos = () => {
     const [avisos, setAvisos] = useState([]);
@@ -34,12 +36,44 @@ const Avisos = () => {
         fetchActividades();
 
     }, []);
-    
+
+    const [abierto, setAbierto] = useState(false);
+    const [aviso, setAviso] = useState({
+        titulo: '',
+        tipo: '',
+        contenido: ''
+    });
+
+    const tiposDeAviso = [
+        { valor: 'Inscripción de listas', etiqueta: 'Inscripción de listas' },
+        { valor: 'Apertura de votaciones', etiqueta: 'Apertura de votaciones' },
+        { valor: 'Cierre de votaciones', etiqueta: 'Cierre de votaciones' },
+        { valor: 'Resultados', etiqueta: 'Resultados' }
+    ];
+
+    const handleChange = (e) => {
+        setAviso({ ...aviso, [e.target.name]: e.target.value });
+    };
+
+    const abrirDialogo = () => {
+        setAbierto(true);
+    };
+
+    const cerrarDialogo = () => {
+        setAbierto(false);
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        console.log(aviso);
+        // Aquí puedes agregar la lógica para enviar el aviso a tu backend o manejarlo según necesites
+        cerrarDialogo();
+    };
     return (
         <Grid container>
-            <Grid item xs={8}>
+            <Grid item xs={10}>
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={2}>
                 <Grid container direction="column" spacing={2} alignItems="flex-end">
                     <Grid item>
                         <h1>Actividades</h1>
@@ -53,6 +87,62 @@ const Avisos = () => {
                     </Grid>
                     <Grid item>
                         <h1>Avisos</h1>
+                        <IconButton variant="outlined" onClick={abrirDialogo} aria-label="crear aviso">
+                            <PlusIcon />
+                        </IconButton>
+            <Dialog open={abierto} onClose={cerrarDialogo}>
+                <DialogTitle>Crear un nuevo aviso</DialogTitle>
+                <DialogContent>
+                    <form onSubmit={handleSubmit}>
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            id="titulo"
+                            name="titulo"
+                            label="Título"
+                            type="text"
+                            fullWidth
+                            variant="standard"
+                            value={aviso.titulo}
+                            onChange={handleChange}
+                        />
+                        <TextField
+                            select
+                            margin="dense"
+                            id="tipo"
+                            name="tipo"
+                            label="Tipo"
+                            fullWidth
+                            variant="standard"
+                            value={aviso.tipo}
+                            onChange={handleChange}
+                        >
+                            {tiposDeAviso.map((opcion) => (
+                                <MenuItem key={opcion.valor} value={opcion.valor}>
+                                    {opcion.etiqueta}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                        <TextField
+                            margin="dense"
+                            id="contenido"
+                            name="contenido"
+                            label="Contenido"
+                            type="text"
+                            fullWidth
+                            multiline
+                            rows={4}
+                            variant="standard"
+                            value={aviso.contenido}
+                            onChange={handleChange}
+                        />
+                    </form>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={cerrarDialogo}>Cancelar</Button>
+                    <Button onClick={handleSubmit}>Guardar</Button>
+                </DialogActions>
+            </Dialog>
                             <List>
                                 {avisos.map((aviso) => (
                                     <ListItem key={aviso._id}>
