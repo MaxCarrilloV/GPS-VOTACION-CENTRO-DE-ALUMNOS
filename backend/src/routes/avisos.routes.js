@@ -8,8 +8,8 @@ const authenticationMiddleware = require("../middlewares/authentication.middlewa
 const router = express.Router();
 router.use(authenticationMiddleware);
 
-router.get("/", authorizationMiddleware.isTricel, avisosController.getAvisos);
-router.get("/:id", authorizationMiddleware.isTricel, avisosController.getAvisoById);
+router.get("/", avisosController.getAvisos);
+router.get("/:id", avisosController.getAvisoById);
 
 router.post("/", authorizationMiddleware.isTricel, avisosController.createAviso);
 

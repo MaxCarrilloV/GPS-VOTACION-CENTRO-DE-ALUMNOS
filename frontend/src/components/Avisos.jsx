@@ -3,15 +3,15 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, Grid, IconButton } from '@mui/material';
-import PlusIcon from '@mui/icons-material/Plus';
+import AddIcon from '@mui/icons-material/Add';
 
 
 import avisoService from "../services/Tricel/aviso.service";
+import { useAuth } from "../context/AuthContext";
 
 const Avisos = () => {
     const [avisos, setAvisos] = useState([]);
-    const [actividades, setActividades] = useState([]);
-    
+
     useEffect(() => {
         const fetchAvisos = async () => {
         try {
@@ -23,18 +23,6 @@ const Avisos = () => {
         }
         };
         fetchAvisos();
-
-        const fetchActividades = async () => {
-        try {
-            const { data } = await avisoService.getAllActivities();
-            const actividadesOrdenadas = data.data.sort((a, b) => new Date(b.fechaPublicacion) - new Date(a.fechaPublicacion));
-            setActividades(actividadesOrdenadas);
-        } catch (error) {
-            console.error("Error al obtener las actividades:", error);
-        }
-        };
-        fetchActividades();
-
     }, []);
 
     const [abierto, setAbierto] = useState(false);
@@ -66,30 +54,31 @@ const Avisos = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log(aviso);
-        // Aquí puedes agregar la lógica para enviar el aviso a tu backend o manejarlo según necesites
+        avisoService.createAdvice(aviso);
         cerrarDialogo();
     };
+
+
+
+    const { user } = useAuth();
+    const tieneRolAdecuado = user.roles[0].name === "Miembro de Tricel" || user.roles[0].name === "admin";
+
+
+
     return (
-        <Grid container>
-            <Grid item xs={10}>
-            </Grid>
-            <Grid item xs={2}>
-                <Grid container direction="column" spacing={2} alignItems="flex-end">
+        <>
+        <Grid container alignItems="center" spacing={2}>
+                <Grid item>
+                    <h1>Avisos</h1>
+                </Grid>
+                {tieneRolAdecuado && (
                     <Grid item>
-                        <h1>Actividades</h1>
-                            <List>
-                                {actividades.map((actividad) => (
-                                    <ListItem key={actividad._id}>
-                                        <ListItemText primary={actividad.titulo} secondary={actividad.descripcion} />
-                                    </ListItem>
-                                ))}
-                            </List>
-                    </Grid>
-                    <Grid item>
-                        <h1>Avisos</h1>
-                        <IconButton variant="outlined" onClick={abrirDialogo} aria-label="crear aviso">
-                            <PlusIcon />
+                        <IconButton onClick={abrirDialogo} aria-label="crear aviso">
+                            <AddIcon />
                         </IconButton>
+                    </Grid>
+                )}
+        </Grid>
             <Dialog open={abierto} onClose={cerrarDialogo}>
                 <DialogTitle>Crear un nuevo aviso</DialogTitle>
                 <DialogContent>
@@ -143,18 +132,16 @@ const Avisos = () => {
                     <Button onClick={handleSubmit}>Guardar</Button>
                 </DialogActions>
             </Dialog>
-                            <List>
-                                {avisos.map((aviso) => (
-                                    <ListItem key={aviso._id}>
-                                        <ListItemText primary={aviso.titulo} secondary={aviso.contenido} />
-                                    </ListItem>
-                                ))}
-                            </List>
-                    </Grid>
-                </Grid>
-            </Grid>
-        </Grid>
+            <List>
+                {avisos.map(aviso => (
+                    <ListItem key={aviso._id}>
+                        <ListItemText primary={aviso.titulo} secondary={aviso.contenido} />
+                    </ListItem>
+                ))}
+            </List>
+        </>
     );
 };
+
 
 export default Avisos;
