@@ -139,7 +139,8 @@ const menuItems = [
     { text: 'Tricel', icon: <ManageAccountsIcon />, link: '/tricel/miembros'},
     {text: 'Postulaciones', icon: <ListAltIcon />},  
     {text: 'Listas', icon: <ListAltIcon />, link: '/listas'},
-    { text: 'Votaciones', icon: <HowToVoteIcon /> },
+    { text: 'Votaciones', icon: <HowToVoteIcon />, link:'/votaciones'},
+    { text: 'Agregar Votaciones', icon: <HowToVoteIcon />, link:'/votaciones/crear'},
     { text: 'Actividades', icon: <StarsIcon />},
     {text: 'Sube tu Publicación', icon: <AddCircleIcon />, link: '/crearpost'},
   ];
