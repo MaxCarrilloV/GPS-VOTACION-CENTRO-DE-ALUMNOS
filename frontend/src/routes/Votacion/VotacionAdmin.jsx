@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { getVotaciones, deleteVotacion } from "../../services/votacion.service";
+import { getUsers } from "../../services/user.service";
 import VotacionEditForm from "../../components/VotacionEditForm";
 import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate } from "react-router-dom";
@@ -91,6 +92,8 @@ export default function VotacionAdmin() {
   const [openResultados, setOpenResultados] = useState(false);
   const navigate = useNavigate();
   const [totalVotos, setTotalVotos] = useState(0);
+  const [users, setUsers] = useState([]);
+  const [totalUsers, setTotalUsers] = useState(0);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -121,6 +124,21 @@ export default function VotacionAdmin() {
       }
     }
     fetchData();
+
+    async function fetchUsers() {
+      try {
+        const data = await getUsers();
+        let count = 0;
+        data.map((user) => {
+          if (user.roles[0].name === "user") {
+            count++;
+          }});
+        setTotalUsers(count);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    }
+    fetchUsers();
   }, []);
 
   const handleResultados = (id) => {
@@ -129,7 +147,6 @@ export default function VotacionAdmin() {
       (acc, opcion) => acc + opcion.cantidadVotos,
       0
     );
-    console.log(total);
     if (total === 0) {
       setSnackbarMessage("No hay votos registrados para esta votación");
       setSnackbarSeverity("primary");
@@ -159,6 +176,12 @@ export default function VotacionAdmin() {
 
   const handleEditar = (id) => {
     const votacion = rows.find((row) => row.id === id);
+    if(votacion.estado === "Abierta" || votacion.estado === "Cerrada") {
+      setSnackbarMessage("No se puede editar una votación abierta o cerrada");
+      setSnackbarSeverity("warning");
+      setSnackbarOpen(true);
+      return;
+    }
     setSelectedVotacion(votacion);
     setOpenEditForm(true);
   };
@@ -193,6 +216,14 @@ export default function VotacionAdmin() {
   };
 
   const openConfirmDialog = (id, titulo) => {
+    const votacion = rows.find((row) => row.id === id);
+    if(votacion.estado === "Abierta" ) {
+      setSnackbarMessage("No se puede eliminar una votación abierta");
+      setSnackbarSeverity("warning");
+      setSnackbarOpen(true);
+      handleDialogClose();
+      return;
+    }
     setDeleteInfo({ id, titulo });
     setConfirmDialogOpen(true);
   };
@@ -378,7 +409,7 @@ export default function VotacionAdmin() {
           </TableContainer>
           <Typography variant="h6">
             Total de votos: {totalVotos} <br />
-            Participacion Carrera: {(totalVotos/200)*100}% <br />
+            Participacion Carrera: {((totalVotos/totalUsers)*100).toFixed(2)}% <br />
           </Typography>
         </Box>
       </Modal>
