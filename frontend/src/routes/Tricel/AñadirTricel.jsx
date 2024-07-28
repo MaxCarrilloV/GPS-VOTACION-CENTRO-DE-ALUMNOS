@@ -22,7 +22,8 @@ function AñadirTricel() {
     const fetchUsuarios = async () => {
         try {
             const data = await getUsers();
-            setUsuarios(data);
+            const filteredData = data.filter(usuario => usuario.roles[0].name === 'user');
+            setUsuarios(filteredData);
         } catch (error) {
             console.error('Error al obtener los usuarios:', error);
         }
@@ -93,7 +94,7 @@ function AñadirTricel() {
                             {filteredUsuarios.map((item) => (
                                 <TableRow key={item._id}>
                                     <TableCell>
-                                        <Avatar alt={item.username} src={`URL_DE_LA_IMAGEN/${item.username}.jpg`} />
+                                        <Avatar alt={item.username} src={`http://localhost:5000${item.profileImage}`} />
                                     </TableCell>
                                     <TableCell>{item.username}</TableCell>
                                     <TableCell>{item.email}</TableCell>

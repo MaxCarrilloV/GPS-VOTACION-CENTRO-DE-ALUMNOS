@@ -20,6 +20,10 @@ const actividadCEESchema = new mongoose.Schema(
         type: Date,
         required: true,
         },
+        hora: {
+        type: String,
+        required: true,
+        },
         lugar: {
         type: String,
         required: true,
@@ -35,6 +39,9 @@ const actividadCEESchema = new mongoose.Schema(
         enum: ACTIVIDADES,
         required: true,
         },
+    },
+    {
+        timestamps: true,
     },
     {
         versionKey: false,
