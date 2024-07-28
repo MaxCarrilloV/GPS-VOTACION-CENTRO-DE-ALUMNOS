@@ -139,7 +139,7 @@ export default function LayoutUser({ children }) {
     {text: 'Foro', icon: <HomeIcon />, link: '/foro'},
     { text: 'Tricel', icon: <GroupIcon />, link: '/tricel/miembros'},
     {text: 'Listas', icon: <ListAltIcon />, link: '/listas'},
-    { text: 'Votaciones', icon: <HowToVoteIcon /> },
+    { text: 'Votaciones', icon: <HowToVoteIcon />, link: '/votacionesUser' },
     { text: 'Actividades', icon: <StarsIcon />},
     {text: 'Sube tu Publicación', icon: <AddCircleIcon />, link: '/crearpost'},
     

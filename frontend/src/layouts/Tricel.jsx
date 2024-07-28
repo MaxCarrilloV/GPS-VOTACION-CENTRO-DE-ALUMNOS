@@ -148,7 +148,7 @@ const menuItems = [
         { text: 'Confirmar Lista Ganadora', link: '/tricel/lista-ganadora' },
       ],
     },
-    { text: 'Votaciones', icon: <HowToVoteIcon /> },
+    { text: 'Votaciones', icon: <HowToVoteIcon />, link: '/votaciones' },
   ];
 
   const { user }  = useAuth();

@@ -3,6 +3,7 @@
 const Actividad = require("../models/actividadCEE.model.js");
 const Constants = require("../constants/actividades.constants.js");
 const { handleError } = require("../utils/errorHandler.js");
+const notificacionService = require("./notificacion.service.js");
 
 async function getActividades() {
     try {
@@ -30,15 +31,18 @@ async function getActividadById(actividadId) {
 
 async function createActividad(actividad) {
     try {
-        const { nombre, descripcion, fecha, lugar, tipo } = actividad;
+        const { nombre, descripcion, fecha, hora, lugar, tipo } = actividad;
         const newActividad = new Actividad({
             nombre,
             descripcion,
             fecha,
+            hora,
             lugar,
             tipo,
         });
         await newActividad.save();
+        await notificacionService.notificationActividad(newActividad);
+
         return [newActividad, null];
     } catch (error) {
         handleError(error, "actividades.service -> createActividad");
