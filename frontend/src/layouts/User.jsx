@@ -248,9 +248,9 @@ export default function LayoutUser({ children }) {
                     onClose={handleCloseUserMenu}
                 >
                     <MenuItem onClick={handleCloseUserMenu}>
-                    <Link to="/mi-perfil/" style={{ textDecoration: 'none', color: 'black' }}>
-                      <Typography textAlign="center">Mi perfil</Typography>
-                    </Link>
+                      <Link to="/mi-perfil/" style={{ textDecoration: 'none', color: 'black' }}>
+                        <Typography textAlign="center">Mi perfil</Typography>
+                      </Link>
                     </MenuItem>
                     <MenuItem key={"logout"} onClick={handleLogout}>
                         <Typography textAlign="center">Cerrar sesión</Typography>
