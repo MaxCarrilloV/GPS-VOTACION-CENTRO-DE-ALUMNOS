@@ -145,7 +145,7 @@ const menuItems = [
         { text: 'Postulaciones', link: '/tricel/postulaciones' },
         { text: 'Procesos Electivos', link: '/tricel/procesos-electivos' },
         { text: 'Periodos Electivos', link: '/tricel/periodos-electivos' },
-        { text: 'Confirmar Lista Ganadora', link: '/tricel/lista-ganadora' },
+        
       ],
     },
     { text: 'Votaciones', icon: <HowToVoteIcon />, link: '/votaciones' },
