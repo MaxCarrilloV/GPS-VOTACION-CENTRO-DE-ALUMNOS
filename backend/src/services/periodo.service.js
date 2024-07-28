@@ -24,10 +24,14 @@ function truncateTime(date) {
 async function ValidarSecuencia(fechaInicioDate, numero_etapa, procesoId, proceso) {
   try {
     console.log("Iniciando ValidarSecuencia");
-    console.log("Fecha de inicio (con hora):", fechaInicioDate);
-    fechaInicioDate = truncateTime(fechaInicioDate);
-    console.log("Fecha de inicio (sin hora):", fechaInicioDate);
+
+    // Truncar las fechas para eliminar la parte de la hora
+    const fechaInicio = truncateTime(new Date(fechaInicioDate));
+    const fechaCreacionProceso = truncateTime(new Date(proceso.fechaCreacion));
+
+    console.log("Fecha de inicio (sin hora):", fechaInicio);
     console.log("Número de etapa:", numero_etapa);
+    console.log("Fecha de creación del proceso (sin hora):", fechaCreacionProceso);
 
     if (numero_etapa !== 1) {
       const periodoPrevio = await Periodo.findOne({
@@ -43,31 +47,28 @@ async function ValidarSecuencia(fechaInicioDate, numero_etapa, procesoId, proces
       const fechaFinPrevio = truncateTime(new Date(periodoPrevio.fechaFin));
       console.log("Fecha de finalización del periodo previo (sin hora):", fechaFinPrevio);
 
-      if (fechaInicioDate <= fechaFinPrevio) {
+      if (fechaInicio <= fechaFinPrevio) {
         return [
           new Error("Fecha de inicio inválida"),
           `La fecha de inicio debe ser posterior a la fecha de finalización de la etapa anterior: '${fechaFinPrevio.toLocaleDateString('es-ES')}'`,
         ];
       }
 
-      if (fechaInicioDate > new Date(fechaFinPrevio.getTime() + 14 * 24 * 60 * 60 * 1000)) {
+      if (fechaInicio > new Date(fechaFinPrevio.getTime() + 14 * 24 * 60 * 60 * 1000)) {
         return [
           new Error("Fecha de inicio inválida"),
           `La fecha de inicio no puede exceder los 14 días después de la fecha de finalización de la etapa anterior: '${fechaFinPrevio.toLocaleDateString('es-ES')}'`,
         ];
       }
     } else {
-      const fechaCreacionProceso = truncateTime(new Date(proceso.fechaCreacion));
-      console.log("Fecha de creación del proceso (sin hora):", fechaCreacionProceso);
-
-      if (fechaInicioDate < fechaCreacionProceso) {
+      if (fechaInicio < fechaCreacionProceso) {
         return [
           new Error("Fecha de inicio inválida"),
           `La fecha de inicio debe ser posterior o igual a la fecha de creación del proceso: '${fechaCreacionProceso.toLocaleDateString('es-ES')}'`,
         ];
       }
 
-      if (fechaInicioDate > new Date(fechaCreacionProceso.getTime() + 14 * 24 * 60 * 60 * 1000)) {
+      if (fechaInicio > new Date(fechaCreacionProceso.getTime() + 14 * 24 * 60 * 60 * 1000)) {
         return [
           new Error("Fecha de inicio inválida"),
           `La fecha de inicio no puede exceder los 14 días después de la fecha de creación del proceso: '${fechaCreacionProceso.toLocaleDateString('es-ES')}'`,
@@ -87,8 +88,8 @@ async function createPeriodo(periodo) {
   try {
     const { nombre_etapa, fechaInicio, procesoId } = periodo;
 
-    let fechaInicioDate = new Date(fechaInicio);
-
+    const fechaInicioDate = new Date(fechaInicio.split("-").reverse().join("-") + 'T00:00:00Z');
+    console.log("Fecha de inicio createPeriodo:", fechaInicioDate);
     const duracion = Constants.find(
       (periodo) => periodo.nombre_etapa === nombre_etapa,
     ).duracion;

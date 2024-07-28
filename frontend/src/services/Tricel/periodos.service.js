@@ -5,7 +5,7 @@ export const getPeriodos = async () => {
   try {
     const response = await instance.get("/periodo");
     const { status, data } = response;
-    if (status === 200 ) {
+    if (status === 200) {
       return data.data;
     } else {
       console.error("Error fetching periodos:", response);
@@ -20,10 +20,7 @@ export const getPeriodos = async () => {
 export const createPeriodo = async (periodo) => {
   try {
     const response = await instance.post("/periodo", periodo);
-    const { status, data } = response;
-    if (status === 200 || status === 201) {
-      return data.data;
-    }
+    return response; // devuelve la respuesta completa
   } catch (error) {
     console.error("error: ", error.response.data);
     return error.response;
