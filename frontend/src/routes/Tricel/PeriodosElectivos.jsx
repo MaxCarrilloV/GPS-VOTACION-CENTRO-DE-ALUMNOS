@@ -3,6 +3,7 @@ import {
   getPeriodos,
   updatePeriodo,
   deletePeriodo,
+  createPeriodo
 } from "../../services/Tricel/periodos.service";
 import {
   Table,
@@ -15,7 +16,7 @@ import {
   Button,
 } from "@mui/material";
 import toast, { Toaster } from "react-hot-toast";
-import PeriodoForm from "../../components/PeriodoForm";
+import PeriodoForm from "../../components/Tricel/PeriodoForm";
 import DeletePeriodoModal from "../../components/DeletePeriodoModal";
 
 const PeriodosElectivos = () => {
@@ -23,12 +24,20 @@ const PeriodosElectivos = () => {
   const [openPeriodoModal, setOpenPeriodoModal] = useState(false);
   const [selectedPeriodo, setSelectedPeriodo] = useState(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchPeriodos = async () => {
-      const data = await getPeriodos();
-      console.log("Fetched periodos: ", data); // Debugging
-      setPeriodos(data || []);
+      try {
+        const data = await getPeriodos();
+        if (data.length === 0) {
+          setError("No se encontraron períodos electivos.");
+        } else {
+          setPeriodos(data);
+        }
+      } catch (err) {
+        setError("Ocurrió un error al cargar los períodos electivos.");
+      }
     };
     fetchPeriodos();
   }, []);
@@ -49,6 +58,8 @@ const PeriodosElectivos = () => {
     setOpenPeriodoModal(true);
   };
 
+
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     date.setDate(date.getDate() + 1); // Añade un día a la fecha
@@ -59,9 +70,8 @@ const PeriodosElectivos = () => {
   };
 
   return (
-    <div style={{ overflow: "hidden" }}>
-      <Toaster position="top-right" reverseOrder={false} />
-
+    <div style={{ overflow: "auto" }}>
+      
       <Button
         variant="contained"
         color="primary"
@@ -69,25 +79,22 @@ const PeriodosElectivos = () => {
       >
         Crear Nuevo Periodo
       </Button>
-
-      <div style={{ marginTop: "20px", overflowX: "auto" }}>
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Nombre del Periodo</TableCell>
-                <TableCell>Número de Etapa</TableCell>
-                <TableCell>Fecha Inicio</TableCell>
-                <TableCell>Fecha Fin</TableCell>
-                <TableCell>Duración</TableCell>
-                <TableCell align="center">Acciones</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {periodos.map((periodo) => (
+      <TableContainer component={Paper} style={{ marginTop: 20 }}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell align="center">Nombre del Periodo</TableCell>
+              <TableCell align="center">Fecha de Inicio</TableCell>
+              <TableCell align="center">Fecha de Fin</TableCell>
+              <TableCell align="center">Duración (días)</TableCell>
+              <TableCell align="center">Acciones</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {periodos.length > 0 ? (
+              periodos.map((periodo) => (
                 <TableRow key={periodo._id}>
-                  <TableCell>{periodo.nombre_etapa}</TableCell>
-                  <TableCell align="center">{periodo.numero_etapa}</TableCell>
+                  <TableCell align="center">{periodo.nombre_etapa}</TableCell>
                   <TableCell align="center">
                     {formatDate(periodo.fechaInicio)}
                   </TableCell>
@@ -116,12 +123,17 @@ const PeriodosElectivos = () => {
                     </div>
                   </TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </div>
-
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={5} align="center">
+                  No se encontraron períodos electivos.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
       <PeriodoForm
         open={openPeriodoModal}
         onClose={handleClosePeriodoModal}
@@ -129,8 +141,8 @@ const PeriodosElectivos = () => {
           const data = await getPeriodos();
           setPeriodos(data || []);
         }}
-      />
 
+      />
       <DeletePeriodoModal
         open={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}

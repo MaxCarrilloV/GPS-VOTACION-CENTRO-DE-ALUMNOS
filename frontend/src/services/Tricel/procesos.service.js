@@ -10,7 +10,13 @@ export const getProcesos = async () => {
       return data.data;
     }
   } catch (error) {
+    if (error.response && error.response.status === 404) {
+      // Si el backend devuelve 404, retornamos un array vacío
+      //para evitar el error process is undefined
+      return [];
+    }
     console.log(error);
+    throw error;
   }
 };
 
@@ -27,9 +33,9 @@ export const createProceso = async (proceso) => {
   }
 };
 
-export const updateFinalizadoProceso = async (id, proceso) => {
+export const updateFinalizadoProceso = async (id, finalizado) => {
   try {
-    const response = await instance.put(`/proceso/finalizado/${id}`, proceso);
+    const response = await instance.put(`/proceso/finalizado/${id}`, { finalizado });
     console.log("response: ", response);
     const { status, data } = response;
     if (status === 200) {
@@ -37,6 +43,7 @@ export const updateFinalizadoProceso = async (id, proceso) => {
     }
   } catch (error) {
     console.log(error);
+    throw error; 
   }
 };
 
@@ -50,5 +57,6 @@ export const deleteProceso = async (id) => {
     }
   } catch (error) {
     console.log(error);
+    throw error;
   }
 };
