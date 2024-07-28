@@ -58,7 +58,7 @@ function MiPerfil() {
                 <Grid item xs={12} display="flex" justifyContent="center" p={2}>
                     <Avatar
                         alt="Imagen Perfil"
-                        src={`http://localhost:5000${usuario.profileImage}`} // Aquí se usa la URL de la imagen de perfil del usuario
+                        src={`http://localhost:1245${usuario.profileImage}`} // Aquí se usa la URL de la imagen de perfil del usuario
                         sx={{ width: 200, height: 200, objectFit: 'cover', boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)' }}
                     />
                 </Grid>
