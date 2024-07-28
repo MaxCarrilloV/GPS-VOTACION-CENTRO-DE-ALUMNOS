@@ -228,7 +228,7 @@ export default function LayoutUser({ children }) {
                         <Typography textAlign="center" sx={{ fontSize: '14px', paddingRight: 1, color: '#fff'}}>{usuario.username}</Typography>
                         <Avatar
                                 alt="Imagen Perfil"
-                                src={`http://localhost:1245${usuario.profileImage}`} 
+                                src={`http://146.83.198.35:1245${usuario.profileImage}`} 
                                 sx={{ width: 40, height: 40, objectFit: 'cover', backgroundColor: '#e0e0e0'}}
                             />
                     </Button>
