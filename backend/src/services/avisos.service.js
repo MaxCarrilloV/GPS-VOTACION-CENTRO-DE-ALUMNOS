@@ -3,6 +3,7 @@
 const Aviso = require("../models/avisos.model.js");
 const Constants = require("../constants/avisos.constants.js");
 const { handleError } = require("../utils/errorHandler");
+const notificacionService = require("./notificacion.service.js");
 
 async function getAvisos() {
     try {
@@ -37,6 +38,8 @@ async function createAviso(aviso) {
             fechaPublicacion: new Date(),
         });
         await newAviso.save();
+        await notificacionService.notificationAviso(newAviso);
+        
         return [newAviso, null];
     } catch (error) {
         handleError(error, "avisos.service -> createAviso");

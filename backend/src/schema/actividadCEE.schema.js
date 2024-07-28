@@ -18,14 +18,18 @@ const actividadCEEBodySchema = Joi.object({
         "date.base": "La fecha debe ser de tipo date.",
         "any.required": "La fecha es obligatoria.",
     }),
+    hora: Joi.string().required().messages({
+        "string.empty": "La hora no puede estar vacía.",
+        "any.required": "La hora es obligatoria.",
+        "string.base": "La hora debe ser de tipo string.",
+    }),
     lugar: Joi.string().required().messages({
         "string.empty": "El lugar no puede estar vacío.",
         "any.required": "El lugar es obligatorio.",
         "string.base": "El lugar debe ser de tipo string.",
     }),
-    completado: Joi.boolean().required().messages({
+    completado: Joi.boolean().messages({
         "boolean.base": "El campo completado debe ser de tipo boolean.",
-        "any.required": "El campo completado es obligatorio.",
     }),
     tipo: Joi.string().valid(...ACTIVIDADES).required().messages({
         "string.empty": "El tipo no puede estar vacío.",

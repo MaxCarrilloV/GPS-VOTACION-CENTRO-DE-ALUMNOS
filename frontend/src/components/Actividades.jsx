@@ -21,7 +21,7 @@ const Actividades = () => {
         const fetchActividades = async () => {
             try {
                 const { data } = await avisoService.getAllActivities();
-                const actividadesOrdenadas = data.data.sort((a, b) => new Date(b.fechaPublicacion) - new Date(a.fechaPublicacion));
+                const actividadesOrdenadas = data.data.sort((a, b) => new Date(b.CreatedAt) - new Date(a.CreatedAt));
                 setActividades(actividadesOrdenadas);
             } catch (error) {
                 console.error("Error al obtener las actividades:", error);
@@ -36,6 +36,7 @@ const Actividades = () => {
         nombre: '',
         descripcion: '',
         fecha: '',
+        hora: '',
         lugar: '',
         tipo: ''
     });
@@ -48,10 +49,6 @@ const Actividades = () => {
 
     const handleChange = (e) => {
         setActividad({ ...actividad, [e.target.name]: e.target.value });
-    };
-
-    const handleDateChange = (date) => {
-        setActividad({ ...actividad, fecha: date });
     };
 
     const handleSubmit = (e) => {
@@ -74,7 +71,6 @@ const Actividades = () => {
 
     return(
         <>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
             <Grid container alignItems="center" spacing={2}>
                 <Grid item>
                     <h1>Actividades</h1>
@@ -115,9 +111,29 @@ const Actividades = () => {
                             value={actividad.descripcion}
                             onChange={handleChange}
                         />
-                        <DatePicker
+                        <TextField
+                            margin="dense"
+                            id="fecha"
+                            name="fecha"
                             label="Fecha"
-                            onChange={handleDateChange}
+                            type="date"
+                            fullWidth
+                            InputLabelProps={{ shrink: true }}
+                            variant="standard"
+                            value={actividad.fecha}
+                            onChange={handleChange}
+                        />
+                        <TextField
+                            margin="dense"
+                            id="hora"
+                            name="hora"
+                            label="Hora"
+                            type="time"
+                            fullWidth
+                            InputLabelProps={{ shrink: true }}
+                            variant="standard"
+                            value={actividad.hora}
+                            onChange={handleChange}
                         />
                         <TextField
                             autoFocus
@@ -162,7 +178,6 @@ const Actividades = () => {
                 </ListItem>
             ))}
         </List>
-            </LocalizationProvider>
         </>
     );
 

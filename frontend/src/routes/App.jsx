@@ -10,7 +10,6 @@ function App() {
       <Typography variant="h4" gutterBottom>
         Inicio
       </Typography>
-      <Avisos />
     </Box>
   );
 }
