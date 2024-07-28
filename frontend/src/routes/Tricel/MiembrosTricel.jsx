@@ -74,7 +74,7 @@ function Tricel() {
                                 {tricel.map((item) => (
                                     <TableRow key={item._id}>
                                         <TableCell>
-                                            <Avatar alt={item.username} src={`http://localhost:1245${item.profileImage}`} />
+                                            <Avatar alt={item.username} src={`http://146.83.198.35:1245${item.profileImage}`} />
                                         </TableCell>
                                         <TableCell>{item.username}</TableCell>
                                         <TableCell>{item.email}</TableCell>
