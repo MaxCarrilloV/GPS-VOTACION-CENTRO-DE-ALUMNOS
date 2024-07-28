@@ -32,6 +32,8 @@ import { useAuth } from '../context/AuthContext';
 import { useEffect } from 'react';
 import { getUserByEmail } from '../services/user.service';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import SendIcon from '@mui/icons-material/Send';
+import Send from '@mui/icons-material/Send';
 
 const drawerWidth = 240;
 
@@ -142,7 +144,7 @@ export default function LayoutUser({ children }) {
     { text: 'Votaciones', icon: <HowToVoteIcon />, link: '/votacionesUser' },
     { text: 'Actividades', icon: <StarsIcon />},
     {text: 'Sube tu Publicación', icon: <AddCircleIcon />, link: '/crearpost'},
-    
+    {text: 'Postular Lista', icon: <Send/>, link: '/postular'},
   ];
 
   const { user }  = useAuth();

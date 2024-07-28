@@ -1,3 +1,4 @@
+// src/routes/Tricel/ListaGanadora.jsx
 import React from "react";
 
 const ListaGanadora = () => {
