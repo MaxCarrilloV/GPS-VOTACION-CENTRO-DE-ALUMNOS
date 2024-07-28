@@ -8,8 +8,8 @@ const authenticationMiddleware = require("../middlewares/authentication.middlewa
 const router = express.Router();
 router.use(authenticationMiddleware);
 
-router.get("/", authorizationMiddleware.isMiembroCee, actividadCEEController.getActividades);
-router.get("/:id", authorizationMiddleware.isMiembroCee, actividadCEEController.getActividadById);
+router.get("/", actividadCEEController.getActividades);
+router.get("/:id", actividadCEEController.getActividadById);
 
 router.post("/", authorizationMiddleware.isMiembroCee, actividadCEEController.createActividad);
 
