@@ -59,21 +59,25 @@ async function createVotacion(votacion) {
     const offset = fechaActual.getTimezoneOffset();
     fechaActual.setTime(fechaActual.getTime() - offset * 60 * 1000);
 
-    if (fechaInicio <= fechaActual) return [null, "La fecha de inicio debe ser mayor a la fecha actual"];
-
-    if (fechaFin <= fechaActual) return [null, "La fecha de fin debe ser menor a la fecha actual"];
-
-    if (fechaInicio >= fechaFin) return [null, "La fecha de inicio debe ser menor a la fecha de fin"];
     //la fecha de inicio no debe superar los 5 dias
     const fechaInicioLimite = new Date(fechaActual);
     fechaInicioLimite.setDate(fechaInicioLimite.getDate() + 5);
     const inicio = new Date(fechaInicio);
+    const Fin = new Date(fechaFin);
+
+    if (inicio <= fechaActual) return [null, "La fecha de inicio debe ser mayor a la fecha actual"];
+
+    if (Fin <= fechaActual) return [null, "La fecha de fin debe ser menor a la fecha actual"];
+
+    if (fechaInicio >= fechaFin) return [null, "La fecha de inicio debe ser menor a la fecha de fin"];
+
+
     if (fechaInicioLimite < inicio) return [null, "La fecha de inicio no debe superar los 5 días"];
 
     //la fecha de fin no debe superar a la fecha de inicio por mas de 5 dias
     const fechaFinLimite = new Date(fechaInicio);
     fechaFinLimite.setDate(fechaFinLimite.getDate() + 5);
-    const Fin = new Date(fechaFin);
+  
     if (fechaFinLimite < Fin) return [null, "La fecha de fin no debe superar los 5 días de la fecha de inicio"];
 
     const newVotacion = new Votacion({
