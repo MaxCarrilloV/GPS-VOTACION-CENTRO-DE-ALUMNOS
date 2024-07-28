@@ -8,35 +8,58 @@ import {
   Select,
   TextField,
   Typography,
+  IconButton,
 } from "@mui/material";
-import { createPeriodo } from "../services/Tricel/periodos.service";
-import { getProcesos } from "../services/Tricel/procesos.service";
-import toast from "react-hot-toast";
+import CloseIcon from "@mui/icons-material/Close"; 
+import toast, { Toaster } from "react-hot-toast"; 
+import { createPeriodo } from "../../services/Tricel/periodos.service";
+import { getProcesos } from "../../services/Tricel/procesos.service";
+import { format } from "date-fns";
+import { toZonedTime } from "date-fns-tz";
 
 const PERIODOS = [
   { nombre_etapa: "Periodo de postulaciones", duracion: 5, numero_etapa: 1 },
   { nombre_etapa: "Periodo de revisión", duracion: 2, numero_etapa: 2 },
-  { nombre_etapa: "Periodo de información y propaganda", duracion: 5, numero_etapa: 3 },
-  { nombre_etapa: "Periodo preparatorio para votación", duracion: 2, numero_etapa: 4 },
+  {
+    nombre_etapa: "Periodo de información y propaganda",
+    duracion: 5,
+    numero_etapa: 3,
+  },
+  {
+    nombre_etapa: "Periodo preparatorio para votación",
+    duracion: 2,
+    numero_etapa: 4,
+  },
   { nombre_etapa: "Acto de votación", duracion: 2, numero_etapa: 5 },
-  { nombre_etapa: "Conteo de votos y análisis de resultados", duracion: 1, numero_etapa: 6 },
+  {
+    nombre_etapa: "Conteo de votos y análisis de resultados",
+    duracion: 1,
+    numero_etapa: 6,
+  },
   { nombre_etapa: "Publicación de resultados", duracion: 1, numero_etapa: 7 },
   { nombre_etapa: "Segunda vuelta de votación", duracion: 2, numero_etapa: 8 },
-  { nombre_etapa: "Publicación de resultados de segunda vuelta", duracion: 1, numero_etapa: 9 },
+  {
+    nombre_etapa: "Publicación de resultados de segunda vuelta",
+    duracion: 1,
+    numero_etapa: 9,
+  },
 ];
 
 const PeriodoForm = ({ open, onClose, fetchPeriodos }) => {
+  // Añadido onSuccess
   const [nombreEtapa, setNombreEtapa] = useState("");
   const [fechaInicio, setFechaInicio] = useState("");
   const [modalMessage, setModalMessage] = useState("");
   const [procesoId, setProcesoId] = useState(null);
   const [procesoNombre, setProcesoNombre] = useState("");
-  const [errors, setErrors] = useState({ nombreEtapa: false, fechaInicio: false });
+  const [errors, setErrors] = useState({
+    nombreEtapa: false,
+    fechaInicio: false,
+  });
 
   useEffect(() => {
     const fetchProcesos = async () => {
       const procesos = await getProcesos();
-
       const activeProceso = procesos.find((proceso) => !proceso.finalizado);
       if (activeProceso) {
         setProcesoId(activeProceso._id);
@@ -45,59 +68,64 @@ const PeriodoForm = ({ open, onClose, fetchPeriodos }) => {
         setModalMessage("No existe un proceso electivo vigente");
       }
     };
-
     fetchProcesos();
   }, []);
 
   const handleSubmitPeriodo = async () => {
-    const newErrors = { nombreEtapa: false, fechaInicio: false };
-
-    if (!nombreEtapa) newErrors.nombreEtapa = true;
-    if (!fechaInicio) newErrors.fechaInicio = true;
-
-    setErrors(newErrors);
-
-    if (!nombreEtapa || !fechaInicio || !procesoId) {
-      toast.error("Todos los campos son obligatorios");
+    if (!nombreEtapa || !fechaInicio) {
+      setErrors({
+        nombreEtapa: !nombreEtapa,
+        fechaInicio: !fechaInicio,
+      });
       return;
     }
 
-    // Convertir fechaInicio de "dd-mm-yyyy" a "yyyy-mm-dd"
-    const [day, month, year] = fechaInicio.split("-");
-    const formattedFechaInicio = `${year}-${month}-${day}`;
+    const timeZone = "America/Santiago";
+    const zonedDate = toZonedTime(fechaInicio, timeZone);
+    const formattedFechaInicio = format(zonedDate, "dd-MM-yyyy", { timeZone });
 
-    const newPeriodo = {
+    const periodo = {
       nombre_etapa: nombreEtapa,
       fechaInicio: formattedFechaInicio,
-      procesoId,
+      procesoId: procesoId,
     };
 
     try {
-      const response = await createPeriodo(newPeriodo);
+      console.log(periodo);
+      const response = await createPeriodo(periodo);
 
-      if (response.status && response.status !== 200) {
-        setModalMessage(response.data.message);
-        toast.error(response.data.message);
-      } else {
-        setModalMessage("");
+      if (response.status === 200 || response.status === 201) {
+        // Si la creación es exitosa
+        toast.success("Periodo creado con éxito.", {
+          duration: 2000,
+          isClosable: true,
+        });
+
+        onClose();
         fetchPeriodos();
-        handleClose();
-        toast.success("Periodo creado exitosamente!");
+      } else {
+        // Si ocurre un error
+        const errorMessage =
+          response.data?.message || "Error al crear el periodo";
+        toast.error(`Error: ${errorMessage}`, {
+          duration: 5000,
+          isClosable: true,
+        });
       }
     } catch (error) {
-      toast.error("Ocurrió un error al crear el periodo.");
+      const errorMessage =
+        error.response?.data?.message || "Ocurrió un error inesperado.";
+      toast.error(`Error: ${errorMessage}`, {
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
   const handleClose = () => {
+    onClose();
     setNombreEtapa("");
     setFechaInicio("");
-    setModalMessage("");
-    setErrors({ nombreEtapa: false, fechaInicio: false });
-    onClose();
-  };
-
-  const handleBack = () => {
     setModalMessage("");
     setErrors({ nombreEtapa: false, fechaInicio: false });
   };
@@ -112,24 +140,34 @@ const PeriodoForm = ({ open, onClose, fetchPeriodos }) => {
           transform: "translate(-50%, -50%)",
           width: 400,
           bgcolor: "background.paper",
-          border: "2px solid #000",
           boxShadow: 24,
           p: 4,
+          borderRadius: 2,
         }}
       >
-        <Typography variant="h6" component="h2">
-          Crear Nuevo Periodo
-        </Typography>
+        
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          sx={{
+            position: "absolute",
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
         {modalMessage ? (
           <>
-            <Typography variant="subtitle1" component="div" color="error">
+            <Typography variant="subtitle1" component="div">
               {modalMessage}
             </Typography>
             <Button
               variant="contained"
               color="primary"
-              onClick={handleBack}
-              style={{ marginTop: "20px" }}
+              onClick={onClose}
+              sx={{ mt: 2 }}
             >
               Volver
             </Button>
@@ -144,14 +182,17 @@ const PeriodoForm = ({ open, onClose, fetchPeriodos }) => {
               onChange={(e) => setNombreEtapa(e.target.value)}
               fullWidth
               displayEmpty
-              margin="normal"
+              margin="dense"
               error={errors.nombreEtapa}
             >
               <MenuItem value="" disabled>
                 Seleccionar nombre del periodo
               </MenuItem>
               {PERIODOS.map((periodo) => (
-                <MenuItem key={periodo.numero_etapa} value={periodo.nombre_etapa}>
+                <MenuItem
+                  key={periodo.numero_etapa}
+                  value={periodo.nombre_etapa}
+                >
                   {periodo.nombre_etapa}
                 </MenuItem>
               ))}
@@ -160,23 +201,23 @@ const PeriodoForm = ({ open, onClose, fetchPeriodos }) => {
               <FormHelperText error>Campo obligatorio</FormHelperText>
             )}
             <TextField
-              label="Fecha de Inicio (dd-mm-yyyy)"
-              name="fechaInicio"
+              label="Fecha de Inicio"
+              type="date"
               value={fechaInicio}
               onChange={(e) => setFechaInicio(e.target.value)}
               fullWidth
-              margin="normal"
+              margin="dense"
+              InputLabelProps={{
+                shrink: true,
+              }}
               error={errors.fechaInicio}
-              placeholder="dd-mm-yyyy"
+              helperText={errors.fechaInicio && "Campo obligatorio"}
             />
-            {errors.fechaInicio && (
-              <FormHelperText error>Campo obligatorio</FormHelperText>
-            )}
             <Button
               variant="contained"
               color="primary"
               onClick={handleSubmitPeriodo}
-              style={{ marginTop: "20px" }}
+              sx={{ mt: 2 }}
             >
               Crear
             </Button>
