@@ -30,12 +30,10 @@ export const createPeriodo = async (periodo) => {
 export const updatePeriodo = async (id, periodo) => {
   try {
     const response = await instance.put(`/periodo/${id}`, periodo);
-    const { status, data } = response;
-    if (status === 200) {
-      return data.data;
-    }
+    return response; //retornar la respuesta completa
   } catch (error) {
-    console.error(error);
+    console.error("Error al actualizar el periodo:", error.response);
+    return error.response; 
   }
 };
 
