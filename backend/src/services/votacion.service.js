@@ -50,7 +50,7 @@ async function createVotacion(votacion) {
         const soloLetrasOpcion = /^[a-zA-Z .áéíóúÁÉÍÓÚñÑüÜ]+$/;
         const contieneLetraOpcion = /[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]/.test(opcion.opcion);
     
-        if (!contieneLetraOpcion || !regexOpcion.test(opcion.opcion) || !soloLetrasOpcion.test(opcion.opcion)) {
+        if (!contieneLetraOpcion || (!regexOpcion.test(opcion.opcion) && !soloLetrasOpcion.test(opcion.opcion))) {
             return [null, "La opción solo puede contener letras, números, espacios y puntos"];
         }
     }
