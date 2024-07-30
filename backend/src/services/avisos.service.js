@@ -4,6 +4,7 @@ const Aviso = require("../models/avisos.model.js");
 const Constants = require("../constants/avisos.constants.js");
 const { handleError } = require("../utils/errorHandler");
 const notificacionService = require("./notificacion.service.js");
+const cron = require("node-cron");
 
 async function getAvisos() {
     try {
@@ -58,6 +59,18 @@ async function updateAviso(avisoId, aviso) {
         handleError(error, "avisos.service -> updateAviso");
     }
 }
+
+cron.schedule("0 0 * * *", async () => {
+    try {
+        const twoMonthsAgo = new Date();
+        twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 2);
+
+        const avisos = await Aviso.deleteMany({ fechaPublicacion: { $lt: twoMonthsAgo } });
+        if (avisos.length === 0) return;
+    } catch (error) {
+        handleError(error, "avisos.service -> cron.schedule");
+    }
+});
 
 async function deleteAviso(avisoId) {
     try {
