@@ -4,6 +4,8 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, Grid, IconButton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Swal from 'sweetalert2';
 
 
 import avisoService from "../services/Tricel/aviso.service";
@@ -43,6 +45,32 @@ const Avisos = () => {
         setAviso({ ...aviso, [e.target.name]: e.target.value });
     };
 
+
+    function handleDeleteAviso(id) {
+        Swal.fire({
+            title: "¿Estás seguro?",
+            text: "No podrás revertir la decisión!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Si, borrar!",
+            cancelButtonText: "Cancelar",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                avisoService.deleteAviso(id).then((response) => {
+                    Swal.fire({
+                        title: "Aviso borrado",
+                        icon: "success",
+                    });
+                    setAvisos((prevAvisos) => {
+                        return prevAvisos.filter((aviso) => aviso._id !== id);
+                    });
+                });
+            }
+        });
+    }
+
     const abrirDialogo = () => {
         setAbierto(true);
     };
@@ -76,6 +104,8 @@ const Avisos = () => {
                         <IconButton onClick={abrirDialogo} aria-label="crear aviso">
                             <AddIcon />
                         </IconButton>
+                    <Grid item>
+                    </Grid>
                     </Grid>
                 )}
         </Grid>
@@ -136,6 +166,11 @@ const Avisos = () => {
                 {avisos.map(aviso => (
                     <ListItem key={aviso._id}>
                         <ListItemText primary={aviso.titulo} secondary={aviso.contenido} />
+                        {tieneRolAdecuado && (
+                            <IconButton onClick={() => handleDeleteAviso(aviso._id)} aria-label="borrar aviso">
+                                <DeleteIcon />
+                            </IconButton>
+                        )}
                     </ListItem>
                 ))}
             </List>

@@ -81,7 +81,7 @@ async function updateActividad(req, res) {
 async function deleteActividad(req, res) {
     try {
         const { params } = req;
-        const { error: paramsError } = ActividadSchema.actividadIdSchema.validate(params);
+        const { error: paramsError } = ActividadSchema.actividadCEEIdSchema.validate(params);
         if (paramsError) return respondError(req, res, 400, paramsError.message);
 
         const [deletedActividad, actividadError] = await ActividadService.deleteActividad(params.id);
