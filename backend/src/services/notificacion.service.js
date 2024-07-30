@@ -30,7 +30,7 @@ async function notificationAviso(aviso) {
     users.forEach(user => {
         if (user.roles[0].name === "user") {
             const mailOptions = {
-                from: `TRICEL`,
+                from: 'TRICEL',
                 to: user.email,
                 subject: aviso.titulo,
                 html:`<html>
@@ -54,7 +54,7 @@ async function notificationActividad(actividad) {
     users.forEach(user => {
         if (user.roles[0].name === "user") {
             const mailOptions = {
-                from: `TRICEL`,
+                from: 'CEE',
                 to: user.email,
                 subject: actividad.nombre,
                 html:`<html>
