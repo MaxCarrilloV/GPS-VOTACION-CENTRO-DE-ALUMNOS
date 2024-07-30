@@ -6,6 +6,10 @@ const { handleError } = require("../utils/errorHandler");
 const notificacionService = require("./notificacion.service.js");
 const cron = require("node-cron");
 
+const soloLetras = /^[a-zA-Z\s]+$/;
+const letrasYNumeros = /^(?=.*[a-zA-Z])[a-zA-Z0-9\s]+$/;
+const letrasNumerosYDosPuntos = /^[a-zA-Z0-9\s:]+$/;
+
 async function getAvisos() {
     try {
         const avisos = await Aviso.find();
@@ -32,6 +36,10 @@ async function getAvisoById(avisoId) {
 async function createAviso(aviso) {
     try {
         const { titulo, tipo, contenido } = aviso;
+
+        if (soloLetras.test(titulo) === false) return [null, "El título solo puede contener letras"];
+        if (letrasNumerosYDosPuntos.test(contenido) === false) return [null, "El contenido solo puede contener letras, números y dos puntos"];
+
         const newAviso = new Aviso({
             titulo,
             tipo,
