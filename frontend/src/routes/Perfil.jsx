@@ -52,7 +52,7 @@ function Perfil() {
                     >
                         <Avatar
                             alt="Imagen Perfil"
-                            src={`http://localhost:5000${usuario.profileImage}`}
+                            src={`http://146.83.198.35:1245${usuario.profileImage}`}
                             sx={{
                             position: 'absolute',
                             top: 0,

@@ -54,6 +54,32 @@ async function createPostulacion(req, res) {
   }
 }
 
+async function updatePostulacion(req, res) {
+  try {
+    const { body, params } = req;
+
+
+    const updatedPostulacion = await PostulacionService.updatePostulacion(
+      params.id,
+      body,
+    );
+
+    if (!updatedPostulacion) {
+      return respondError(
+        req,
+        res,
+        400,
+        "La postulación no fue actualizada correctamente",
+      );
+    }
+    respondSuccess(req, res, 200, updatedPostulacion);
+  } catch (error) {
+    handleError(error, "postulacion.controller -> updatePostulacion");
+    respondError(req, res, 500, "No se actualizo la postulacion");
+  }
+}
+
+
 async function deletePostulacion(req, res) {
   try {
     const { params } = req;
@@ -79,4 +105,4 @@ async function deletePostulacion(req, res) {
   }
 }
 
-module.exports = { getPostulaciones, createPostulacion, deletePostulacion };
+module.exports = { getPostulaciones, createPostulacion,updatePostulacion, deletePostulacion };

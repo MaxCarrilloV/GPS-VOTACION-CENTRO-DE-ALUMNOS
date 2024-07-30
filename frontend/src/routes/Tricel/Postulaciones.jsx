@@ -3,8 +3,10 @@ import {
   Table, TableBody, TableCell, TableContainer, 
   TableHead, TableRow, Paper, Button, Modal, Box, Typography, Alert 
 } from '@mui/material';
-import { getPostulaciones } from '../../services/tricel/postulaciones.service';
+import { getPostulaciones, updatePostulacion } from '../../services/tricel/postulaciones.service';
 import axios from 'axios';
+import { toast } from 'react-hot-toast';
+
 
 const Postulaciones = () => {
   const [postulaciones, setPostulaciones] = useState([]);
@@ -28,22 +30,74 @@ const Postulaciones = () => {
     fetchPostulaciones();
   }, []);
 
-  const handleAccept = (id) => {
-    console.log(`Accepting postulation with id ${id}`);
-    // Implementar lógica para aceptar la postulación
+  const handleAccept = async (id) => {
+    try {
+      const response = await updatePostulacion(id, { estado: 'Aceptado' });
+      if (response.status === 200) {
+        setPostulaciones((prevPostulaciones) =>
+          prevPostulaciones.map((postulacion) =>
+            postulacion._id === id ? { ...postulacion, estado: 'Aceptado' } : postulacion
+          )
+        );
+        toast.success("Postulación aceptada con éxito.", {
+          duration: 2000,
+          isClosable: true,
+        });
+      } else {
+        const errorMessage =
+          response.data?.message || "Error al aceptar la postulación";
+        toast.error(`Error: ${errorMessage}`, {
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Ocurrió un error inesperado.";
+      toast.error(`Error: ${errorMessage}`, {
+        duration: 5000,
+        isClosable: true,
+      });
+    }
   };
-
-  const handleReject = (id) => {
-    console.log(`Rejecting postulation with id ${id}`);
-    // Implementar lógica para rechazar la postulación (pendienteeee)
+  
+  const handleReject = async (id) => {
+    try {
+      const response = await updatePostulacion(id, { estado: 'Rechazado' });
+      if (response.status === 200) {
+        setPostulaciones((prevPostulaciones) =>
+          prevPostulaciones.map((postulacion) =>
+            postulacion._id === id ? { ...postulacion, estado: 'Rechazado' } : postulacion
+          )
+        );
+        toast.success("Postulación rechazada con éxito.", {
+          duration: 2000,
+          isClosable: true,
+        });
+      } else {
+        const errorMessage =
+          response.data?.message || "Error al rechazar la postulación";
+        toast.error(`Error: ${errorMessage}`, {
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Ocurrió un error inesperado.";
+      toast.error(`Error: ${errorMessage}`, {
+        duration: 5000,
+        isClosable: true,
+      });
+    }
   };
+  
 
   const handleDetail = async (postulacion) => {
     setSelectedPostulacion(postulacion);
     setOpen(true);
 
     try {
-      // el campo 'programa_trabajo' contiene la ruta relativa del archivo
       const res = await axios.get(`http://localhost:5000${postulacion.programa_trabajo}`, { responseType: 'blob' });
       const pdfBlob = new Blob([res.data], { type: 'application/pdf' });
       const pdfUrl = URL.createObjectURL(pdfBlob);

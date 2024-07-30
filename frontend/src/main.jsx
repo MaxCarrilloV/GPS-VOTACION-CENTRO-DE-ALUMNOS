@@ -23,6 +23,7 @@ import Perfil from './routes/Perfil.jsx';
 import MiPerfil from './routes/MiPerfil/MiPerfil.jsx';
 import EditarMiPerfil from './routes/MiPerfil/EditarMiPerfil.jsx';
 import CrearPost from './routes/CrearPost.jsx';
+import PostulacionForm from "./routes/PostulacionForm.jsx";
 
 const router = createBrowserRouter([
   {
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
         element: <App />,
       },
       {
+        path: "/postular",
+        element: <PostulacionForm />,
+      },
+      {
         path: "/tricel/postulaciones",
         element: <Postulaciones />,
       },
@@ -45,10 +50,6 @@ const router = createBrowserRouter([
       {
         path: "/tricel/periodos-electivos",
         element: <PeriodosElectivos/>
-      },
-      {
-        path: "/tricel/lista-ganadora",
-        element: <ListaGanadora />,
       },
       {
         path:'votaciones',

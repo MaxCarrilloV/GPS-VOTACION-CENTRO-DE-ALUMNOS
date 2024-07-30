@@ -32,6 +32,8 @@ import { useAuth } from '../context/AuthContext';
 import { useEffect } from 'react';
 import { getUserByEmail } from '../services/user.service';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import SendIcon from '@mui/icons-material/Send';
+import Send from '@mui/icons-material/Send';
 
 const drawerWidth = 240;
 
@@ -142,7 +144,7 @@ export default function LayoutUser({ children }) {
     { text: 'Votaciones', icon: <HowToVoteIcon />, link: '/votacionesUser' },
     { text: 'Actividades', icon: <StarsIcon />},
     {text: 'Sube tu Publicación', icon: <AddCircleIcon />, link: '/crearpost'},
-    
+    {text: 'Postular Lista', icon: <Send/>, link: '/postular'},
   ];
 
   const { user }  = useAuth();
@@ -226,7 +228,7 @@ export default function LayoutUser({ children }) {
                         <Typography textAlign="center" sx={{ fontSize: '14px', paddingRight: 1, color: '#fff'}}>{usuario.username}</Typography>
                         <Avatar
                                 alt="Imagen Perfil"
-                                src={`http://localhost:5000${usuario.profileImage}`} 
+                                src={`http://146.83.198.35:1245${usuario.profileImage}`} 
                                 sx={{ width: 40, height: 40, objectFit: 'cover', backgroundColor: '#e0e0e0'}}
                             />
                     </Button>
@@ -248,9 +250,9 @@ export default function LayoutUser({ children }) {
                     onClose={handleCloseUserMenu}
                 >
                     <MenuItem onClick={handleCloseUserMenu}>
-                    <Link to="/mi-perfil/" style={{ textDecoration: 'none', color: 'black' }}>
-                      <Typography textAlign="center">Mi perfil</Typography>
-                    </Link>
+                      <Link to="/mi-perfil/" style={{ textDecoration: 'none', color: 'black' }}>
+                        <Typography textAlign="center">Mi perfil</Typography>
+                      </Link>
                     </MenuItem>
                     <MenuItem key={"logout"} onClick={handleLogout}>
                         <Typography textAlign="center">Cerrar sesión</Typography>

@@ -28,6 +28,10 @@ import StarsIcon from '@mui/icons-material/Stars';
 import CircleIcon from '@mui/icons-material/Circle';
 import { logout } from "../services/auth.service";
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { useEffect } from 'react';
+import { getUserByEmail } from '../services/user.service';
+import HomeIcon from '@mui/icons-material/Home';
 
 const drawerWidth = 240;
 
@@ -132,6 +136,7 @@ export default function LayoutTricel({ children }) {
   };
 
 const menuItems = [
+    { text: 'Foro', icon: <HomeIcon />, link: '/foro'},
     { text: 'Tricel', icon: <ManageAccountsIcon />, link: '/tricel/miembros'},
     {
       text: 'Gestión de Elecciones',
@@ -140,11 +145,37 @@ const menuItems = [
         { text: 'Postulaciones', link: '/tricel/postulaciones' },
         { text: 'Procesos Electivos', link: '/tricel/procesos-electivos' },
         { text: 'Periodos Electivos', link: '/tricel/periodos-electivos' },
-        { text: 'Confirmar Lista Ganadora', link: '/tricel/lista-ganadora' },
+        
       ],
     },
     { text: 'Votaciones', icon: <HowToVoteIcon />, link: '/votaciones' },
   ];
+
+  const { user }  = useAuth();
+  const [usuario, setUsuario] = React.useState(null);
+  
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        if (user && user.email) {
+          const loadedUser = await getUserByEmail(user.email);
+          if (loadedUser && loadedUser.length > 0) {
+            setUsuario(loadedUser[0].user);
+          } else {
+            console.error('No se encontró ningún usuario.');
+          }
+        }
+      } catch (error) {
+        console.error('Error al obtener el usuario:', error.message);
+      }
+    };
+
+    fetchUser();
+  }, [user]);
+
+  if (!usuario) {
+    return <p>Cargando usuario...</p>; // Mensaje de carga mientras se carga el usuario
+  }
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -198,8 +229,12 @@ const menuItems = [
                     }}
                     >
                         <ArrowDropDownIcon sx={{ color: '#fff'}} />
-                        <Typography textAlign="center" sx={{ paddingRight: 1, color: '#fff'}}>Admin</Typography>
-                        <Avatar alt="Remy Sharp" />
+                        <Typography textAlign="center" sx={{ fontSize: '14px', paddingRight: 1, color: '#fff'}}>{usuario.username} (TRICEL)</Typography>
+                        <Avatar
+                                alt="Imagen Perfil"
+                                src={`http://146.83.198.35:1245${usuario.profileImage}`} 
+                                sx={{ width: 40, height: 40, objectFit: 'cover', backgroundColor: '#e0e0e0'}}
+                            />
                     </Button>
                 </Tooltip>
                 <Menu
@@ -218,6 +253,11 @@ const menuItems = [
                     open={Boolean(anchorElUser)}
                     onClose={handleCloseUserMenu}
                 >
+                    <MenuItem onClick={handleCloseUserMenu}>
+                      <Link to="/mi-perfil/" style={{ textDecoration: 'none', color: 'black' }}>
+                        <Typography textAlign="center">Mi perfil</Typography>
+                      </Link>
+                    </MenuItem>
                     <MenuItem key={"logout"} onClick={handleLogout}>
                         <Typography textAlign="center">Cerrar sesión</Typography>
                     </MenuItem>

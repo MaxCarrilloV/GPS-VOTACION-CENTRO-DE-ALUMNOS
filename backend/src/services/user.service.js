@@ -35,7 +35,7 @@ async function createUser(user) {
     const { username, email, password, roles } = user;
 
     // Verificar el dominio del correo
-    const dominiosAdmitidos = ['alumnos.ubiobio.cl', 'ubb.cl', 'email.com']; // Agrega los dominios permitidos aquí
+    const dominiosAdmitidos = ['alumnos.ubiobio.cl', 'ubb.cl']; // Agrega los dominios permitidos aquí
     const emailDominio = email.split('@')[1];
     if (!dominiosAdmitidos.includes(emailDominio)) {
       return [null, "Debes ingresar un correo institucional"];

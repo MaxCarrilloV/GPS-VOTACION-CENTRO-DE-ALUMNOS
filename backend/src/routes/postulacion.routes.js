@@ -23,6 +23,11 @@ router.post(
   authorizationMiddleware.hasRole("Apoderado de CEE"),
   postulacionController.createPostulacion,
 );
+router.put(
+  "/:id",
+  authorizationMiddleware.hasRole("Miembro de Tricel"),
+  postulacionController.updatePostulacion,
+);
 router.delete(
   "/:id",
   authorizationMiddleware.hasRole("Apoderado de CEE"),
