@@ -5,6 +5,10 @@ import { getUserByEmail } from '../services/user.service';
 import { useAuth } from '../context/AuthContext';
 import '../post.css';
 
+import Avisos from '../components/Avisos';
+import Actividades from '../components/Actividades';
+import { Grid } from '@mui/material';
+
 const Post = () => {
   const { postId } = useParams();
   const [post, setPost] = useState(null);
@@ -248,6 +252,10 @@ const Post = () => {
 
 
   return (
+    <Grid container spacing={2}>
+    <Grid item xs={3}>
+    </Grid>
+    <Grid item xs={6}>
     <div className="post-detail">
       <div className="post-card">
         <p><span style={{
@@ -301,6 +309,18 @@ const Post = () => {
         )}
       </div>
     </div>
+    </Grid>
+          <Grid item xs={3}>
+            <Grid container direction="column" spacing={2} justifyContent="flex-end">
+              <Grid item>
+                <Avisos />
+              </Grid>
+              <Grid item>
+                <Actividades />
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
   );
 };
 
