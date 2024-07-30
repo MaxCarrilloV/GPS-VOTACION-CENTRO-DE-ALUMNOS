@@ -38,9 +38,19 @@ const createActivity = (activityData) => {
     return instance.post('/actividades', activityData);
 };
 
+const deleteAviso = (id) => {
+    return instance.delete(`/avisos/${id}`);
+};
+
+const deleteActividad = (id) => {
+    return instance.delete(`/actividades/${id}`);
+}
+
 export default {
     getAllAdvices,
     getAllActivities,
     createAdvice,
-    createActivity
+    createActivity,
+    deleteAviso,
+    deleteActividad
 };

@@ -78,7 +78,7 @@ async function updateAviso(req, res) {
 async function deleteAviso(req, res) {
     try {
         const { params } = req;
-        const { error: paramsError } = AvisoSchema.avisoIdSchema.validate(params);
+        const { error: paramsError } = AvisoSchema.avisosIdSchema.validate(params);
         if (paramsError) return respondError(req, res, 400, paramsError.message);
 
         const [deletedAviso, avisoError] = await AvisoService.deleteAviso(params.id);

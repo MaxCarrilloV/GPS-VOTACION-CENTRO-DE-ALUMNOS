@@ -4,14 +4,10 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, MenuItem, Grid, IconButton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import dayjs from 'dayjs';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-
-
+import DeleteIcon from '@mui/icons-material/Delete';
 import avisoService from "../services/Tricel/aviso.service";
 import { useAuth } from "../context/AuthContext";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider/LocalizationProvider";
+import Swal from 'sweetalert2';
 
 const Actividades = () => {
 
@@ -50,6 +46,31 @@ const Actividades = () => {
     const handleChange = (e) => {
         setActividad({ ...actividad, [e.target.name]: e.target.value });
     };
+
+    function handleDeleteActividad(id) {
+        Swal.fire({
+            title: "¿Estás seguro?",
+            text: "No podrás revertir la decisión!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Si, borrar!",
+            cancelButtonText: "Cancelar",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                avisoService.deleteActividad(id).then((response) => {
+                    Swal.fire({
+                        title: "Actividad borrada",
+                        icon: "success",
+                    });
+                    setActividades((prevActividades) => {
+                        return prevActividades.filter((actividad) => actividad._id !== id);
+                    });
+                });
+            }
+        });
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -175,6 +196,11 @@ const Actividades = () => {
             {actividades.map(actividad => (
                 <ListItem key={actividad._id}>
                     <ListItemText primary={actividad.nombre} secondary={actividad.descripcion} />
+                    {tieneRolAdecuado && (
+                        <IconButton onClick={() => handleDeleteActividad(actividad._id)} aria-label="borrar actividad">
+                            <DeleteIcon />
+                        </IconButton>
+                    )}
                 </ListItem>
             ))}
         </List>
