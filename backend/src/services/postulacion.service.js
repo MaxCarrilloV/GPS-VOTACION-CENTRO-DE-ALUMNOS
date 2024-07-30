@@ -24,7 +24,7 @@ async function validateName(nombre, procesoId) {
   try {
     const postulaciones = await Postulacion.find({ procesoId: procesoId });
     for (let postulacion of postulaciones) {
-      const nombreSinPrefijo = postulacion.nombre.split(" - ")[1]; 
+      const nombreSinPrefijo = postulacion.nombre.split(" - ")[1];
       if (nombreSinPrefijo === nombre) return false;
     }
     return true;
@@ -89,6 +89,24 @@ async function createPostulacion(postulacion, programa_trabajo) {
   }
 }
 
+async function updatePostulacion(postulacion) {
+  try {
+    const { _id, estado } = postulacion;
+
+    const postulacionUpdated = await Postulacion.findByIdAndUpdate(
+      _id,
+      { estado: estado },
+      { new: true },
+    );
+    if (!postulacionUpdated)
+      return [null, "Error al actualizar la postulacion"];
+
+    return [postulacionUpdated, null];
+  } catch (error) {
+    handleError(error, "postulacion.service -> updatePostulacion");
+  }
+}
+
 async function deletePostulacion(id) {
   try {
     const postulacionFound = await Postulacion.findById(id);
@@ -126,5 +144,6 @@ async function deletePostulacion(id) {
 module.exports = {
   getPostulaciones,
   createPostulacion,
+  updatePostulacion,
   deletePostulacion,
 };
