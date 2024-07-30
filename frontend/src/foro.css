@@ -22,6 +22,11 @@
     margin: 0;
   }
 
+  .post-card h2 a {
+    color: black;
+    text-decoration: underline;
+  }
+
   .card-content {
     color: black;
   }
