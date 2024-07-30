@@ -101,7 +101,7 @@ const UpdateProfileForm = ({ user, onCancel }) => {
                         <Grid item xs={12} display="flex" justifyContent="center">
                             <Avatar
                                 alt="Imagen Perfil"
-                                src={imagePreview || `http://localhost:5000${user.profileImage}`} 
+                                src={imagePreview || `http://146.83.198.35:1245${user.profileImage}`} 
                                 sx={{ width: 200, height: 200, objectFit: 'cover', boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)' }}
                             />
                         </Grid>

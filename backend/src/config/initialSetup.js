@@ -64,22 +64,34 @@ async function createUsers() {
 function cerrarVotacion() {
   cron.schedule('* * * * *', async () => {
     try {
-        const votaciones = await Votacion.find();
-        const now = new Date();
-        
-        votaciones.forEach(async (votacion) => {
-            if (votacion.fechaFin < now && votacion.estado === 'Abierta') {
-                votacion.estado = 'Cerrada';
-                await votacion.save();
-                console.log(`Votación "${votacion.titulo}" cerrada automáticamente`);
-            } else if (votacion.fechaFin >= now && votacion.estado === 'Cerrada') {
-                votacion.estado = 'Abierta';
-                await votacion.save();
-                console.log(`Votación "${votacion.titulo}" reabierta automáticamente`);
-            }
-        });
+      const votaciones = await Votacion.find();
+      const now = new Date();
+      const offset = now.getTimezoneOffset();
+      now.setTime(now.getTime() - offset * 60 * 1000);
+
+      votaciones.forEach(async (votacion) => {
+        const fechaInicio = new Date(votacion.fechaInicio);
+        const offsetInicio = fechaInicio.getTimezoneOffset();
+        fechaInicio.setTime(fechaInicio.getTime() - offsetInicio * 60 * 1000);
+
+        const fechaFin = new Date(votacion.fechaFin);
+        const offsetFin = fechaFin.getTimezoneOffset();
+        fechaFin.setTime(fechaFin.getTime() - offsetFin * 60 * 1000);
+
+        if (fechaFin < now && votacion.estado === 'Abierta') {
+            votacion.estado = 'Cerrada';
+            await votacion.save();
+            console.log(`Votación "${votacion.titulo}" cerrada automáticamente`);
+        }
+
+        if (fechaInicio < now && votacion.estado === 'Pendiente') {
+          votacion.estado = "Abierta";
+          await votacion.save();
+          console.log(`Votación "${votacion.titulo}" abierta automáticamente`);
+        }
+      });
     } catch (err) {
-        console.error('Error al actualizar el estado de las votaciones:', err);
+      console.error('Error al actualizar el estado de las votaciones:', err);
     }
   });
 }

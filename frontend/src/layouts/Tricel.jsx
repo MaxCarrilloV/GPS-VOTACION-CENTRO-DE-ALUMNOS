@@ -20,9 +20,9 @@ import Avatar from '@mui/material/Avatar';
 import { Button, Menu, MenuItem, Tooltip } from '@mui/material';
 import { Link } from 'react-router-dom';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import GroupIcon from '@mui/icons-material/Group';
+import PersonIcon from '@mui/icons-material/Person';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import ListAltIcon from '@mui/icons-material/ListAlt';
-import HomeIcon from '@mui/icons-material/Home';
 import HowToVoteIcon from '@mui/icons-material/HowToVote';
 import StarsIcon from '@mui/icons-material/Stars';
 import CircleIcon from '@mui/icons-material/Circle';
@@ -31,9 +31,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useEffect } from 'react';
 import { getUserByEmail } from '../services/user.service';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-import SendIcon from '@mui/icons-material/Send';
-import Send from '@mui/icons-material/Send';
+import HomeIcon from '@mui/icons-material/Home';
 
 const drawerWidth = 240;
 
@@ -109,7 +107,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   }),
 );
 
-export default function LayoutUser({ children }) {
+export default function LayoutTricel({ children }) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -135,16 +133,22 @@ export default function LayoutUser({ children }) {
   const handleLogout = () => {
     logout();
     navigate('/');
-};
+  };
 
-  const menuItems = [
-    {text: 'Foro', icon: <HomeIcon />, link: '/foro'},
-    { text: 'Tricel', icon: <GroupIcon />, link: '/tricel/miembros'},
-    {text: 'Listas', icon: <ListAltIcon />, link: '/listas'},
-    { text: 'Votaciones', icon: <HowToVoteIcon />, link: '/votacionesUser' },
-    { text: 'Actividades', icon: <StarsIcon />},
-    {text: 'Sube tu Publicación', icon: <AddCircleIcon />, link: '/crearpost'},
-    {text: 'Postular Lista', icon: <Send/>, link: '/postular'},
+const menuItems = [
+    { text: 'Foro', icon: <HomeIcon />, link: '/foro'},
+    { text: 'Tricel', icon: <ManageAccountsIcon />, link: '/tricel/miembros'},
+    {
+      text: 'Gestión de Elecciones',
+      icon: <ListAltIcon />,
+      subitems: [
+        { text: 'Postulaciones', link: '/tricel/postulaciones' },
+        { text: 'Procesos Electivos', link: '/tricel/procesos-electivos' },
+        { text: 'Periodos Electivos', link: '/tricel/periodos-electivos' },
+        
+      ],
+    },
+    { text: 'Votaciones', icon: <HowToVoteIcon />, link: '/votaciones' },
   ];
 
   const { user }  = useAuth();
@@ -190,12 +194,12 @@ export default function LayoutUser({ children }) {
             >
               <MenuIcon />
             </IconButton>
-            <Avatar variant="square" sx={{ width: '21px', height: '20px'}} src="https://intranet.ubiobio.cl/bootstrapsite/assets/images/escudo.png" />
+            <Avatar variant="square" sx={{ width: '21px', height: '20px' }} src="https://intranet.ubiobio.cl/bootstrapsite/assets/images/escudo.png" />
             <Typography
                 variant="h6"
                 noWrap
                 component="a"
-                href="/foro"
+                href="/"
                 sx={{
                     mr: 2,
                     display: { xs: 'none', md: 'flex' },
@@ -225,7 +229,7 @@ export default function LayoutUser({ children }) {
                     }}
                     >
                         <ArrowDropDownIcon sx={{ color: '#fff'}} />
-                        <Typography textAlign="center" sx={{ fontSize: '14px', paddingRight: 1, color: '#fff'}}>{usuario.username}</Typography>
+                        <Typography textAlign="center" sx={{ fontSize: '14px', paddingRight: 1, color: '#fff'}}>{usuario.username} (TRICEL)</Typography>
                         <Avatar
                                 alt="Imagen Perfil"
                                 src={`http://146.83.198.35:1245${usuario.profileImage}`} 
@@ -269,33 +273,11 @@ export default function LayoutUser({ children }) {
         </DrawerHeader>
         <Divider sx={{ color: '#fff'}}/>
         <List>
-            {menuItems.map((item) => (
-            <React.Fragment key={item.text}>
-            <ListItem disablePadding sx={{ display: 'block' }}>
-              {item.link ? (
-                <Link to={item.link} style={{ textDecoration: 'none', color: 'inherit' }}>
-                  <ListItemButton
-                    sx={{
-                      minHeight: 48,
-                      justifyContent: open ? 'initial' : 'center',
-                      px: 2.5,
-                      color: '#fff',
-                    }}
-                  >
-                    <ListItemIcon
-                      sx={{
-                        minWidth: 0,
-                        mr: open ? 3 : 'auto',
-                        justifyContent: 'center',
-                        color: '#E1EAF1',
-                      }}
-                    >
-                      {item.icon}
-                    </ListItemIcon>
-                    <ListItemText primary={item.text} sx={{ opacity: open ? 1 : 0 }} />
-                  </ListItemButton>
-                </Link>
-              ) : (
+      {menuItems.map((item) => (
+        <React.Fragment key={item.text}>
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            {item.link ? (
+              <Link to={item.link} style={{ textDecoration: 'none', color: 'inherit' }}>
                 <ListItemButton
                   sx={{
                     minHeight: 48,
@@ -303,7 +285,6 @@ export default function LayoutUser({ children }) {
                     px: 2.5,
                     color: '#fff',
                   }}
-                  onClick={() => setOpen(!open)}
                 >
                   <ListItemIcon
                     sx={{
@@ -317,12 +298,36 @@ export default function LayoutUser({ children }) {
                   </ListItemIcon>
                   <ListItemText primary={item.text} sx={{ opacity: open ? 1 : 0 }} />
                 </ListItemButton>
-              )}
-            </ListItem>
-            {item.subitems && open && (
-              <List>
-                {item.subitems.map((subitem, index) => (
-                  <ListItem key={subitem} disablePadding sx={{ display: 'block' }}>
+              </Link>
+            ) : (
+              <ListItemButton
+                sx={{
+                  minHeight: 48,
+                  justifyContent: open ? 'initial' : 'center',
+                  px: 2.5,
+                  color: '#fff',
+                }}
+                onClick={() => setOpen(!open)}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 3 : 'auto',
+                    justifyContent: 'center',
+                    color: '#E1EAF1',
+                  }}
+                >
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText primary={item.text} sx={{ opacity: open ? 1 : 0 }} />
+              </ListItemButton>
+            )}
+          </ListItem>
+          {item.subitems && open && (
+            <List>
+              {item.subitems.map((subitem) => (
+                <ListItem key={subitem.text} disablePadding sx={{ display: 'block' }}>
+                  <Link to={subitem.link} style={{ textDecoration: 'none', color: 'inherit' }}>
                     <ListItemButton
                       sx={{
                         minHeight: 48,
@@ -341,17 +346,18 @@ export default function LayoutUser({ children }) {
                       >
                         <CircleIcon sx={{ fontSize: 'small' }} />
                       </ListItemIcon>
-                      <ListItemText primary={subitem} sx={{ opacity: open ? 1 : 0 }} />
+                      <ListItemText primary={subitem.text} sx={{ opacity: open ? 1 : 0 }} />
                     </ListItemButton>
-                  </ListItem>
-                ))}
-              </List>
-            )}
-          </React.Fragment>
-            ))}
-        </List>
+                  </Link>
+                </ListItem>
+              ))}
+            </List>
+          )}
+        </React.Fragment>
+      ))}
+    </List>
         </Drawer>
-      <Box component="main" sx={{ marginTop: '64px', p: 3, width: '100%' }}>
+      <Box component="main" sx={{ marginTop: '64px', p: 3 , width: '100%'}}>
         {children}
       </Box>
     </Box>

@@ -4,31 +4,37 @@ import {
   updatePeriodo,
   deletePeriodo,
 } from "../../services/Tricel/periodos.service";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Button,
-} from "@mui/material";
+import {Table,TableBody,TableCell,TableContainer,
+  TableHead,TableRow,Paper,Button,} from "@mui/material";
 import toast, { Toaster } from "react-hot-toast";
-import PeriodoForm from "../../components/PeriodoForm";
+import PeriodoForm from "../../components/Tricel/PeriodoForm";
 import DeletePeriodoModal from "../../components/DeletePeriodoModal";
+import EditPeriodoModal from "../../components/Tricel/EditPeriodoModal";
+import { format, toZonedTime } from "date-fns-tz";
+import { formatInTimeZone } from "date-fns-tz";
+import {  parseISO, addHours, subHours } from "date-fns";
+import { enGB } from 'date-fns/locale';
 
 const PeriodosElectivos = () => {
   const [periodos, setPeriodos] = useState([]);
   const [openPeriodoModal, setOpenPeriodoModal] = useState(false);
   const [selectedPeriodo, setSelectedPeriodo] = useState(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchPeriodos = async () => {
-      const data = await getPeriodos();
-      console.log("Fetched periodos: ", data); // Debugging
-      setPeriodos(data || []);
+      try {
+        const data = await getPeriodos();
+        if (data.length === 0) {
+          setError("No se encontraron períodos electivos.");
+        } else {
+          setPeriodos(data);
+        }
+      } catch (err) {
+        setError("Ocurrió un error al cargar los períodos electivos.");
+      }
     };
     fetchPeriodos();
   }, []);
@@ -49,19 +55,28 @@ const PeriodosElectivos = () => {
     setOpenPeriodoModal(true);
   };
 
-  const formatDate = (dateString) => {
+  const handleEditPeriodo = (periodo) => {
+    setSelectedPeriodo(periodo);
+    setEditModalOpen(true); 
+  };
+
+  
+  const formatDateToDDMMYYYY = (dateString) => {
     const date = new Date(dateString);
-    date.setDate(date.getDate() + 1); // Añade un día a la fecha
-    const day = date.getDate().toString().padStart(2, "0");
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const year = date.getFullYear();
+    
+    // Get day, month, and year
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const year = date.getUTCFullYear();
+  
+    // Format the date
     return `${day}-${month}-${year}`;
   };
 
-  return (
-    <div style={{ overflow: "hidden" }}>
-      <Toaster position="top-right" reverseOrder={false} />
 
+
+  return (
+    <div style={{ overflow: "auto" }}>
       <Button
         variant="contained"
         color="primary"
@@ -69,30 +84,27 @@ const PeriodosElectivos = () => {
       >
         Crear Nuevo Periodo
       </Button>
-
-      <div style={{ marginTop: "20px", overflowX: "auto" }}>
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Nombre del Periodo</TableCell>
-                <TableCell>Número de Etapa</TableCell>
-                <TableCell>Fecha Inicio</TableCell>
-                <TableCell>Fecha Fin</TableCell>
-                <TableCell>Duración</TableCell>
-                <TableCell align="center">Acciones</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {periodos.map((periodo) => (
+      <TableContainer component={Paper} style={{ marginTop: 20 }}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell align="center">Nombre del Periodo</TableCell>
+              <TableCell align="center">Fecha de Inicio</TableCell>
+              <TableCell align="center">Fecha de Fin</TableCell>
+              <TableCell align="center">Duración (días)</TableCell>
+              <TableCell align="center">Acciones</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {periodos.length > 0 ? (
+              periodos.map((periodo) => (
                 <TableRow key={periodo._id}>
-                  <TableCell>{periodo.nombre_etapa}</TableCell>
-                  <TableCell align="center">{periodo.numero_etapa}</TableCell>
+                  <TableCell align="center">{periodo.nombre_etapa}</TableCell>
                   <TableCell align="center">
-                    {formatDate(periodo.fechaInicio)}
+                  {formatDateToDDMMYYYY(periodo.fechaInicio)}
                   </TableCell>
                   <TableCell align="center">
-                    {formatDate(periodo.fechaFin)}
+                  {formatDateToDDMMYYYY(periodo.fechaFin)}
                   </TableCell>
                   <TableCell align="center">{periodo.duracion}</TableCell>
                   <TableCell align="center">
@@ -116,12 +128,17 @@ const PeriodosElectivos = () => {
                     </div>
                   </TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </div>
-
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={5} align="center">
+                  No se encontraron períodos electivos.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
       <PeriodoForm
         open={openPeriodoModal}
         onClose={handleClosePeriodoModal}
@@ -130,6 +147,18 @@ const PeriodosElectivos = () => {
           setPeriodos(data || []);
         }}
       />
+
+      <EditPeriodoModal
+        open={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
+        periodoId={selectedPeriodo?._id}
+        currentFechaInicio={selectedPeriodo?.fechaInicio}
+        fetchPeriodos={async () => {
+          const data = await getPeriodos();
+          setPeriodos(data || []);
+        }}
+      />  
+
 
       <DeletePeriodoModal
         open={deleteModalOpen}

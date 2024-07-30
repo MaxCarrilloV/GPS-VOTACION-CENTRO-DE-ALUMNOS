@@ -9,7 +9,7 @@ import MainLayout from "../components/LandingPage";
 import LayoutAdmin from "../layouts/Admin.jsx";
 import toast, { Toaster } from "react-hot-toast";
 import LayoutUser from '../layouts/User.jsx';
-
+import LayoutTricel from "../layouts/Tricel.jsx";
 function Root() {
   return (
     <AuthProvider>
@@ -28,15 +28,20 @@ function PageRoot() {
   };
 
   const { user } = useAuth();
+  console.log(user);
 
   return (
     <>
       {user ? (
         <>
-          {user.roles[0].name === 'admin' ? (
+          {user.roles[0].name === "admin" ? (
             <LayoutAdmin>
               <Outlet />
             </LayoutAdmin>
+          ) : user.roles[0].name === "Miembro de Tricel" ? (
+            <LayoutTricel>
+              <Outlet />
+            </LayoutTricel>
           ) : (
             <LayoutUser>
               <Outlet />

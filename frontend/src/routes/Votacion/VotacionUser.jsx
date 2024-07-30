@@ -29,8 +29,8 @@ import {
 
 const columns = [
   { field: "titulo", headerName: "Nombre", width: 150 },
-  { field: "descripcion", headerName: "Descripción", width: 250 },
-  { field: "fechaInicio", headerName: "Fecha inicio", width: 250 },
+  { field: "descripcion", headerName: "Descripción", width: 200 },
+  { field: "fechaInicio", headerName: "Fecha inicio", width: 200 },
   { field: "fechaFin", headerName: "Fecha fin", width: 200 },
   { field: "estado", headerName: "Estado", width: 100 },
   {
@@ -252,7 +252,7 @@ export default function VotacionUser() {
     );
   });
   return (
-    <Box style={{ height: 400 }}>
+    <Box style={{ height: 400, width: 1240 }}>
       <Snackbar
         className=""
         open={snackbarOpen}

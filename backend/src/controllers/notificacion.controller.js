@@ -53,7 +53,7 @@ async function sendMail(req, res){
         //text: `Hola ${user.username}, desde hoy tienes disponible el nuevo beneficio ${benefit.name}`,
         html:`<html>
             <body>
-                <p>Hola,<br> 
+                <p>Hola,<br>
                 ${mensaje}</p>
             </body>
             </html>`
