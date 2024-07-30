@@ -41,7 +41,7 @@ const Post = () => {
           const loadedUser = await getUserByEmail(user.email);
           if (loadedUser && loadedUser.length > 0) {
             setUsuario(loadedUser[0].user);
-            console.log('Usuario cargado:', loadedUser[0].user.username);
+            //console.log('Usuario cargado:', loadedUser[0].user.username);
           } else {
             console.error('No se encontró ningún usuario.');
           }
@@ -60,7 +60,7 @@ const Post = () => {
       try {
         await postService.deletePost(postId);
         localStorage.setItem('postDeletedMessage', 'Publicación eliminada exitosamente');
-        navigate('/foro'); 
+        navigate('/foro');
       } catch (error) {
         console.error("Error al eliminar el post:", error);
       }
@@ -179,7 +179,7 @@ const Post = () => {
               </button>
             )}
             <button onClick={() => setReplyingTo(reply._id)} className="reply-button">Responder</button>
-            {usuario && usuario.username === reply.username && (
+            {usuario && (usuario.username === reply.username || usuario.username === 'admin') && (
               <button onClick={() => handleDeleteComment(reply._id)} className="delete-button">Eliminar</button>
             )}
 
@@ -220,7 +220,7 @@ const Post = () => {
               </button>
             )}
             <button onClick={() => setReplyingTo(comment._id)} className="reply-button">Responder</button>
-            {usuario && usuario.username === comment.username && (
+            {usuario && (usuario.username === comment.username || usuario.username === 'admin') && (
               <button onClick={() => handleDeleteComment(comment._id)} className="delete-button">Eliminar</button>
             )}
           </div>
@@ -253,74 +253,74 @@ const Post = () => {
 
   return (
     <Grid container spacing={2}>
-    <Grid item xs={3}>
-    </Grid>
-    <Grid item xs={6}>
-    <div className="post-detail">
-      <div className="post-card">
-        <p><span style={{
-          fontStyle: 'italic',
-          fontWeight: 'bold',
-          color: 'rgba(128, 200, 255, 0.5)',
-          textShadow: '0 0 1px black'
-        }}>
-          Publicada por: {post.username}
-        </span></p>
-        <h2>{post.title}</h2>
+      <Grid item xs={3}>
+      </Grid>
+      <Grid item xs={6}>
+        <div className="post-detail">
+          <div className="post-card">
+            <p><span style={{
+              fontStyle: 'italic',
+              fontWeight: 'bold',
+              color: 'rgba(128, 200, 255, 0.5)',
+              textShadow: '0 0 1px black'
+            }}>
+              Publicada por: {post.username}
+            </span></p>
+            <h2>{post.title}</h2>
 
-        <div className="post-text-box">
-          <p>{post.text}</p>
-        </div>
-        <div>
-          {usuario && usuario.username === post.username && (
-            <button
-              type="submit"
-              onClick={handleDeletePost}
-              style={{ backgroundColor: 'red', color: 'white' }}
-            >
-              Eliminar post
-            </button>
-          )}
-        </div>
-        {post.type === 'List' && (
-          <div>
-            <h3>Miembros:</h3>
-            <ul>
-              {post.listMembers.map(member => (
-                <li key={member}>{member}</li>
-              ))}
-            </ul>
+            <div className="post-text-box">
+              <p>{post.text}</p>
+            </div>
+            <div>
+              {usuario && (usuario.username === post.username || usuario.username === 'admin') && (
+                <button
+                  type="submit"
+                  onClick={handleDeletePost}
+                  style={{ backgroundColor: 'red', color: 'white' }}
+                >
+                  Eliminar post
+                </button>
+              )}
+            </div>
+            {post.type === 'List' && (
+              <div>
+                <h3>Miembros:</h3>
+                <ul>
+                  {post.listMembers.map(member => (
+                    <li key={member}>{member}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {post.type === 'Normal' && (<h3>Comentarios:</h3>)}
+            {renderComments(post.comments)}
+            {post.type === 'Normal' && (
+              <div className="new-comment-box">
+                <form onSubmit={handleNewCommentSubmit}>
+                  <textarea
+                    value={newCommentText}
+                    onChange={handleNewCommentChange}
+                    placeholder="Escribe un comentario..."
+                    rows="3"
+                  />
+                  <button type="submit">Enviar</button>
+                </form>
+              </div>
+            )}
           </div>
-        )}
-        {post.type === 'Normal' && (<h3>Comentarios:</h3>)}
-        {renderComments(post.comments)}
-        {post.type === 'Normal' && (
-          <div className="new-comment-box">
-            <form onSubmit={handleNewCommentSubmit}>
-              <textarea
-                value={newCommentText}
-                onChange={handleNewCommentChange}
-                placeholder="Escribe un comentario..."
-                rows="3"
-              />
-              <button type="submit">Enviar</button>
-            </form>
-          </div>
-        )}
-      </div>
-    </div>
-    </Grid>
-          <Grid item xs={3}>
-            <Grid container direction="column" spacing={2} justifyContent="flex-end">
-              <Grid item>
-                <Avisos />
-              </Grid>
-              <Grid item>
-                <Actividades />
-              </Grid>
-            </Grid>
+        </div>
+      </Grid>
+      <Grid item xs={3}>
+        <Grid container direction="column" spacing={2} justifyContent="flex-end">
+          <Grid item>
+            <Avisos />
+          </Grid>
+          <Grid item>
+            <Actividades />
           </Grid>
         </Grid>
+      </Grid>
+    </Grid>
   );
 };
 

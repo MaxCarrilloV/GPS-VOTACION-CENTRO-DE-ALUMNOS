@@ -28,7 +28,7 @@ function PageRoot() {
   };
 
   const { user } = useAuth();
-  console.log(user);
+  //console.log(user);
 
   return (
     <>
