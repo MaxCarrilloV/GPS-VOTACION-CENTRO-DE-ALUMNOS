@@ -1,6 +1,9 @@
 "use strict";
 
 const postService = require("../services/post.service");
+const {postSchema} = require("../schema/post.schema");
+const {commentSchema} = require("../schema/post.schema");
+
 
 async function getAllPosts(req, res) {
   try {
@@ -29,16 +32,29 @@ async function getPostById(req, res) {
 
 async function createPost(req, res) {
   try {
-    const postData = req.body;
-    postData.username = req.username;
-    const [newPost, error] = await postService.createPost(postData);
-    if (error) return res.status(400).json({ message: error });
+    // Validar los datos de entrada usando Joi
+    const { error, value } = postSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
+
+    // Asignar el nombre de usuario de la sesión
+    value.username = req.username;
+
+    // Llamar al servicio para crear la publicación
+    const [newPost, serviceError] = await postService.createPost(value);
+    if (serviceError) {
+      return res.status(400).json({ message: serviceError });
+    }
+
+    // Responder con éxito
     return res.status(201).json({ message: "Publicación creada exitosamente", post: newPost });
   } catch (error) {
     console.error("Error en createPost:", error);
     return res.status(500).json({ message: "Error interno del servidor" });
   }
 }
+
 
 async function updatePost(req, res) {
   try {
@@ -69,10 +85,23 @@ async function createComment(req, res) {
   try {
     const postId = req.params.postId;
     const commentData = req.body;
-    commentData.username = req.username;
-    console.log(req.username);
-    const [updatedPost, error] = await postService.createComment(postId, commentData);
-    if (error) return res.status(404).json({ message: error });
+    
+    // Validar los datos del comentario usando Joi
+    const { error, value } = commentSchema.validate(commentData);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
+
+    // Asignar el nombre de usuario de la sesión
+    value.username = req.username;
+
+    // Llamar al servicio para crear el comentario
+    const [updatedPost, serviceError] = await postService.createComment(postId, value);
+    if (serviceError) {
+      return res.status(404).json({ message: serviceError });
+    }
+
+    // Responder con éxito
     return res.status(201).json({ message: "Comentario creado exitosamente", post: updatedPost });
   } catch (error) {
     console.error("Error en createComment:", error);
