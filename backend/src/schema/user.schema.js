@@ -9,10 +9,11 @@ const { verify } = require("jsonwebtoken");
  * @constant {Object}
  */
 const userBodySchema = Joi.object({
-  username: Joi.string().required().messages({
+  username: Joi.string().pattern(/^[A-Za-z]+$/).required().messages({
     "string.empty": "El nombre de usuario no puede estar vacío.",
     "any.required": "El nombre de usuario es obligatorio.",
     "string.base": "El nombre de usuario debe ser de tipo string.",
+    "string.pattern.base": "El nombre de usuario solo puede contener letras.",
   }),
   rut: Joi.string().messages({
     "string.base": "El rut debe ser de tipo string.",
@@ -60,14 +61,17 @@ const userBodySchema = Joi.object({
 });
 
 const userUpdateBodySchema = Joi.object({
-  username: Joi.string().messages({
+  username: Joi.string().pattern(/^[A-Za-z]+$/).messages({
     "string.base": "El nombre de usuario debe ser de tipo string.",
+    "string.pattern.base": "El nombre de usuario solo puede contener letras."
   }),
-  rut: Joi.string().messages({
+  rut: Joi.string().pattern(/^[0-9.-]+$/).allow("No especificado").messages({
     "string.base": "El rut debe ser de tipo string.",
+    "string.pattern.base": "El rut solo puede contener números, puntos y guiones."
   }),
-  contact: Joi.string().messages({
+  contact: Joi.string().pattern(/^[0-9+]+$/).allow("No especificado").messages({
     "string.base": "El contacto debe ser de tipo string.",
+    "string.pattern.base": "El contacto solo puede contener números y el carácter '+'."
   }),
   profileImage: Joi.any().optional(),
   password: Joi.string().min(5).messages({
@@ -105,10 +109,12 @@ const roleUpdateSchema = Joi.object({
 });
 
 const codeSchema = Joi.object({
-  codigo: Joi.string().required().messages({
+  codigo: Joi.string().pattern(/^[0-9]+$/).length(6).required().messages({
     "string.empty": "El código no puede estar vacío.",
     "any.required": "El código es obligatorio.",
     "string.base": "El código debe ser de tipo string.",
+    "string.pattern.base": "El código solo puede contener números.",
+    "string.length": "El código debe tener exactamente 6 caracteres."
   }),
 });
 
