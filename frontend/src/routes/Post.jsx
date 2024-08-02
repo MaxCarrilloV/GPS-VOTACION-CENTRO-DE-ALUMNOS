@@ -9,7 +9,24 @@ import Avisos from '../components/Avisos';
 import Actividades from '../components/Actividades';
 import { Grid } from '@mui/material';
 
+import Modal from 'react-modal';
+
 const Post = () => {
+
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+
+  const openModal = (commentId) => {
+    setCommentToDelete(commentId);
+    setModalIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalIsOpen(false);
+    setCommentToDelete(null);
+  };
+
+  const [commentToDelete, setCommentToDelete] = useState(null);
+
   const { postId } = useParams();
   const [post, setPost] = useState(null);
   const navigate = useNavigate();
@@ -101,6 +118,7 @@ const Post = () => {
     setReplyText(e.target.value);
   };
 
+  /*
   const handleDeleteComment = async (commentId) => {
     const confirmDelete = window.confirm("¿Estás seguro de que quieres eliminar este comentario?");
     if (confirmDelete) {
@@ -113,6 +131,25 @@ const Post = () => {
       }
     }
   };
+  */
+
+  const handleDeleteComment = async (commentId) => {
+    openModal(commentId);
+  };
+
+  const confirmDeleteComment = async () => {
+    if (commentToDelete) {
+      try {
+        await postService.deleteComment(postId, commentToDelete);
+        const { data } = await postService.getPostById(postId);
+        setPost(data);
+        closeModal();
+      } catch (error) {
+        console.error("Error al eliminar el comentario:", error);
+      }
+    }
+  };
+
 
 
   const handleNewCommentSubmit = async (e) => {
@@ -239,11 +276,17 @@ const Post = () => {
                 <button type="submit">Responder</button>
               </form>
             </div>
+
+
+
+
           )}
         </div> {/* y quitar este*/}
       </React.Fragment>
     ));
   };
+
+
 
   if (!post) {
     return <div>Cargando...</div>;
@@ -252,75 +295,93 @@ const Post = () => {
 
 
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={3}>
-      </Grid>
-      <Grid item xs={6}>
-        <div className="post-detail">
-          <div className="post-card">
-            <p><span style={{
-              fontStyle: 'italic',
-              fontWeight: 'bold',
-              color: 'rgba(128, 200, 255, 0.5)',
-              textShadow: '0 0 1px black'
-            }}>
-              Publicada por: {post.username}
-            </span></p>
-            <h2>{post.title}</h2>
+    <>
+      <Grid container spacing={2}>
+        <Grid item xs={3}>
+        </Grid>
+        <Grid item xs={6}>
+          <div className="post-detail">
+            <div className="post-card">
+              <p><span style={{
+                fontStyle: 'italic',
+                fontWeight: 'bold',
+                color: 'rgba(128, 200, 255, 0.5)',
+                textShadow: '0 0 1px black'
+              }}>
+                Publicada por: {post.username}
+              </span></p>
+              <h2>{post.title}</h2>
 
-            <div className="post-text-box">
-              <p>{post.text}</p>
-            </div>
-            <div>
-              {usuario && (usuario.username === post.username || usuario.username === 'admin') && (
-                <button
-                  type="submit"
-                  onClick={handleDeletePost}
-                  style={{ backgroundColor: 'red', color: 'white' }}
-                >
-                  Eliminar post
-                </button>
+              <div className="post-text-box">
+                <p>{post.text}</p>
+              </div>
+              <div>
+                {usuario && (usuario.username === post.username || usuario.username === 'admin') && (
+                  <button
+                    type="submit"
+                    onClick={handleDeletePost}
+                    style={{ backgroundColor: 'red', color: 'white' }}
+                  >
+                    Eliminar post
+                  </button>
+                )}
+              </div>
+              {post.type === 'List' && (
+                <div>
+                  <h3>Miembros:</h3>
+                  <ul>
+                    {post.listMembers.map(member => (
+                      <li key={member}>{member}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {post.type === 'Normal' && (<h3>Comentarios:</h3>)}
+              {renderComments(post.comments)}
+              {post.type === 'Normal' && (
+                <div className="new-comment-box">
+                  <form onSubmit={handleNewCommentSubmit}>
+                    <textarea
+                      value={newCommentText}
+                      onChange={handleNewCommentChange}
+                      placeholder="Escribe un comentario..."
+                      rows="3"
+                    />
+                    <button type="submit">Enviar</button>
+                  </form>
+                </div>
+
+
               )}
             </div>
-            {post.type === 'List' && (
-              <div>
-                <h3>Miembros:</h3>
-                <ul>
-                  {post.listMembers.map(member => (
-                    <li key={member}>{member}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            {post.type === 'Normal' && (<h3>Comentarios:</h3>)}
-            {renderComments(post.comments)}
-            {post.type === 'Normal' && (
-              <div className="new-comment-box">
-                <form onSubmit={handleNewCommentSubmit}>
-                  <textarea
-                    value={newCommentText}
-                    onChange={handleNewCommentChange}
-                    placeholder="Escribe un comentario..."
-                    rows="3"
-                  />
-                  <button type="submit">Enviar</button>
-                </form>
-              </div>
-            )}
           </div>
-        </div>
-      </Grid>
-      <Grid item xs={3}>
-        <Grid container direction="column" spacing={2} justifyContent="flex-end">
-          <Grid item>
-            <Avisos />
-          </Grid>
-          <Grid item>
-            <Actividades />
+        </Grid>
+        <Grid item xs={3}>
+          <Grid container direction="column" spacing={2} justifyContent="flex-end">
+            <Grid item>
+              <Avisos />
+            </Grid>
+            <Grid item>
+              <Actividades />
+            </Grid>
           </Grid>
         </Grid>
       </Grid>
-    </Grid>
+
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        contentLabel="Confirmar eliminación de comentario"
+        ariaHideApp={false}
+        className="Modal"
+        overlayClassName="Overlay"
+      >
+        <h2>¿Estás seguro de que quieres eliminar este comentario?</h2>
+        <button onClick={confirmDeleteComment} className="confirm-button">Confirmar</button>
+        <button onClick={closeModal} className="cancel-button">Cancelar</button>
+      </Modal>
+    </>
+
   );
 };
 
